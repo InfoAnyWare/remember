@@ -1,0 +1,53 @@
+<ion-modal-view>
+  <ion-header-bar>
+    <a class="button icon-left ion-chevron-left button-clear button-small"  ng-click="closeLogin()"></a>
+    <h1 class="title">Login</h1>
+    <a class="button button-small ion-person-add" ng-click="register()">&nbsp;New User?</a>
+  </ion-header-bar>
+  <ion-content>
+    <form ng-submit="doLogin()" name="loginForm" novalidate>
+      <div class="list">
+      
+        <label class="item item-input" style="color:red" ng-show="vEmailMsg">
+        	{{vEmailMsgValue}}
+        </label>
+        
+        <label class="item item-input item-floating-label">
+          <span class="input-label">Username</span>
+          <input type="text" name="username" ng-model="loginData.username" placeholder="Username" autocomplete="off" required>
+          <span style="color:red" ng-show="loginForm.username.$dirty && loginForm.username.$invalid">
+          	<span ng-show="loginForm.username.$error.required">Username is required.</span>
+          </span>
+        </label>
+        
+         <label class="item item-input item-floating-label">
+          <span class="input-label">Password</span>
+          <input type="password" name="password" ng-model="loginData.password" placeholder="Password" required>
+          <span style="color:red" ng-show="loginForm.password.$dirty && loginForm.password.$invalid">
+          	<span ng-show="loginForm.password.$error.required">Password is required.</span>
+          </span>
+        </label>
+        
+        <label class="item">
+          <button class="button button-block button-positive" type="submit" ng-disabled="((loginForm.username.$dirty || loginForm.username.$pristine) && loginForm.username.$invalid) || ((loginForm.password.$dirty || loginForm.password.$pristine) && loginForm.password.$invalid)">
+          <i class="icon ion-log-in"></i>
+          Log in</button>
+        </label>
+        
+      </div>
+    </form>
+   
+    <button class="button button-full button-light" style="border:none;">
+     	<h4>OR</h4>
+     </button>
+    
+   <div class="list">
+       <label class="item">
+            <button class="button button-block button-positive" ng-click="fbLogin()">
+              Log in with Facebook
+            </button>
+        </label>
+  </div>
+
+  </ion-content>
+</ion-modal-view>

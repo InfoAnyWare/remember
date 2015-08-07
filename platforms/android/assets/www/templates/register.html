@@ -1,0 +1,73 @@
+<ion-modal-view>
+
+  <ion-header-bar>
+    <a class="button icon-left ion-chevron-left button-clear button-small"  ng-click="closeRegister()"></a>
+    <h1 class="title">Register</h1>
+    <!--<a class="button button-small icon ion-log-in" ng-click="login()">&nbsp;Login?</a>-->
+  </ion-header-bar>
+  
+  <ion-content>
+    <form ng-submit="doRegister()" name="registerForm" novalidate>
+      <div class="list">
+      
+       	<label class="item item-input" style="color:red" ng-show="registerMsg">
+        	{{registerMsgValue}}
+        </label>
+        
+        <label class="item item-input item-floating-label">
+          <span class="input-label">Username</span>
+          <input type="text" name="username" ng-model="registerData.username" placeholder="Username" autocomplete="off" required>
+          <span style="color:red" ng-show="registerForm.username.$dirty && registerForm.username.$invalid">
+          	<span ng-show="registerForm.username.$error.required">Username is required.</span>
+          </span>
+        </label>
+        
+        <label class="item item-input item-floating-label">
+          <span class="input-label">Email</span>
+          <input type="email" name="email" ng-model="registerData.email" placeholder="Email" autocomplete="off" required>
+           <span style="color:red" ng-show="registerForm.email.$dirty && registerForm.email.$invalid">
+          	<span ng-show="registerForm.email.$error.required">Email is required.</span>
+            <span ng-show="registerForm.email.$error.email">Invalid email address.</span>
+          </span>
+        </label>
+        
+        <label class="item item-input item-floating-label">
+          <span class="input-label">Phone Number</span>
+          <input type="number" maxlength="11" name="phoneNumber"  ng-model="registerData.phoneNumber" autocomplete="off" placeholder="Phone Number" required>
+          <span style="color:red" ng-show="registerForm.phoneNumber.$dirty && registerForm.phoneNumber.$invalid">
+          	<span ng-show="registerForm.phoneNumber.$error.required">Phone Number is required.</span>
+            <span ng-show="registerForm.phoneNumber.$error.number">Invalid Phone Number.</span>
+          </span>
+        </label>
+        
+        <label class="item item-input item-floating-label">
+          <span class="input-label">Password</span>
+          <input type="password" name="password" ng-model="registerData.password" placeholder="Password" required>
+          <span style="color:red" ng-show="registerForm.password.$dirty && registerForm.password.$invalid">
+          	<span ng-show="registerForm.password.$error.required">Password is required.</span>
+          </span>
+        </label>
+        
+        <label class="item item-input item-floating-label">
+          <span class="input-label">Confirm password</span>
+          <input type="password" name="confirmPassword" ng-model="registerData.confirmPassword" placeholder="Confirm password" required>
+          <span style="color:red" ng-show="registerForm.confirmPassword.$dirty && registerForm.confirmPassword.$invalid">
+          	<span ng-show="registerForm.confirmPassword.$error.required">Confirm password is required.</span>
+          </span>
+        </label>
+        
+         <label class="item item-input item-floating-label" style="color:red" ng-show="passwordMatchMsg">
+        	<span >Password did not match.</span>
+        </label>
+        
+        <label class="item" ng-hide="!passwordMatch || ((registerForm.username.$dirty || registerForm.username.$pristine) && registerForm.username.$invalid) || ((registerForm.email.$dirty || registerForm.email.$pristine) && registerForm.email.$invalid) || ((registerForm.phoneNumber.$dirty || registerForm.phoneNumber.$pristine) && registerForm.phoneNumber.$invalid) || ((registerForm.password.$dirty || registerForm.password.$pristine) && registerForm.password.$invalid) || ((registerForm.confirmPassword.$dirty || registerForm.confirmPassword.$pristine) && registerForm.confirmPassword.$invalid)">
+          <button class="button button-block button-positive" type="submit">
+          <i class="ion-android-checkmark-circle"></i>
+          Submit</button>
+        </label>
+        
+      </div>
+    </form>
+  </div>
+  </ion-content>
+</ion-modal-view>

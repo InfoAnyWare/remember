@@ -1,0 +1,18 @@
+<ion-modal-view>
+
+  <ion-header-bar>
+    <a class="button icon-left ion-chevron-left button-clear button-small"  ng-click="closeRegisterThanks()"></a>
+    <h1 class="title">Thank you for register</h1>
+    <a class="button button-small icon ion-log-in" ng-click="login()">&nbsp;Login?</a>
+  </ion-header-bar>
+  
+  <ion-content>
+    
+      <div class="list">
+       	<label class="item item-input" style="color:red" ng-show="registerMsg">
+        	{{registerMsgValue}}
+        </label>
+      </div>
+  </div>
+  </ion-content>
+</ion-modal-view>
