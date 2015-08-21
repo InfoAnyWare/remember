@@ -1,16 +1,16 @@
 <ion-modal-view>
 
   <ion-header-bar>
-    <a class="button icon-left ion-chevron-left button-clear button-small"  ng-click="closeRegister()"></a>
+    <a class="button icon-left ion-chevron-left button-clear button-small"  ng-click="login()" ng-show="beforeloginLinks"></a>
+    <a class="button icon-left ion-chevron-left button-clear button-small"  ng-click="closeRegister()" ng-show="afterloginLinks"></a>
     <h1 class="title">Register</h1>
-    <!--<a class="button button-small icon ion-log-in" ng-click="login()">&nbsp;Login?</a>-->
   </ion-header-bar>
   
   <ion-content>
-    <form ng-submit="doRegister()" name="registerForm" novalidate>
+    <form ng-submit="doRegister()" name="registerForm" novalidate enctype="multipart/form-data">
       <div class="list">
       
-       	<label class="item item-input" style="color:red" ng-show="registerMsg">
+       	<label class="item item-input display-msg" ng-show="registerMsg">
         	{{registerMsgValue}}
         </label>
         
@@ -28,6 +28,38 @@
            <span style="color:red" ng-show="registerForm.email.$dirty && registerForm.email.$invalid">
           	<span ng-show="registerForm.email.$error.required">Email is required.</span>
             <span ng-show="registerForm.email.$error.email">Invalid email address.</span>
+          </span>
+        </label>
+        
+        <label class="item item-input item-floating-label">
+          <span class="input-label">First Name</span>
+          <input type="text" name="firstName" ng-model="registerData.firstName" placeholder="First Name" autocomplete="off" required>
+          <span style="color:red" ng-show="registerForm.firstName.$dirty && registerForm.firstName.$invalid">
+          	<span ng-show="registerForm.firstName.$error.required">First name is required.</span>
+          </span>
+        </label>
+        
+        <label class="item item-input item-floating-label">
+          <span class="input-label">Middle Name</span>
+          <input type="text" name="middleName" ng-model="registerData.middleName" placeholder="Middle Name" autocomplete="off" required>
+          <span style="color:red" ng-show="registerForm.middleName.$dirty && registerForm.middleName.$invalid">
+          	<span ng-show="registerForm.middleName.$error.required">Middle name is required.</span>
+          </span>
+        </label>
+        
+        <label class="item item-input item-floating-label">
+          <span class="input-label">Sur Name</span>
+          <input type="text" name="surName" ng-model="registerData.surName" placeholder="Sur Name" autocomplete="off" required>
+          <span style="color:red" ng-show="registerForm.surName.$dirty && registerForm.surName.$invalid">
+          	<span ng-show="registerForm.surName.$error.required">Sur name is required.</span>
+          </span>
+        </label>
+        
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Date Of Birth</span>
+          <input type="date" name="dateOfBirth" ng-model="registerData.dateOfBirth" placeholder="MM-DD-YYYY" value="">
+          <span style="color:red" ng-show="registerForm.dateOfBirth.$dirty">
+          	<span ng-show="registerForm.dateOfBirth.$error.required">Date Of Birth is required.</span>
           </span>
         </label>
         
@@ -56,12 +88,18 @@
           </span>
         </label>
         
+        
+         <label class="item item-input">
+          <span class="input-label">Photo</span>
+          <input type="file" name="photoFileUpload" id="photoFileUpload" ng-model="registerData.photoFileUpload">
+        </label>
+        
          <label class="item item-input item-floating-label" style="color:red" ng-show="passwordMatchMsg">
         	<span >Password did not match.</span>
         </label>
         
-        <label class="item" ng-hide="!passwordMatch || ((registerForm.username.$dirty || registerForm.username.$pristine) && registerForm.username.$invalid) || ((registerForm.email.$dirty || registerForm.email.$pristine) && registerForm.email.$invalid) || ((registerForm.phoneNumber.$dirty || registerForm.phoneNumber.$pristine) && registerForm.phoneNumber.$invalid) || ((registerForm.password.$dirty || registerForm.password.$pristine) && registerForm.password.$invalid) || ((registerForm.confirmPassword.$dirty || registerForm.confirmPassword.$pristine) && registerForm.confirmPassword.$invalid)">
-          <button class="button button-block button-positive" type="submit">
+        <label class="item">
+          <button class="button button-block button-positive" type="submit" ng-disabled="!passwordMatch || ((registerForm.username.$dirty || registerForm.username.$pristine) && registerForm.username.$invalid) || ((registerForm.firstName.$dirty || registerForm.firstName.$pristine) && registerForm.firstName.$invalid) || ((registerForm.middleName.$dirty || registerForm.middleName.$pristine) && registerForm.middleName.$invalid) || ((registerForm.surName.$dirty || registerForm.surName.$pristine) && registerForm.surName.$invalid) || ((registerForm.email.$dirty || registerForm.email.$pristine) && registerForm.email.$invalid) || ((registerForm.phoneNumber.$dirty || registerForm.phoneNumber.$pristine) && registerForm.phoneNumber.$invalid) || ((registerForm.password.$dirty || registerForm.password.$pristine) && registerForm.password.$invalid) || ((registerForm.confirmPassword.$dirty || registerForm.confirmPassword.$pristine) && registerForm.confirmPassword.$invalid)">
           <i class="ion-android-checkmark-circle"></i>
           Submit</button>
         </label>

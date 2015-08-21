@@ -1,6 +1,6 @@
 <ion-modal-view>
   <ion-header-bar>
-    <a class="button icon-left ion-chevron-left button-clear button-small"  ng-click="closeLogin()"></a>
+    <a class="button icon-left ion-chevron-left button-clear button-small"  ng-click="closeLogin()" ng-show="afterloginLinks"></a>
     <h1 class="title">Login</h1>
     <a class="button button-small ion-person-add" ng-click="register()">&nbsp;New User?</a>
   </ion-header-bar>
@@ -8,8 +8,15 @@
     <form ng-submit="doLogin()" name="loginForm" novalidate>
       <div class="list">
       
-        <label class="item item-input" style="color:red" ng-show="vEmailMsg">
+        <label class="item item-input display-msg" ng-show="vEmailMsg">
         	{{vEmailMsgValue}}
+        </label>
+         <label class="item item-input display-msg" ng-show="logoutMsg">
+        	{{logoutMsgValue}}
+        </label>
+        
+        <label class="item item-input display-msg" ng-show="successForgotPasswordMsg">
+        	{{successForgotPasswordMsgValue}}
         </label>
         
         <label class="item item-input item-floating-label">
@@ -28,22 +35,25 @@
           </span>
         </label>
         
-        <label class="item">
-          <button class="button button-block button-positive" type="submit" ng-disabled="((loginForm.username.$dirty || loginForm.username.$pristine) && loginForm.username.$invalid) || ((loginForm.password.$dirty || loginForm.password.$pristine) && loginForm.password.$invalid)">
+        <label class="item login-submit-label">
+          <button class="button button-block button-positive login-submit-button" type="submit" ng-disabled="((loginForm.username.$dirty || loginForm.username.$pristine) && loginForm.username.$invalid) || ((loginForm.password.$dirty || loginForm.password.$pristine) && loginForm.password.$invalid)">
           <i class="icon ion-log-in"></i>
           Log in</button>
         </label>
-        
       </div>
     </form>
-   
-    <button class="button button-full button-light" style="border:none;">
-     	<h4>OR</h4>
-     </button>
+    
+    <div class="row forgot-password-div">
+         <div class="col forgot-password-link" ng-click="forgotPassword()">Forgot your password?</div>
+    </div>  
+     
+  	<div class="row">
+     	<div class="col text-center"><h4>OR</h4></div>
+	</div>  
     
    <div class="list">
        <label class="item">
-            <button class="button button-block button-positive" ng-click="fbLogin()">
+            <button class="button button-block button-positive" scope="public_profile,email" ng-click="fbLogin()">
               Log in with Facebook
             </button>
         </label>

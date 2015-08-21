@@ -1,0 +1,29 @@
+{
+    "cordova-plugin-whitelist": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-whitelist"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-facebook": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-facebook"
+        },
+        "is_top_level": true,
+        "variables": {
+            "FACEBOOK_APP_ID": "1442568932738358",
+            "FACEBOOK_DISPLAY_NAME": "canYouRememberMe"
+        }
+    },
+    "org.apache.cordova.dialogs": {
+        "source": {
+            "type": "registry",
+            "id": "org.apache.cordova.dialogs"
+        },
+        "is_top_level": true,
+        "variables": {}
+    }
+}

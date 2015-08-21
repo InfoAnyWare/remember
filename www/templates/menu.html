@@ -18,19 +18,32 @@
     </ion-header-bar>
     <ion-content>
       <ion-list>
-       <ion-item menu-close href="#/app/home">
+       <ion-item menu-close ng-show="afterloginLinks" href="#/app/home">
          <i class="icon ion-home"></i>
           Home
         </ion-item>
-        <ion-item menu-close href="#/app/search">
+        <ion-item menu-close ng-show="afterloginLinks" href="#/app/search">
           <i class="icon ion-search"></i>
           Search
         </ion-item>
-        <ion-item menu-close class="icon ion-log-in" ng-click="login()">
+        <ion-item menu-close class="icon ion-log-in" ng-click="login()" ng-show="beforeloginLinks">
           Login
         </ion-item>
-        <ion-item menu-close class="icon ion-person-add" ng-click="register()">
+        <ion-item menu-close class="icon ion-person-add" ng-click="register()" ng-show="beforeloginLinks">
           Register
+        </ion-item>
+        <ion-item menu-close class="icon ion-gear-b" ng-click="forgotPassword()" ng-show="beforeloginLinks">
+         Forgot your password?
+        </ion-item>
+        
+        <ion-item menu-close class="icon ion-person" ng-click="userDetails()" ng-show="afterloginLinks">
+         My Account Details
+        </ion-item>
+        <ion-item menu-close class="icon ion-gear-b" ng-click="resetPassword()" ng-show="afterloginLinks">
+         Reset Password
+        </ion-item>
+         <ion-item menu-close class="icon ion-log-out" ng-click="logOut()" ng-show="afterloginLinks">
+          Logout 
         </ion-item>
         
       </ion-list>

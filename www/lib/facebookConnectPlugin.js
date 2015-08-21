@@ -82,7 +82,6 @@ if (!window.cordova) {
             if (permissions && permissions.length > 0) {
                 permissionObj.scope = permissions.toString();
             }
-            
             FB.login(function (response) {
                 if (response.authResponse) {
                     s(response);
@@ -154,11 +153,12 @@ if (!window.cordova) {
         // Browser wrapper API ONLY
         browserInit: function (appId, version) {
             if (!version) {
-                version = "v2.0";
+                version = "v2.4";
             }
             FB.init({
                 appId      : appId,
-                cookie     : true,
+                //cookie     : true,
+				status     : true, 
                 xfbml      : true,
                 version    : version
             })
@@ -175,5 +175,5 @@ if (!window.cordova) {
             document.getElementById('fb-root').appendChild(e);
         }
     }());
-
+	
 }
