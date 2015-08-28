@@ -1,5 +1,5 @@
 angular.module('starter.controllers', [])
-.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $state, $filter, $ionicLoading, $timeout) {
+.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $state, $filter, $ionicLoading, $cordovaFacebook, ngFB, $timeout) {
 	
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -7,7 +7,27 @@ angular.module('starter.controllers', [])
   // listen for the $ionicView.enter event:
   //$scope.$on('$ionicView.enter', function(e) {
   //});
-  	
+  
+  
+  	// function for show Loading
+		$scope.showLoading = function() {
+			$ionicLoading.show({
+			  template: '<ion-spinner icon="bubbles"></ion-spinner>'
+			});
+		  };
+		 
+	// function for hide Loading
+	    $scope.hideLoading = function(){
+			$ionicLoading.hide();
+		  };
+		  
+	//call for hide bydefault loding
+	 	$scope.showLoading();
+		$timeout(function() {
+			 $scope.hideLoading();
+			}, 4000);
+	
+  		
 	// var for show home page
 		$scope.showHomeMsg 			= false;
 		$scope.showHomeUserName 	= false;
@@ -22,17 +42,6 @@ angular.module('starter.controllers', [])
 		
 	// var for show logou tMsg
 		$scope.logoutMsg  = false;
-	
-	// function for show Loading
-		$scope.showLoading = function() {
-			$ionicLoading.show({
-			  template: '<ion-spinner icon="bubbles"></ion-spinner>'
-			});
-		  };
-	// function for hide Loading
-	    $scope.hideLoading = function(){
-			$ionicLoading.hide();
-		  };
 	
 	// Form data for the login modal
 		$scope.loginData = [];
@@ -144,6 +153,7 @@ angular.module('starter.controllers', [])
 	//logout current user
 		$scope.logOut = function() {
 			Parse.User.logOut();
+			ngFB.logout();
 			var currentUser = Parse.User.current();  // this will now be null
 			$scope.beforeloginLinks	 = true;
 			$scope.afterloginLinks   = false;
@@ -174,6 +184,7 @@ angular.module('starter.controllers', [])
 			 mySucceslogOutPopup.close(); //auto close the popup after 1 seconds
 		  }, 3000);
 		 };*/
+
 
 
 	
@@ -210,7 +221,6 @@ angular.module('starter.controllers', [])
 					  $scope.showHomeUserName 	 = true;
 		    		  $scope.name 				 = user.get("name");
 					  $scope.email 			 	 = user.get("email");
-					  $scope.phone 			 	 = user.get("phone");
 					  $scope.firstName 			 = user.get("firstName");
 					  $scope.middleName 		 = user.get("middleName");
 					  $scope.surName 		     = user.get("surName");
@@ -265,11 +275,17 @@ angular.module('starter.controllers', [])
 		};
 	// Perform the login action when the user submits the CYR login form ***********END***********
 	
-	// Perform the FB login start***********
+	
+	
+	
+	
+	
+	
+	// Perform the FB login ****************************************start***************************
 		var fbLogged = new Parse.Promise();
 		
 		var fbLoginSuccess = function(response) {
-		if (!response.authResponse){
+		if (!response.authResponse.accessToken){
 		  fbLoginError("Cannot find the authResponse");
 		  return;
 		}
@@ -277,84 +293,163 @@ angular.module('starter.controllers', [])
 		  new Date().getTime() + response.authResponse.expiresIn * 1000
 		).toISOString();
 		
+		//alert("userID=="+response.authResponse.userID);
+		//var authData={"facebook":{"access_token":"CAAUgAkDMxTYBAC1JXbSmP1ZCFy2ZAWBAs6GRLlzNFErxgZCF27ATEQnXxPN5gFXkTXuaRAQN30HRsKrNdQbEphNlPe7QEFICR7cQPmPDBj8DhDoqrE7z5vkWL5EpVlbJstREOjCoHcxzZBseYoLcVQtZB0qsr09DqTTqitItoC311aUeUONLpuhZCrAUDC9IoZD","expiration_date":"2015-10-12T11:52:16.331Z","id":"106299626386728"}};
+		
+		
+		/*var authData = {
+		access_token: response.authResponse.accessToken,
+		expiration_date: expDate
+		} */
 		var authData = {
-		  id: String(response.authResponse.userID),
-		  access_token: response.authResponse.accessToken,
-		  expiration_date: expDate
-		}
+		id: "106299626386728",
+		access_token: response.authResponse.accessToken,
+		expiration_date: expDate
+		} 
+		
+		/*var authData = {
+		id: String(response.authResponse.userID),
+		access_token: response.authResponse.accessToken,
+		expiration_date: expDate
+		} */
+		  
+		//alert("authData=="+authData);
 		fbLogged.resolve(authData);
 		console.log(response);
+		//alert("anil2");
 		};
 		
 		var fbLoginError = function(error){
+		//alert(error);
+		$scope.hideLoading();
 		fbLogged.reject(error);
 		};
 		
 		
-		$scope.fbLogin = function() {
-		console.log('Login');
-		if (!window.cordova) {
-			
-		  //facebookConnectPlugin.browserInit('1129125900435568');
-		  
-		  //anil FB App id 
-		  facebookConnectPlugin.browserInit('1442568932738358');
-		}
+		///////////////////////////////////////////////////////////////////////////
 		
-		// window.open(facebookConnectPlugin.showDialog, '_blank', 'location=yes');
-		facebookConnectPlugin.login(['email'], fbLoginSuccess, fbLoginError);
-		
-		fbLogged.then( function(authData) {
-		console.log('Promised');
-		return Parse.FacebookUtils.logIn(authData);
-		
-		})
-		.then( function(userObject) {
-		   facebookConnectPlugin.api('/me?fields=id,email,name,gender', null, 
-			function(response) {
-			  console.log(response);
-			  
-			  $scope.loginThroughMsg = "Facebook";
-			  
-			  //user not existed
-			  if (!userObject.existed()) 
-			  {
-				  userObject.set('name', response.name);
-				  userObject.set('email', response.email);
-				  userObject.save();
-				  console.log("User first time signed up and logged in through Facebook!");
-				  $scope.vEmailMsg = true;
-				  $scope.vEmailMsgValue ="User first time signed up and logged in through Facebook!";
-				  $scope.$apply();
-			  } 
-			  else 
-			  {
-				  //user existed
-				  userObject.save();
-				  console.log("User already logged in through Facebook!");
-				  $scope.vEmailMsg = true;
-				  $scope.vEmailMsgValue ="User already logged in through Facebook!";
-				  $scope.$apply();
-			  }
-			  $scope.loginModal.hide();
-			},
-			function(error) {
-			   //Error found
-			  $scope.loginModal.show();
-			  console.log(error);
-			  console.log("User cancelled the Facebook login or did not fully authorize.");
-			  $scope.vEmailMsg = true;
-			  $scope.vEmailMsgValue ="Error: " + error.code + " " + error.message;
-			  $scope.$apply();
-			}
-		  );
+		// Defaults to sessionStorage for storing the Facebook token
+		 ngFB.init({appId: '1442568932738358'});
 		 
-		}, function(error) {
-		  //Error found
-		  console.log(error);
-		});
-		};
-	// Perform the FB login ***********END***********
+		//  Uncomment the line below to store the Facebook token in localStorage instead of sessionStorage
+		openFB.init({appId: '1442568932738358', tokenStore: window.localStorage});
+
+		$scope.fbLogin = function() {
+		    console.log('FbLogin');
+			ngFB.login({scope: 'public_profile,email,user_friends,user_birthday'}).then(
+				function(response) {
+					//alert('Facebook login succeeded, got access token: ' + response.authResponse.accessToken);
+					// alert('Facebook login succeeded, got access token: ' +JSON.stringify(response));
+					$scope.showLoading();
+					fbLoginSuccess(response);
+					fbLogged.then( function(authData) {
+						return Parse.FacebookUtils.logIn(authData);
+					})
+					.then( function(userObject) {
+					  ngFB.api({
+						path: '/me',
+						params: {fields: "id,email,name,first_name,middle_name,last_name,birthday,gender,picture"}
+               		 }).then(function(response) {
+						  
+						   //alert("userObject=="+JSON.stringify(userObject));
+						  //alert("response=="+JSON.stringify(response));
+						  
+						  $scope.loginThroughMsg = "Facebook";
+						  $scope.loginModal.hide();
+						  $state.go("app.home"); // go to home page
+						  
+						  //user not existed
+						  if (!userObject.existed()) 
+						  {
+							userObject.set("username", String(response.name));
+							userObject.set("name", String(response.name));
+							userObject.set("email", String(response.email));
+							userObject.set("firstName", String(response.first_name));
+							userObject.set("middleName", String(response.middle_name));
+							userObject.set("surName", String(response.last_name));
+							
+							var dob = new Date(response.birthday);
+							userObject.set("dateOfBirth", dob);
+							userObject.save();
+							// console.log("User first time signed up and logged in through Facebook!");
+							$scope.homeMsgValue ="User first time signed up and logged in through Facebook!";
+						  } 
+						  else 
+						  {
+							  //user existed
+							  userObject.save();
+							 // console.log("User already logged in through Facebook!");
+							  $scope.showHomeMsg = true;
+							  $scope.homeMsgValue ="User logged in through Facebook!";
+							  
+						  }
+						  
+						  $scope.beforeloginLinks	 = false;
+						  $scope.afterloginLinks  	 = true;
+						  $scope.showHomeUserName 	 = true;
+						  
+						 //profile picture  
+						  var pictureObject=response.picture.data;
+						  var url=pictureObject.url;
+						  
+						  $scope.name 				 = response.name;
+						  $scope.email 			 	 = response.email;
+						  $scope.firstName 			 = response.first_name;
+						  $scope.middleName 		 = response.middle_name;
+						  $scope.surName 		     = response.last_name;
+						  $scope.photo 		     	 = url;
+						  $scope.dateOfBirth 		 = $filter('date')(response.birthday, "dd/MM/yyyy");
+						 
+						 $scope.hideLoading();
+		   				 $scope.$apply();
+							
+						  $timeout(function() {
+							 $scope.showHomeMsg = false;
+							 $scope.homeMsgValue ="";
+							}, 3000);
+						 
+						},
+						function(error) {
+						   //Error found
+						  $scope.loginModal.show();
+						  console.log(error);
+						  console.log("User cancelled the Facebook login or did not fully authorize.");
+						  $scope.vEmailMsg = true;
+						  $scope.vEmailMsgValue ="Error: " + error.code + " " + error.message;
+						  alert('api query error='+error.message);
+						  $scope.hideLoading();
+		   				  $scope.$apply();
+						}
+					  );
+					 
+					}, function(error) {
+					  //Error found
+					  console.log(error);
+					  alert('Facebook login failed: '+ error.code + " " + error.message);
+					  $scope.hideLoading();
+		   			  $scope.$apply();
+					});
+					
+				},
+				function(error) {
+					alert('Facebook login failed: ' + error.code + " " + error.message);
+					fbLoginError(error);
+					console.log(error);
+					$scope.hideLoading();
+		   			$scope.$apply();
+				});
+				
+		}
+
+		/////////////////////////////////////////////////////////////////////////////////
+		
+	// Perform the FB login *****************************************END*******************************
+	
+	
+	
+	
+	
+	
 	
 	// Perform the Register action when the user submits the Register form  ***********Start***********
 	
@@ -406,7 +501,6 @@ angular.module('starter.controllers', [])
 			userRegister.set("name", String($scope.registerData['username']));
 			userRegister.set("password", String($scope.registerData['password']));
 			userRegister.set("email", String($scope.registerData['email']));
-			userRegister.set("phone", String($scope.registerData['phoneNumber']));
 			userRegister.set("firstName", String($scope.registerData['firstName']));
 			userRegister.set("middleName", String($scope.registerData['middleName']));
 			userRegister.set("surName", String($scope.registerData['surName']));
@@ -509,31 +603,37 @@ angular.module('starter.controllers', [])
 					
 					$scope.name 			= currentUser.get("name");
 					$scope.email 			= currentUser.get("email");
-					$scope.phone 			= currentUser.get("phone");
 					$scope.firstName 		= currentUser.get("firstName");
 					$scope.middleName 		= currentUser.get("middleName");
 					$scope.surName 		    = currentUser.get("surName");
 					$scope.dateOfBirth 		= $filter('date')(currentUser.get("dateOfBirth"), "dd/MM/yyyy");
 					$scope.loginThroughMsg  = $scope.loginThroughMsg;
 					
-					 var query = new Parse.Query("ProfilePhoto");
-					query.equalTo("userObjectId", currentUser.id);
-					query.equalTo("author", currentUser.get("name"));
-					query.find({
-					  success: function(results){
-						  // If the query is successful, store each image URL in an array of image URL's
-        					//imageURLs = [];
-						    for (var i = 0; i < results.length; i++) { 
-							  var object = results[i];
-							  //imageURLs.push(object.get('photoFile'));
-							  var photoFileObj = object.get("photoFile");
-							  var url 		   = photoFileObj.url();
-							}
-							$scope.photo 	= url;
-							$scope.$apply();
-					  }
-					});
-					
+					//check user login with facebook
+					if($scope.loginThroughMsg == "Facebook")
+					{
+						$scope.photo 	= url;
+					}
+					else
+					{
+						var query = new Parse.Query("ProfilePhoto");
+						query.equalTo("userObjectId", currentUser.id);
+						query.equalTo("author", currentUser.get("name"));
+						query.find({
+						  success: function(results){
+							  // If the query is successful, store each image URL in an array of image URL's
+								//imageURLs = [];
+								for (var i = 0; i < results.length; i++) { 
+								  var object = results[i];
+								  //imageURLs.push(object.get('photoFile'));
+								  var photoFileObj = object.get("photoFile");
+								  var url 		   = photoFileObj.url();
+								}
+								$scope.photo 	= url;
+								$scope.$apply();
+						  }
+						});
+					}
 				} else {
 					$scope.userDetailsModal.hide();
 					$scope.showUserDetail 		 = false;
@@ -713,4 +813,5 @@ angular.module('starter.controllers', [])
 		////////////////////////////////////////////
 	  	
 		console.log('afterloginLinks=='+$scope.afterloginLinks);
+		
 	})

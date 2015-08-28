@@ -157,7 +157,6 @@ if (!window.cordova) {
             }
             FB.init({
                 appId      : appId,
-                //cookie     : true,
 				status     : true, 
                 xfbml      : true,
                 version    : version

@@ -64,15 +64,6 @@
         </label>
         
         <label class="item item-input item-floating-label">
-          <span class="input-label">Phone Number</span>
-          <input type="number" maxlength="11" name="phoneNumber"  ng-model="registerData.phoneNumber" autocomplete="off" placeholder="Phone Number" required>
-          <span style="color:red" ng-show="registerForm.phoneNumber.$dirty && registerForm.phoneNumber.$invalid">
-          	<span ng-show="registerForm.phoneNumber.$error.required">Phone Number is required.</span>
-            <span ng-show="registerForm.phoneNumber.$error.number">Invalid Phone Number.</span>
-          </span>
-        </label>
-        
-        <label class="item item-input item-floating-label">
           <span class="input-label">Password</span>
           <input type="password" name="password" ng-model="registerData.password" placeholder="Password" required>
           <span style="color:red" ng-show="registerForm.password.$dirty && registerForm.password.$invalid">
@@ -99,7 +90,7 @@
         </label>
         
         <label class="item">
-          <button class="button button-block button-positive" type="submit" ng-disabled="!passwordMatch || ((registerForm.username.$dirty || registerForm.username.$pristine) && registerForm.username.$invalid) || ((registerForm.firstName.$dirty || registerForm.firstName.$pristine) && registerForm.firstName.$invalid) || ((registerForm.middleName.$dirty || registerForm.middleName.$pristine) && registerForm.middleName.$invalid) || ((registerForm.surName.$dirty || registerForm.surName.$pristine) && registerForm.surName.$invalid) || ((registerForm.email.$dirty || registerForm.email.$pristine) && registerForm.email.$invalid) || ((registerForm.phoneNumber.$dirty || registerForm.phoneNumber.$pristine) && registerForm.phoneNumber.$invalid) || ((registerForm.password.$dirty || registerForm.password.$pristine) && registerForm.password.$invalid) || ((registerForm.confirmPassword.$dirty || registerForm.confirmPassword.$pristine) && registerForm.confirmPassword.$invalid)">
+          <button class="button button-block button-positive" type="submit" ng-disabled="!passwordMatch || ((registerForm.username.$dirty || registerForm.username.$pristine) && registerForm.username.$invalid) || ((registerForm.firstName.$dirty || registerForm.firstName.$pristine) && registerForm.firstName.$invalid) || ((registerForm.middleName.$dirty || registerForm.middleName.$pristine) && registerForm.middleName.$invalid) || ((registerForm.surName.$dirty || registerForm.surName.$pristine) && registerForm.surName.$invalid) || ((registerForm.email.$dirty || registerForm.email.$pristine) && registerForm.email.$invalid) || ((registerForm.password.$dirty || registerForm.password.$pristine) && registerForm.password.$invalid) || ((registerForm.confirmPassword.$dirty || registerForm.confirmPassword.$pristine) && registerForm.confirmPassword.$invalid)">
           <i class="ion-android-checkmark-circle"></i>
           Submit</button>
         </label>
