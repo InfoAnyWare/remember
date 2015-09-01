@@ -38,7 +38,9 @@ angular.module('starter.controllers', [])
 		
 	// var for show user details page
 		$scope.showUserDetail  = false;
-		$scope.loginThroughMsg = "CYR";
+		
+	// var for show links when user Login in CYR
+		$scope.cyrLoginLinks  = true;
 		
 	// var for show logou tMsg
 		$scope.logoutMsg  = false;
@@ -219,13 +221,15 @@ angular.module('starter.controllers', [])
 					  $scope.beforeloginLinks	 = false;
 					  $scope.afterloginLinks  	 = true;
 					  $scope.showHomeUserName 	 = true;
+					  $scope.cyrLoginLinks  	 = true;
+					  
 		    		  $scope.name 				 = user.get("name");
 					  $scope.email 			 	 = user.get("email");
 					  $scope.firstName 			 = user.get("firstName");
 					  $scope.middleName 		 = user.get("middleName");
 					  $scope.surName 		     = user.get("surName");
 					  $scope.dateOfBirth 		 = $filter('date')(user.get("dateOfBirth"), "dd/MM/yyyy");
-					  $scope.loginThroughMsg   	 = $scope.loginThroughMsg;
+					  $scope.loginThroughMsg   	 = "CYR";
 					  
 					  var query = new Parse.Query("ProfilePhoto");
 						query.equalTo("userObjectId", user.id);
@@ -281,7 +285,7 @@ angular.module('starter.controllers', [])
 	
 	
 	
-	// Perform the FB login ****************************************start***************************
+	// Perform the login with FB ****************************************start***************************
 		var fbLogged = new Parse.Promise();
 		
 		var fbLoginSuccess = function(response) {
@@ -293,40 +297,20 @@ angular.module('starter.controllers', [])
 		  new Date().getTime() + response.authResponse.expiresIn * 1000
 		).toISOString();
 		
-		//alert("userID=="+response.authResponse.userID);
-		//var authData={"facebook":{"access_token":"CAAUgAkDMxTYBAC1JXbSmP1ZCFy2ZAWBAs6GRLlzNFErxgZCF27ATEQnXxPN5gFXkTXuaRAQN30HRsKrNdQbEphNlPe7QEFICR7cQPmPDBj8DhDoqrE7z5vkWL5EpVlbJstREOjCoHcxzZBseYoLcVQtZB0qsr09DqTTqitItoC311aUeUONLpuhZCrAUDC9IoZD","expiration_date":"2015-10-12T11:52:16.331Z","id":"106299626386728"}};
-		
-		
-		/*var authData = {
-		access_token: response.authResponse.accessToken,
-		expiration_date: expDate
-		} */
 		var authData = {
-		id: "106299626386728",
-		access_token: response.authResponse.accessToken,
-		expiration_date: expDate
-		} 
-		
-		/*var authData = {
 		id: String(response.authResponse.userID),
 		access_token: response.authResponse.accessToken,
 		expiration_date: expDate
-		} */
+		} 
 		  
-		//alert("authData=="+authData);
 		fbLogged.resolve(authData);
 		console.log(response);
-		//alert("anil2");
 		};
 		
 		var fbLoginError = function(error){
-		//alert(error);
 		$scope.hideLoading();
 		fbLogged.reject(error);
 		};
-		
-		
-		///////////////////////////////////////////////////////////////////////////
 		
 		// Defaults to sessionStorage for storing the Facebook token
 		 ngFB.init({appId: '1442568932738358'});
@@ -338,8 +322,7 @@ angular.module('starter.controllers', [])
 		    console.log('FbLogin');
 			ngFB.login({scope: 'public_profile,email,user_friends,user_birthday'}).then(
 				function(response) {
-					//alert('Facebook login succeeded, got access token: ' + response.authResponse.accessToken);
-					// alert('Facebook login succeeded, got access token: ' +JSON.stringify(response));
+					//alert('Facebook login succeeded, auth data: ' +JSON.stringify(response));
 					$scope.showLoading();
 					fbLoginSuccess(response);
 					fbLogged.then( function(authData) {
@@ -371,14 +354,13 @@ angular.module('starter.controllers', [])
 							var dob = new Date(response.birthday);
 							userObject.set("dateOfBirth", dob);
 							userObject.save();
-							// console.log("User first time signed up and logged in through Facebook!");
+							$scope.showHomeMsg = true;
 							$scope.homeMsgValue ="User first time signed up and logged in through Facebook!";
 						  } 
 						  else 
 						  {
 							  //user existed
 							  userObject.save();
-							 // console.log("User already logged in through Facebook!");
 							  $scope.showHomeMsg = true;
 							  $scope.homeMsgValue ="User logged in through Facebook!";
 							  
@@ -387,6 +369,7 @@ angular.module('starter.controllers', [])
 						  $scope.beforeloginLinks	 = false;
 						  $scope.afterloginLinks  	 = true;
 						  $scope.showHomeUserName 	 = true;
+						  $scope.cyrLoginLinks  	 = false;
 						  
 						 //profile picture  
 						  var pictureObject=response.picture.data;
@@ -412,38 +395,47 @@ angular.module('starter.controllers', [])
 						function(error) {
 						   //Error found
 						  $scope.loginModal.show();
-						  console.log(error);
-						  console.log("User cancelled the Facebook login or did not fully authorize.");
 						  $scope.vEmailMsg = true;
-						  $scope.vEmailMsgValue ="Error: " + error.code + " " + error.message;
-						  alert('api query error='+error.message);
+						  $scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
 						  $scope.hideLoading();
 		   				  $scope.$apply();
+						  $timeout(function() {
+							 $scope.vEmailMsg = false;
+							 $scope.vEmailMsgValue ="";
+							}, 3000);
 						}
 					  );
 					 
 					}, function(error) {
-					  //Error found
-					  console.log(error);
-					  alert('Facebook login failed: '+ error.code + " " + error.message);
-					  $scope.hideLoading();
-		   			  $scope.$apply();
+					  	  //Error found
+						  $scope.loginModal.show();
+						  $scope.vEmailMsg = true;
+						  $scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
+						  $scope.hideLoading();
+		   				  $scope.$apply();
+						  
+						  $timeout(function() {
+							 $scope.vEmailMsg = false;
+							 $scope.vEmailMsgValue ="";
+							}, 3000);
 					});
 					
 				},
 				function(error) {
-					alert('Facebook login failed: ' + error.code + " " + error.message);
-					fbLoginError(error);
-					console.log(error);
-					$scope.hideLoading();
-		   			$scope.$apply();
+					//Error found
+					  $scope.loginModal.show();
+					  $scope.vEmailMsg = true;
+					  $scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
+					  $scope.hideLoading();
+					  $scope.$apply();
+					  
+					  $timeout(function() {
+						 $scope.vEmailMsg = false;
+						 $scope.vEmailMsgValue ="";
+						}, 3000);
 				});
-				
 		}
-
-		/////////////////////////////////////////////////////////////////////////////////
-		
-	// Perform the FB login *****************************************END*******************************
+	// Perform the login with FB *****************************************END*******************************
 	
 	
 	
