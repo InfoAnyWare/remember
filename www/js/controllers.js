@@ -173,7 +173,7 @@ angular.module('starter.controllers', [])
 		
 	// Triggered on a button click, or some other target
 		/*$scope.succeslogOutPopup = function() {
-		  //custom popup
+		  ///custom popup
 		  var mySucceslogOutPopup = $ionicPopup.show({
 				 title: 'You have been successfully logout.',
 			  });
