@@ -158,7 +158,7 @@ var openFB = (function () {
         startTime = new Date().getTime();
         loginWindow = window.open(loginURL + '?client_id=' + fbAppId + '&redirect_uri=' + redirectURL +
             '&response_type=token&scope=' + scope, '_blank', 'location=no,clearcache=yes');
-			
+
         // If the app is running in Cordova, listen to URL changes in the InAppBrowser until we get a URL with an access_token or an error
         if (runningInCordova) {
             loginWindow.addEventListener('loadstart', loginWindow_loadStartHandler);
@@ -183,13 +183,18 @@ var openFB = (function () {
         loginProcessed = true;
         if (url.indexOf("access_token=") > 0) {
             queryString = url.substr(url.indexOf('#') + 1);
+			 alert('queryString: ' +queryString);
             obj = parseQueryString(queryString);
             tokenStore.fbAccessToken = obj['access_token'];
 			
-			// alert('obj: ' +JSON.stringify(obj));
+			 alert('obj: ' +JSON.stringify(obj));
             if (loginCallback) 
 			
-			loginCallback({status: 'connected', authResponse: {accessToken: obj['access_token'],expiresIn: obj['expires_in']}});
+			authResponse = { accessToken:obj['access_token'], expiresIn:obj['expires_in'], signedRequest:obj['signed_request'], userID:decodeSignedRequest(obj['signed_request']).user_id };
+			 alert('objauthResponse: ' +authResponse);
+			loginCallback({status: 'connected', authResponse: authResponse});
+			
+			//loginCallback({status: 'connected', authResponse: {accessToken: obj['access_token'],expiresIn: obj['expires_in']}});
 			
         } else if (url.indexOf("error=") > 0) {
             queryString = url.substring(url.indexOf('?') + 1, url.indexOf('#'));
@@ -296,6 +301,25 @@ var openFB = (function () {
         return parts.join("&");
     }
 	
+	
+	
+	function decodeSignedRequest(signedRequest){
+		signedRequest = signedRequest.split('.');
+		var encodedSig = signedRequest[0];
+		var payload = signedRequest[1];
+		var sig = base64Decode(encodedSig);
+		payload = base64Decode(payload);
+		// Removing null character \0 from the JSON data
+		payload = payload.replace(/\0/g, '');
+		var data = JSON.parse(payload);
+		if(data.algorithm.toUpperCase() != 'HMAC-SHA256'){
+			return 'Unknown algorithm. Expected HMAC-SHA256';
+		}
+		// TODO: Check signature!
+		return data;
+	}
+	
+
     // The public API
     return {
         init: init,

@@ -16,5 +16,4 @@
         <provider android:authorities="com.facebook.app.FacebookContentProvider1442568932738358" android:exported="true" android:name="com.facebook.FacebookContentProvider" />
     </application>
     <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="22" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </manifest>
