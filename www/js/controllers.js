@@ -1,5 +1,5 @@
 angular.module('starter.controllers', [])
-.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $state, $filter, $ionicLoading, $cordovaFacebook, ngFB, $cordovaFile, $cordovaFileTransfer, $timeout) {
+.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $state, $filter, $ionicLoading, $cordovaFacebook, ngFB, $cordovaFile, $cordovaFileTransfer, $cordovaNetwork, $timeout) {
 	
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -137,64 +137,46 @@ angular.module('starter.controllers', [])
 	var uPhotolocalPath 	= window.localStorage.getItem("uPhotolocalPath");
 	//var uFileName = window.localStorage.getItem("filename");
 	
-	//alert("uName="+uName);
+	//set cyr Login Links false when user login with facebook
+	if(uLoginThroughMsg=="Facebook")
+	{
+		$scope.cyrLoginLinks  = false;
+	}
 	
 	// check current user are present or not
 		var currentUser = Parse.User.current();
-		//console.log(currentUser);
 		//alert("currentUser=="+currentUser);
-		if (currentUser) {
-			//console.log('currentUser= yes');
+		if (currentUser) 
+		{
+			//alert('currentUser= yes');
 			$scope.beforeloginLinks	 = false;
 			$scope.afterloginLinks   = true;
 			
 			$scope.showHomeUserName 	= true;
 		    $scope.name = currentUser.get("name");
 			$scope.showUserDetail  = true;
-			
+			currentUser.save(); //save app run log time
 			$timeout(function() {
 			$scope.userDetails(); //auto close the popup after 1\2 seconds
 			$scope.userDetailsModal.hide(); //hide detail popup after 1\2 seconds
 		  }, 500);
 		  
 		} else {
-			//console.log('currentUser= No');
-			if(uName!=null && uName!="")
-			{
-				$scope.beforeloginLinks	 = false;
-				$scope.afterloginLinks   = true;
-				$scope.showHomeUserName  = true;
-				
-				$scope.name 			= uName;
-				$scope.email 			= uEmail;
-				$scope.firstName 		= uFirstName;
-				$scope.middleName 		= uMiddleName;
-				$scope.surName 		    = uSurName;
-				$scope.dateOfBirth 		= uDateOfBirth;
-				$scope.loginThroughMsg  = uLoginThroughMsg;
-				$scope.photo 			= uPhotolocalPath;
-				$state.go("app.home"); // go to home page
-				$scope.$apply();
-			}
-			else
-			{
-				$scope.beforeloginLinks	 = true;
-				$scope.afterloginLinks   = false;
-				$scope.showHomeUserName  = false;
-				
-				// localStorage is now empty
-				 window.localStorage.clear();
-				
-				$timeout(function() {
-				 $scope.login(); //auto close the popup after 1\2 seconds
-			  }, 500);
-			}
+			 //alert('currentUser= no');
+			 $timeout(function() {
+				$scope.showLocalStorageData();
+		  }, 100);
 		}
 	
 	//logout current user
 		$scope.logOut = function() {
 			Parse.User.logOut();
-			ngFB.logout();
+			
+			//call fb logout when user login with fb
+			if(uLoginThroughMsg=="Facebook")
+			{
+				ngFB.logout();
+			}
 			
 			var currentUser = Parse.User.current();  // this will now be null
 			$scope.beforeloginLinks	 = true;
@@ -238,6 +220,16 @@ angular.module('starter.controllers', [])
 		// Simulate a login delay. Remove this and replace with your login
 		// code if using a login system
 		 $scope.vEmailMsg = false;
+		 
+		 // check network connection present or not
+		 if ($cordovaNetwork.isOffline()) 
+		 {
+				 //alert("No data network present, app use last loged in user loacl data CYR login.");
+				 $scope.showLocalStorageData();
+		 }
+		 else
+		 {
+		  // alert("Data network ok CYR login");
 		   Parse.User.logIn(String($scope.loginData['username']), String($scope.loginData['password']), {
 			  success: function(user) {
 				 var emailVerified = user.get("emailVerified");
@@ -291,6 +283,9 @@ angular.module('starter.controllers', [])
 					  
 					  
 					 //////////////////////////////CYR local store data start////////////////////////////////////
+					 // first localStorage is now empty
+				 	 window.localStorage.clear();
+				 
 					 window.localStorage.setItem("uName", user.get("name"));
 					 window.localStorage.setItem("uEmail",user.get("email"));
 					 window.localStorage.setItem("uFirstName", user.get("firstName"));
@@ -328,6 +323,7 @@ angular.module('starter.controllers', [])
 				 $scope.$apply();
 			  }
 			});
+		 }
 		};
 	// Perform the login action when the user submits the CYR login form ***********END***********
 	
@@ -372,7 +368,18 @@ angular.module('starter.controllers', [])
 
 		$scope.fbLogin = function() {
 		    console.log('FbLogin');
-			ngFB.login({scope: 'public_profile,email,user_friends,user_birthday'}).then(
+			
+			// check network connection present or not
+			if ($cordovaNetwork.isOffline()) 
+			{
+				 //alert("No data network present, app use last loged in user loacl data.");
+				 $scope.showLocalStorageData();
+		    }
+		    else
+		    {
+			  //alert("Data network ok");
+		    
+			  ngFB.login({scope: 'public_profile,email,user_friends,user_birthday'}).then(
 				function(response) {
 					//alert('Facebook login succeeded, auth data: ' +JSON.stringify(response));
 					$scope.showLoading();
@@ -436,6 +443,9 @@ angular.module('starter.controllers', [])
 						  $scope.loginThroughMsg     = "Facebook";
 						 
 						 //////////////////////////////FB local store data start////////////////////////////////////
+						 // first localStorage is now empty
+				 	 	 window.localStorage.clear();
+					 
 					 	 window.localStorage.setItem("uName", response.name);
 					 	 window.localStorage.setItem("uEmail", response.email);
 						 window.localStorage.setItem("uFirstName", response.first_name);
@@ -498,6 +508,8 @@ angular.module('starter.controllers', [])
 						 $scope.vEmailMsgValue ="";
 						}, 3000);
 				});
+			
+		   }
 		}
 	// Perform the login with FB *****************************************END*******************************
 	
@@ -655,11 +667,14 @@ angular.module('starter.controllers', [])
 		
 			//show user details
 			$scope.userDetails = function() {
+				
+				    $scope.userDetailsModal.show();
+					$scope.showUserDetail = true;
 				// check current user are present or not
 				var currentUser = Parse.User.current();
 				if (currentUser) {
-					$scope.userDetailsModal.show();
-					$scope.showUserDetail = true;
+					/*$scope.userDetailsModal.show();
+					$scope.showUserDetail = true;*/
 					
 					$scope.name 			= currentUser.get("name");
 					$scope.email 			= currentUser.get("email");
@@ -706,8 +721,13 @@ angular.module('starter.controllers', [])
 						});
 					}
 				} else {
-					$scope.userDetailsModal.hide();
-					$scope.showUserDetail 		 = false;
+					
+					$timeout(function() {
+						$scope.showLocalStorageData();
+				   }, 100);
+				   
+					/*$scope.userDetailsModal.hide();
+					$scope.showUserDetail 		 = false;*/
 				}
 			};
 	// Perform user details   ***********End***********
@@ -902,6 +922,60 @@ angular.module('starter.controllers', [])
 		 }
 	//Download File  ***********end***********
 	
+	
+	//show user data from local storage  ***********start***********
+		$scope.showLocalStorageData = function() {
+			//alert("uName=="+uName);
+			
+			if(uName!=null && uName!="" && $cordovaNetwork.isOffline())
+			{
+				$timeout(function() {
+					$scope.closeLogin();
+			  }, 100);
+				
+				//alert("hide login");
+				$scope.beforeloginLinks	 = false;
+				$scope.afterloginLinks   = true;
+				$scope.showHomeUserName  = true;
+				
+				$scope.name 			= uName;
+				$scope.email 			= uEmail;
+				$scope.firstName 		= uFirstName;
+				$scope.middleName 		= uMiddleName;
+				$scope.surName 		    = uSurName;
+				$scope.dateOfBirth 		= uDateOfBirth;
+				$scope.loginThroughMsg  = uLoginThroughMsg;
+				$scope.photo 			= uPhotolocalPath;
+				$state.go("app.home"); // go to home page
+				$scope.hideLoading();
+				$scope.$apply();
+			}
+			else
+			{
+				//alert("show login");
+				
+				$scope.beforeloginLinks	 = true;
+				$scope.afterloginLinks   = false;
+				$scope.showHomeUserName  = false;
+				
+				$timeout(function() {
+					//call hide user Details Modal
+					$scope.userDetailsModal.hide();
+					$scope.showUserDetail  = false;
+				 	$scope.login(); //auto close the popup after 1\2 seconds
+					if($cordovaNetwork.isOffline())
+					{
+						$scope.vEmailMsg = true;
+						$scope.vEmailMsgValue ="Please check your network connection and try again";
+					}
+				    $scope.hideLoading();
+			  }, 300);
+			}
+	     }
+		 //show user data from local storage  ***********End***********
+		 
+		 
+		 
 		////////////////////////////////////////////
 	  	
 		console.log('afterloginLinks=='+$scope.afterloginLinks);
