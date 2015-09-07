@@ -1,5 +1,5 @@
 angular.module('starter.controllers', [])
-.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $state, $filter, $ionicLoading, $cordovaFacebook, ngFB, $timeout) {
+.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $state, $filter, $ionicLoading, $cordovaFacebook, ngFB, $cordovaFile, $cordovaFileTransfer, $timeout) {
 	
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -38,7 +38,9 @@ angular.module('starter.controllers', [])
 		
 	// var for show user details page
 		$scope.showUserDetail  = false;
-		$scope.loginThroughMsg = "CYR";
+		
+	// var for show links when user Login in CYR
+		$scope.cyrLoginLinks  = true;
 		
 	// var for show logou tMsg
 		$scope.logoutMsg  = false;
@@ -120,10 +122,27 @@ angular.module('starter.controllers', [])
 		};
 		
 	
+	
+	//local storage key set
+	 var keyName = window.localStorage.key(0);
+	 
+	//check user local data are store or not
+	var uName 				= window.localStorage.getItem("uName");
+    var uEmail 				= window.localStorage.getItem("uEmail");
+	var uFirstName 			= window.localStorage.getItem("uFirstName");
+	var uMiddleName 		= window.localStorage.getItem("uMiddleName");
+	var uSurName 			= window.localStorage.getItem("uSurName");
+	var uDateOfBirth 		= window.localStorage.getItem("uDateOfBirth");
+    var uLoginThroughMsg 	= window.localStorage.getItem("uLoginThroughMsg");
+	var uPhotolocalPath 	= window.localStorage.getItem("uPhotolocalPath");
+	//var uFileName = window.localStorage.getItem("filename");
+	
+	//alert("uName="+uName);
+	
 	// check current user are present or not
 		var currentUser = Parse.User.current();
-		//alert(currentUser["name"]);
 		//console.log(currentUser);
+		//alert("currentUser=="+currentUser);
 		if (currentUser) {
 			//console.log('currentUser= yes');
 			$scope.beforeloginLinks	 = false;
@@ -140,20 +159,43 @@ angular.module('starter.controllers', [])
 		  
 		} else {
 			//console.log('currentUser= No');
-			$scope.beforeloginLinks	 = true;
-			$scope.afterloginLinks   = false;
-			
-			$scope.showHomeUserName 	 = false;
-			
-			$timeout(function() {
-			 $scope.login(); //auto close the popup after 1\2 seconds
-		  }, 500);
+			if(uName!=null && uName!="")
+			{
+				$scope.beforeloginLinks	 = false;
+				$scope.afterloginLinks   = true;
+				$scope.showHomeUserName  = true;
+				
+				$scope.name 			= uName;
+				$scope.email 			= uEmail;
+				$scope.firstName 		= uFirstName;
+				$scope.middleName 		= uMiddleName;
+				$scope.surName 		    = uSurName;
+				$scope.dateOfBirth 		= uDateOfBirth;
+				$scope.loginThroughMsg  = uLoginThroughMsg;
+				$scope.photo 			= uPhotolocalPath;
+				$state.go("app.home"); // go to home page
+				$scope.$apply();
+			}
+			else
+			{
+				$scope.beforeloginLinks	 = true;
+				$scope.afterloginLinks   = false;
+				$scope.showHomeUserName  = false;
+				
+				// localStorage is now empty
+				 window.localStorage.clear();
+				
+				$timeout(function() {
+				 $scope.login(); //auto close the popup after 1\2 seconds
+			  }, 500);
+			}
 		}
 	
 	//logout current user
 		$scope.logOut = function() {
 			Parse.User.logOut();
 			ngFB.logout();
+			
 			var currentUser = Parse.User.current();  // this will now be null
 			$scope.beforeloginLinks	 = true;
 			$scope.afterloginLinks   = false;
@@ -173,7 +215,7 @@ angular.module('starter.controllers', [])
 		
 	// Triggered on a button click, or some other target
 		/*$scope.succeslogOutPopup = function() {
-		  ///custom popup
+		  //custom popup
 		  var mySucceslogOutPopup = $ionicPopup.show({
 				 title: 'You have been successfully logout.',
 			  });
@@ -219,13 +261,15 @@ angular.module('starter.controllers', [])
 					  $scope.beforeloginLinks	 = false;
 					  $scope.afterloginLinks  	 = true;
 					  $scope.showHomeUserName 	 = true;
+					  $scope.cyrLoginLinks  	 = true;
+					  
 		    		  $scope.name 				 = user.get("name");
 					  $scope.email 			 	 = user.get("email");
 					  $scope.firstName 			 = user.get("firstName");
 					  $scope.middleName 		 = user.get("middleName");
 					  $scope.surName 		     = user.get("surName");
 					  $scope.dateOfBirth 		 = $filter('date')(user.get("dateOfBirth"), "dd/MM/yyyy");
-					  $scope.loginThroughMsg   	 = $scope.loginThroughMsg;
+					  $scope.loginThroughMsg   	 = "CYR";
 					  
 					  var query = new Parse.Query("ProfilePhoto");
 						query.equalTo("userObjectId", user.id);
@@ -246,6 +290,18 @@ angular.module('starter.controllers', [])
 						});
 					  
 					  
+					 //////////////////////////////CYR local store data start////////////////////////////////////
+					 window.localStorage.setItem("uName", user.get("name"));
+					 window.localStorage.setItem("uEmail",user.get("email"));
+					 window.localStorage.setItem("uFirstName", user.get("firstName"));
+					 window.localStorage.setItem("uMiddleName", user.get("middleName"));
+					 window.localStorage.setItem("uSurName", user.get("surName"));
+					 window.localStorage.setItem("uDateOfBirth", $filter('date')(user.get("dateOfBirth"), "dd/MM/yyyy"));
+					 window.localStorage.setItem("uLoginThroughMsg", $scope.loginThroughMsg);
+					 
+					 $scope.downloadFile(url);
+					 //////////////////////////////CYR local store data start////////////////////////////////////
+					
 					  $state.go("app.home"); // go to home page
 					  $timeout(function() {
 						 $scope.showHomeMsg = false;
@@ -281,7 +337,7 @@ angular.module('starter.controllers', [])
 	
 	
 	
-	// Perform the FB login ****************************************start***************************
+	// Perform the login with FB ****************************************start***************************
 		var fbLogged = new Parse.Promise();
 		
 		var fbLoginSuccess = function(response) {
@@ -293,40 +349,20 @@ angular.module('starter.controllers', [])
 		  new Date().getTime() + response.authResponse.expiresIn * 1000
 		).toISOString();
 		
-		//alert("userID=="+response.authResponse.userID);
-		//var authData={"facebook":{"access_token":"CAAUgAkDMxTYBAC1JXbSmP1ZCFy2ZAWBAs6GRLlzNFErxgZCF27ATEQnXxPN5gFXkTXuaRAQN30HRsKrNdQbEphNlPe7QEFICR7cQPmPDBj8DhDoqrE7z5vkWL5EpVlbJstREOjCoHcxzZBseYoLcVQtZB0qsr09DqTTqitItoC311aUeUONLpuhZCrAUDC9IoZD","expiration_date":"2015-10-12T11:52:16.331Z","id":"106299626386728"}};
-		
-		
-		/*var authData = {
-		access_token: response.authResponse.accessToken,
-		expiration_date: expDate
-		} */
 		var authData = {
-		id: "106299626386728",
-		access_token: response.authResponse.accessToken,
-		expiration_date: expDate
-		} 
-		
-		/*var authData = {
 		id: String(response.authResponse.userID),
 		access_token: response.authResponse.accessToken,
 		expiration_date: expDate
-		} */
+		} 
 		  
-		//alert("authData=="+authData);
 		fbLogged.resolve(authData);
 		console.log(response);
-		//alert("anil2");
 		};
 		
 		var fbLoginError = function(error){
-		//alert(error);
 		$scope.hideLoading();
 		fbLogged.reject(error);
 		};
-		
-		
-		///////////////////////////////////////////////////////////////////////////
 		
 		// Defaults to sessionStorage for storing the Facebook token
 		 ngFB.init({appId: '1442568932738358'});
@@ -338,8 +374,7 @@ angular.module('starter.controllers', [])
 		    console.log('FbLogin');
 			ngFB.login({scope: 'public_profile,email,user_friends,user_birthday'}).then(
 				function(response) {
-					//alert('Facebook login succeeded, got access token: ' + response.authResponse.accessToken);
-					// alert('Facebook login succeeded, got access token: ' +JSON.stringify(response));
+					//alert('Facebook login succeeded, auth data: ' +JSON.stringify(response));
 					$scope.showLoading();
 					fbLoginSuccess(response);
 					fbLogged.then( function(authData) {
@@ -354,7 +389,6 @@ angular.module('starter.controllers', [])
 						   //alert("userObject=="+JSON.stringify(userObject));
 						  //alert("response=="+JSON.stringify(response));
 						  
-						  $scope.loginThroughMsg = "Facebook";
 						  $scope.loginModal.hide();
 						  $state.go("app.home"); // go to home page
 						  
@@ -371,14 +405,13 @@ angular.module('starter.controllers', [])
 							var dob = new Date(response.birthday);
 							userObject.set("dateOfBirth", dob);
 							userObject.save();
-							// console.log("User first time signed up and logged in through Facebook!");
+							$scope.showHomeMsg = true;
 							$scope.homeMsgValue ="User first time signed up and logged in through Facebook!";
 						  } 
 						  else 
 						  {
 							  //user existed
 							  userObject.save();
-							 // console.log("User already logged in through Facebook!");
 							  $scope.showHomeMsg = true;
 							  $scope.homeMsgValue ="User logged in through Facebook!";
 							  
@@ -387,6 +420,7 @@ angular.module('starter.controllers', [])
 						  $scope.beforeloginLinks	 = false;
 						  $scope.afterloginLinks  	 = true;
 						  $scope.showHomeUserName 	 = true;
+						  $scope.cyrLoginLinks  	 = false;
 						  
 						 //profile picture  
 						  var pictureObject=response.picture.data;
@@ -399,6 +433,19 @@ angular.module('starter.controllers', [])
 						  $scope.surName 		     = response.last_name;
 						  $scope.photo 		     	 = url;
 						  $scope.dateOfBirth 		 = $filter('date')(response.birthday, "dd/MM/yyyy");
+						  $scope.loginThroughMsg     = "Facebook";
+						 
+						 //////////////////////////////FB local store data start////////////////////////////////////
+					 	 window.localStorage.setItem("uName", response.name);
+					 	 window.localStorage.setItem("uEmail", response.email);
+						 window.localStorage.setItem("uFirstName", response.first_name);
+						 window.localStorage.setItem("uMiddleName", response.middle_name);
+						 window.localStorage.setItem("uSurName", response.last_name);
+						 window.localStorage.setItem("uDateOfBirth", $filter('date')(response.birthday, "dd/MM/yyyy"));
+					     window.localStorage.setItem("uLoginThroughMsg", "Facebook");
+						 
+						 $scope.downloadFile(url);
+					     //////////////////////////////FB local store data start////////////////////////////////////
 						 
 						 $scope.hideLoading();
 		   				 $scope.$apply();
@@ -412,38 +459,47 @@ angular.module('starter.controllers', [])
 						function(error) {
 						   //Error found
 						  $scope.loginModal.show();
-						  console.log(error);
-						  console.log("User cancelled the Facebook login or did not fully authorize.");
 						  $scope.vEmailMsg = true;
-						  $scope.vEmailMsgValue ="Error: " + error.code + " " + error.message;
-						  alert('api query error='+error.message);
+						  $scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
 						  $scope.hideLoading();
 		   				  $scope.$apply();
+						  $timeout(function() {
+							 $scope.vEmailMsg = false;
+							 $scope.vEmailMsgValue ="";
+							}, 3000);
 						}
 					  );
 					 
 					}, function(error) {
-					  //Error found
-					  console.log(error);
-					  alert('Facebook login failed: '+ error.code + " " + error.message);
-					  $scope.hideLoading();
-		   			  $scope.$apply();
+					  	  //Error found
+						  $scope.loginModal.show();
+						  $scope.vEmailMsg = true;
+						  $scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
+						  $scope.hideLoading();
+		   				  $scope.$apply();
+						  
+						  $timeout(function() {
+							 $scope.vEmailMsg = false;
+							 $scope.vEmailMsgValue ="";
+							}, 3000);
 					});
 					
 				},
 				function(error) {
-					alert('Facebook login failed: ' + error.code + " " + error.message);
-					fbLoginError(error);
-					console.log(error);
-					$scope.hideLoading();
-		   			$scope.$apply();
+					//Error found
+					  $scope.loginModal.show();
+					  $scope.vEmailMsg = true;
+					  $scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
+					  $scope.hideLoading();
+					  $scope.$apply();
+					  
+					  $timeout(function() {
+						 $scope.vEmailMsg = false;
+						 $scope.vEmailMsgValue ="";
+						}, 3000);
 				});
-				
 		}
-
-		/////////////////////////////////////////////////////////////////////////////////
-		
-	// Perform the FB login *****************************************END*******************************
+	// Perform the login with FB *****************************************END*******************************
 	
 	
 	
@@ -490,6 +546,10 @@ angular.module('starter.controllers', [])
 		// Perform the register action when the user submits the register form
 		$scope.doRegister = function() {
 			$scope.showLoading();
+			
+			// localStorage is now empty
+			window.localStorage.clear();
+			
 			console.log('Doing register', $scope.registerData);
 			
 			// code if using a register system
@@ -607,12 +667,23 @@ angular.module('starter.controllers', [])
 					$scope.middleName 		= currentUser.get("middleName");
 					$scope.surName 		    = currentUser.get("surName");
 					$scope.dateOfBirth 		= $filter('date')(currentUser.get("dateOfBirth"), "dd/MM/yyyy");
-					$scope.loginThroughMsg  = $scope.loginThroughMsg;
 					
-					//check user login with facebook
-					if($scope.loginThroughMsg == "Facebook")
+					if(uLoginThroughMsg!=null && uLoginThroughMsg!='')
 					{
-						$scope.photo 	= url;
+						$scope.loginThroughMsg  = uLoginThroughMsg;
+					}
+					else
+					{
+						$scope.loginThroughMsg  = $scope.loginThroughMsg;
+					}
+					//check user login with facebook
+					//if($scope.loginThroughMsg == "Facebook")
+					var uPhotolocalPath 	= window.localStorage.getItem("uPhotolocalPath");
+					//alert("uPhotolocalPath="+uPhotolocalPath);
+					if(uPhotolocalPath != null && uPhotolocalPath != '')
+					{
+						//alert("uPhotolocalPath="+uPhotolocalPath);
+						$scope.photo 	= uPhotolocalPath;
 					}
 					else
 					{
@@ -808,7 +879,28 @@ angular.module('starter.controllers', [])
 		};
 	
 	// Perform the Reset Password action when the user submits the Reset Password form  ***********END***********
-	
+		
+	//Download File  ***********start***********
+		$scope.downloadFile = function(url) {
+			var filename = url.split("/").pop();
+			var trustHosts = true
+			var options = {};
+			var targetPath = cordova.file.externalRootDirectory + filename;
+			$cordovaFileTransfer.download(url, targetPath, options, trustHosts)
+			  .then(function(result) {
+				//set local img path in var
+				window.localStorage.setItem("uPhotolocalPath", result.nativeURL);
+				window.localStorage.setItem("filename", result.name);
+				//alert(JSON.stringify(result));
+			  }, function(error) {
+				// Error
+			  }, function (progress) {
+				$timeout(function () {
+				  $scope.downloadProgress = (progress.loaded / progress.total) * 100;
+				})
+			  });
+		 }
+	//Download File  ***********end***********
 	
 		////////////////////////////////////////////
 	  	
