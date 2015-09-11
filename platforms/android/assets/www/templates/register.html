@@ -10,20 +10,24 @@
     <form ng-submit="doRegister()" name="registerForm" novalidate enctype="multipart/form-data">
       <div class="list">
       
+        <label class="item item-input item-stacked-label m-star">
+      		Fields marked with '<i class="ion-ios-medical assertive"></i>' are mandatory
+        </label>
+      
        	<label class="item item-input display-msg" ng-show="registerMsg">
         	{{registerMsgValue}}
         </label>
         
-        <label class="item item-input item-floating-label">
-          <span class="input-label">Username</span>
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Username  <i class="ion-ios-medical assertive m-star-field"></i></span>
           <input type="text" name="username" ng-model="registerData.username" placeholder="Username" autocomplete="off" required>
           <span style="color:red" ng-show="registerForm.username.$dirty && registerForm.username.$invalid">
           	<span ng-show="registerForm.username.$error.required">Username is required.</span>
           </span>
         </label>
         
-        <label class="item item-input item-floating-label">
-          <span class="input-label">Email</span>
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Email <i class="ion-ios-medical assertive m-star-field"></i></span>
           <input type="email" name="email" ng-model="registerData.email" placeholder="Email" autocomplete="off" required>
            <span style="color:red" ng-show="registerForm.email.$dirty && registerForm.email.$invalid">
           	<span ng-show="registerForm.email.$error.required">Email is required.</span>
@@ -31,24 +35,21 @@
           </span>
         </label>
         
-        <label class="item item-input item-floating-label">
-          <span class="input-label">First Name</span>
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">First Name <i class="ion-ios-medical assertive m-star-field"></i></span>
           <input type="text" name="firstName" ng-model="registerData.firstName" placeholder="First Name" autocomplete="off" required>
           <span style="color:red" ng-show="registerForm.firstName.$dirty && registerForm.firstName.$invalid">
           	<span ng-show="registerForm.firstName.$error.required">First name is required.</span>
           </span>
         </label>
         
-        <label class="item item-input item-floating-label">
+        <label class="item item-input item-stacked-label">
           <span class="input-label">Middle Name</span>
           <input type="text" name="middleName" ng-model="registerData.middleName" placeholder="Middle Name" autocomplete="off" required>
-          <span style="color:red" ng-show="registerForm.middleName.$dirty && registerForm.middleName.$invalid">
-          	<span ng-show="registerForm.middleName.$error.required">Middle name is required.</span>
-          </span>
         </label>
         
-        <label class="item item-input item-floating-label">
-          <span class="input-label">Sur Name</span>
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Sur Name <i class="ion-ios-medical assertive m-star-field"></i></span>
           <input type="text" name="surName" ng-model="registerData.surName" placeholder="Sur Name" autocomplete="off" required>
           <span style="color:red" ng-show="registerForm.surName.$dirty && registerForm.surName.$invalid">
           	<span ng-show="registerForm.surName.$error.required">Sur name is required.</span>
@@ -56,23 +57,23 @@
         </label>
         
         <label class="item item-input item-stacked-label">
-          <span class="input-label">Date Of Birth</span>
+          <span class="input-label">Date Of Birth <i class="ion-ios-medical assertive m-star-field"></i></span>
           <input type="date" name="dateOfBirth" ng-model="registerData.dateOfBirth" placeholder="MM-DD-YYYY" value="">
           <span style="color:red" ng-show="registerForm.dateOfBirth.$dirty">
           	<span ng-show="registerForm.dateOfBirth.$error.required">Date Of Birth is required.</span>
           </span>
         </label>
         
-        <label class="item item-input item-floating-label">
-          <span class="input-label">Password</span>
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Password <i class="ion-ios-medical assertive m-star-field"></i></span>
           <input type="password" name="password" ng-model="registerData.password" placeholder="Password" required>
           <span style="color:red" ng-show="registerForm.password.$dirty && registerForm.password.$invalid">
           	<span ng-show="registerForm.password.$error.required">Password is required.</span>
           </span>
         </label>
         
-        <label class="item item-input item-floating-label">
-          <span class="input-label">Confirm password</span>
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Confirm password <i class="ion-ios-medical assertive m-star-field"></i></span>
           <input type="password" name="confirmPassword" ng-model="registerData.confirmPassword" placeholder="Confirm password" required>
           <span style="color:red" ng-show="registerForm.confirmPassword.$dirty && registerForm.confirmPassword.$invalid">
           	<span ng-show="registerForm.confirmPassword.$error.required">Confirm password is required.</span>
@@ -90,7 +91,8 @@
         </label>
         
         <label class="item">
-          <button class="button button-block button-positive" type="submit" ng-disabled="!passwordMatch || ((registerForm.username.$dirty || registerForm.username.$pristine) && registerForm.username.$invalid) || ((registerForm.firstName.$dirty || registerForm.firstName.$pristine) && registerForm.firstName.$invalid) || ((registerForm.middleName.$dirty || registerForm.middleName.$pristine) && registerForm.middleName.$invalid) || ((registerForm.surName.$dirty || registerForm.surName.$pristine) && registerForm.surName.$invalid) || ((registerForm.email.$dirty || registerForm.email.$pristine) && registerForm.email.$invalid) || ((registerForm.password.$dirty || registerForm.password.$pristine) && registerForm.password.$invalid) || ((registerForm.confirmPassword.$dirty || registerForm.confirmPassword.$pristine) && registerForm.confirmPassword.$invalid)">
+          <button class="button button-block button-positive" type="submit" ng-disabled="!passwordMatch || ((registerForm.username.$dirty || registerForm.username.$pristine) && registerForm.username.$invalid) || ((registerForm.firstName.$dirty || registerForm.firstName.$pristine) && registerForm.firstName.$invalid) || ((registerForm.surName.$dirty || registerForm.surName.$pristine) && registerForm.surName.$invalid) || ((registerForm.email.$dirty || registerForm.email.$pristine) && registerForm.email.$invalid) || ((registerForm.password.$dirty || registerForm.password.$pristine) && registerForm.password.$invalid) || ((registerForm.confirmPassword.$dirty || registerForm.confirmPassword.$pristine) && registerForm.confirmPassword.$invalid)">
+         
           <i class="ion-android-checkmark-circle"></i>
           Submit</button>
         </label>

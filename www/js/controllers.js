@@ -159,13 +159,13 @@ angular.module('starter.controllers', [])
 			$timeout(function() {
 			$scope.userDetails(); //auto close the popup after 1\2 seconds
 			$scope.userDetailsModal.hide(); //hide detail popup after 1\2 seconds
-		  }, 500);
+		  }, 300);
 		  
 		} else {
-			 //alert('currentUser= no');
+			// alert('currentUser= no');
 			 $timeout(function() {
 				$scope.showLocalStorageData();
-		  }, 100);
+		  }, 300);
 		}
 	
 	//logout current user
@@ -262,7 +262,21 @@ angular.module('starter.controllers', [])
 					  $scope.surName 		     = user.get("surName");
 					  $scope.dateOfBirth 		 = $filter('date')(user.get("dateOfBirth"), "dd/MM/yyyy");
 					  $scope.loginThroughMsg   	 = "CYR";
+					 
+					 //////////////////////////////CYR local store data start//////////////////////////////////// 
+					 // first localStorage is now empty
+				 	 window.localStorage.clear();
+				 	 
+					 window.localStorage.setItem("uName", user.get("name"));
+					 window.localStorage.setItem("uEmail",user.get("email"));
+					 window.localStorage.setItem("uFirstName", user.get("firstName"));
+					 window.localStorage.setItem("uMiddleName", user.get("middleName"));
+					 window.localStorage.setItem("uSurName", user.get("surName"));
+					 window.localStorage.setItem("uDateOfBirth", $filter('date')(user.get("dateOfBirth"), "dd/MM/yyyy"));
+					 window.localStorage.setItem("uLoginThroughMsg", $scope.loginThroughMsg);
+					 //////////////////////////////CYR local store data start////////////////////////////////////
 					  
+					  //get profile image
 					  var query = new Parse.Query("ProfilePhoto");
 						query.equalTo("userObjectId", user.id);
 						query.equalTo("author", user.get("name"));
@@ -277,34 +291,17 @@ angular.module('starter.controllers', [])
 								  var url 		   = photoFileObj.url();
 								}
 								$scope.photo 	= url;
-							 	$scope.$apply();
+								$scope.downloadFile(url);
 						  }
 						});
 					  
-					  
-					 //////////////////////////////CYR local store data start////////////////////////////////////
-					 // first localStorage is now empty
-				 	 window.localStorage.clear();
-				 
-					 window.localStorage.setItem("uName", user.get("name"));
-					 window.localStorage.setItem("uEmail",user.get("email"));
-					 window.localStorage.setItem("uFirstName", user.get("firstName"));
-					 window.localStorage.setItem("uMiddleName", user.get("middleName"));
-					 window.localStorage.setItem("uSurName", user.get("surName"));
-					 window.localStorage.setItem("uDateOfBirth", $filter('date')(user.get("dateOfBirth"), "dd/MM/yyyy"));
-					 window.localStorage.setItem("uLoginThroughMsg", $scope.loginThroughMsg);
-					 
-					 $scope.downloadFile(url);
-					 //////////////////////////////CYR local store data start////////////////////////////////////
+					$scope.hideLoading();
+					$scope.$apply();
 					
-					  $state.go("app.home"); // go to home page
-					  $timeout(function() {
+					$state.go("app.home"); // go to home page
+					$timeout(function() {
 						 $scope.showHomeMsg = false;
-						}, 3000);
-					  
-					  
-					  $scope.hideLoading();
-					  $scope.$apply();
+						}, 5000);
 				  }
 				  
 			  },
@@ -400,7 +397,7 @@ angular.module('starter.controllers', [])
 						  $state.go("app.home"); // go to home page
 						  
 						  //user not existed
-						  if (!userObject.existed()) 
+						  /*if (!userObject.existed()) 
 						  {
 							userObject.set("username", String(response.name));
 							userObject.set("name", String(response.name));
@@ -422,7 +419,19 @@ angular.module('starter.controllers', [])
 							  $scope.showHomeMsg = true;
 							  $scope.homeMsgValue ="User logged in through Facebook!";
 							  
-						  }
+						  }*/
+						  userObject.set("username", String(response.name));
+						  userObject.set("name", String(response.name));
+						  userObject.set("email", String(response.email));
+						  userObject.set("firstName", String(response.first_name));
+						  userObject.set("middleName", String(response.middle_name));
+						  userObject.set("surName", String(response.last_name));
+							
+						  var dob = new Date(response.birthday);
+						  userObject.set("dateOfBirth", dob);
+						  userObject.save();
+						  $scope.showHomeMsg = true;
+						  $scope.homeMsgValue ="User logged in through Facebook!";
 						  
 						  $scope.beforeloginLinks	 = false;
 						  $scope.afterloginLinks  	 = true;
@@ -667,9 +676,15 @@ angular.module('starter.controllers', [])
 		
 			//show user details
 			$scope.userDetails = function() {
+				$scope.userDetailsModal.show();
+				$scope.showUserDetail = true;
 				
-				    $scope.userDetailsModal.show();
-					$scope.showUserDetail = true;
+				uLoginThroughMsg 	= window.localStorage.getItem("uLoginThroughMsg");
+				//set cyr Login Links false when user login with facebook
+				if(uLoginThroughMsg=="Facebook")
+				{
+					$scope.cyrLoginLinks  = false;
+				}
 				// check current user are present or not
 				var currentUser = Parse.User.current();
 				if (currentUser) {
@@ -724,7 +739,7 @@ angular.module('starter.controllers', [])
 					
 					$timeout(function() {
 						$scope.showLocalStorageData();
-				   }, 100);
+				   }, 300);
 				   
 					/*$scope.userDetailsModal.hide();
 					$scope.showUserDetail 		 = false;*/
@@ -926,12 +941,11 @@ angular.module('starter.controllers', [])
 	//show user data from local storage  ***********start***********
 		$scope.showLocalStorageData = function() {
 			//alert("uName=="+uName);
-			
 			if(uName!=null && uName!="" && $cordovaNetwork.isOffline())
 			{
 				$timeout(function() {
 					$scope.closeLogin();
-			  }, 100);
+			  }, 300);
 				
 				//alert("hide login");
 				$scope.beforeloginLinks	 = false;
@@ -970,6 +984,7 @@ angular.module('starter.controllers', [])
 					}
 				    $scope.hideLoading();
 			  }, 300);
+			  $scope.$apply();
 			}
 	     }
 		 //show user data from local storage  ***********End***********
