@@ -52,3 +52,19 @@
 .logo-image {
     height: 35px;
 }
+
+.m-star
+{
+	color: red;
+    font-size: 12px;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-align: right;
+}
+.m-star-field
+{
+    font-size: 12px;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-align: right;
+}
