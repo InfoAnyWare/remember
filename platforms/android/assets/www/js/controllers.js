@@ -966,9 +966,10 @@ angular.module('starter.controllers', [])
 				else
 				{
 					//alert("show login");
+					
 					$scope.beforeloginLinks	 = true;
 					$scope.afterloginLinks   = false;
-					$scope.showHomeUserName  = false; 
+					$scope.showHomeUserName  = false;
 					
 					//call hide user Details Modal
 					$scope.userDetailsModal.hide();
@@ -979,14 +980,14 @@ angular.module('starter.controllers', [])
 						$scope.vEmailMsg = true;
 						$scope.vEmailMsgValue ="Please check your network connection and try again";
 					}
+
 					$scope.hideLoading();
 					$scope.$apply();
-					
-				}
+						
+					}
 			  }, 400);
 	     }
 		 //show user data from local storage  ***********End***********
-		 
 		 
 		 
 		////////////////////////////////////////////
