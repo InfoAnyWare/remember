@@ -60,6 +60,16 @@ angular.module('starter', [
       }
     }
   })
+  
+  .state('app.Memory', {
+    url: '/Memory',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/addMemory.html',
+		 controller: "CYRmeMemory"
+      }
+    }
+  })
 
   .state('app.home', {
       url: '/home',

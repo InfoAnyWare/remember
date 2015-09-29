@@ -1,0 +1,65 @@
+<ion-view view-title='Home'>
+  <ion-content>
+   
+    <div class="row" ng-show="showHomeUserName">
+        <div class="col text-center"><h2>Welcome {{name}}</h2></div>
+    </div>
+    
+    <div class="row" ng-show="showHomeMsg">
+        <div class="col"><h4 class="display-msg">{{homeMsgValue}}</h4></div>
+    </div>
+    
+    <div ng-show="beforeloginLinks">
+        <div class="row">
+             <div class="col item text-center">Please login OR register before use the app?</div>
+         </div>
+         <div class="row">
+             <div class="col col-40 text-center">
+             	<a class="button button-block button-positive button-small ion-log-in" ng-click="login()">&nbsp;Login</a>
+             </div>
+             <div class="col col-20 text-center home-or-text">
+             	<div class="col text-center">OR</div>
+             </div>
+             <div class="col col-40 text-center">
+             	<a class="button button-block button-positive button-small ion-person-add" ng-click="register()">&nbsp;Register</a>
+             </div>
+         </div>
+    </div>
+    
+    <div ng-show="afterloginLinks" class="card">
+          <div class="row item item-divider">
+              <div class="col col-33">Name : </div>
+              <div class="col col-67">{{name}}</div>
+          </div>
+          <div class="row item item-text-wrap">
+              <div class="col col-33">Email : </div>
+              <div class="col col-67">{{email}}</div>
+          </div>
+          <div class="row item item-divider">
+              <div class="col col-33">First Name : </div>
+              <div class="col col-67">{{firstName}}</div>
+          </div>
+          <div class="row item item-text-wrap">
+              <div class="col col-33">Middle Name : </div>
+              <div class="col col-67">{{middleName}}</div>
+          </div>
+          <div class="row item item-divider">
+              <div class="col col-33">Sur Name : </div>
+              <div class="col col-67">{{surName}}</div>
+          </div>
+          <div class="row item item-divider">
+              <div class="col col-33">Date Of Birth : </div>
+              <div class="col col-67">{{dateOfBirth}}</div>
+          </div>
+          <div class="row item item-text-wrap">
+              <div class="col col-33">Photo : </div>
+              <div class="col col-67"><img  align="absmiddle" width="100px" height="100px" src="{{photo}}"  /></div>
+          </div>
+          <div class="row item item-divider">
+              <div class="col col-33">Login Through : </div>
+              <div class="col col-67">{{loginThroughMsg}}</div>
+          </div>
+      </div>
+    
+  </ion-content>
+</ion-view>

@@ -135,7 +135,7 @@ angular.module('starter.controllers', [])
 	var uDateOfBirth 		= window.localStorage.getItem("uDateOfBirth");
     var uLoginThroughMsg 	= window.localStorage.getItem("uLoginThroughMsg");
 	var uPhotolocalPath 	= window.localStorage.getItem("uPhotolocalPath");
-	//var uFileName = window.localStorage.getItem("filename");
+    //var uFileName = window.localStorage.getItem("filename");
 	
 	//set cyr Login Links false when user login with facebook
 	if(uLoginThroughMsg=="Facebook")
@@ -920,7 +920,8 @@ angular.module('starter.controllers', [])
 			var filename = url.split("/").pop();
 			var trustHosts = true
 			var options = {};
-			var targetPath = cordova.file.externalRootDirectory + filename;
+			var targetPath = cordova.file.dataDirectory + filename;
+            
 			$cordovaFileTransfer.download(url, targetPath, options, trustHosts)
 			  .then(function(result) {
 				//set local img path in var
@@ -957,7 +958,7 @@ angular.module('starter.controllers', [])
 					$scope.surName 		    = uSurName;
 					$scope.dateOfBirth 		= uDateOfBirth;
 					$scope.loginThroughMsg  = uLoginThroughMsg;
-					$scope.photo 			= uPhotolocalPath;
+                    $scope.photo 			= uPhotolocalPath;
 					$state.go("app.home"); // go to home page
 					$scope.hideLoading();
 					$scope.$apply();
@@ -995,3 +996,86 @@ angular.module('starter.controllers', [])
 		console.log('afterloginLinks=='+$scope.afterloginLinks);
 		
 	})
+	
+	
+	
+	
+	
+	
+	
+//CYRme Memory controller******************************Start************************************************
+	.controller('CYRmeMemory', function($scope,$state, $ionicLoading, $cordovaNetwork, $timeout) {
+		//msg false by default
+		$scope.addMemoryMsg = false;
+		$scope.addMemoryValue ="";
+		// Form data for add Memory
+		$scope.addMemoryData = [];
+			
+		//Add CYRme Memory
+		$scope.addMemory = function() {
+			$scope.showLoading();
+			
+			var currentUser = Parse.User.current();
+			if(currentUser && $cordovaNetwork.isOnline()) 
+			{
+				var CYRmeMemory = new Parse.Object("CYRme");
+				CYRmeMemory.set("user", Parse.User.current());
+				CYRmeMemory.set("title", String($scope.addMemoryData['title']));
+				CYRmeMemory.set("typeOfMemory", String($scope.addMemoryData['typeOfMemory']))
+				CYRmeMemory.set("dateOfMemory", $scope.addMemoryData['dateOfMemory']);
+				if(String($scope.addMemoryData['mentionTo'])!="undefined")
+				{
+					CYRmeMemory.set("mentionTo", $scope.addMemoryData['mentionTo'].split(","));
+					
+				}
+				CYRmeMemory.set("content", String($scope.addMemoryData['content']));
+				CYRmeMemory.set("privacy", String($scope.addMemoryData['privacy']));
+				var fileUploadControl = $("#memoryFileUpload")[0];
+				if (fileUploadControl.files.length > 0) {
+					var file = fileUploadControl.files[0];
+					var name = "photo.png";
+					var parseFile = new Parse.File(name, file);
+					parseFile.save().then(function(parseFile) {
+					   CYRmeMemory.set("image", parseFile);
+					   //save CYRmeMemory object
+					   CYRmeMemory.save();
+					   //alert('success: file upload');
+					   
+					}, 
+					  function(error) {
+						// The file either could not be read, or could not be saved to Parse.
+						// alert("Error: " + error.code + " " + error.message);
+					  });
+				}
+				else
+				{
+					//save CYRmeMemory object
+					CYRmeMemory.save();
+				}
+				
+				$timeout(function() {
+					$scope.hideLoading();
+					$state.go("app.home"); // go to home page
+					$scope.showHomeMsg 	 	= true;
+					$scope.homeMsgValue 	= "Memory has been Added successfully.";
+				}, 500);
+				$scope.$apply();
+				$timeout(function() {
+					$scope.showHomeMsg 	 	= false;
+				  	$scope.homeMsgValue 	= "";
+					}, 400);
+				
+			}
+			else
+			{
+				// Show the error message somewhere and let the user try again.
+				$scope.addMemoryMsg = true;
+				$scope.addMemoryValue ="Please check your network connection and try again";
+				$scope.hideLoading();
+				$scope.$apply();
+			}
+		};
+		
+	})
+//CYRme Memory controller******************************End************************************************
+	

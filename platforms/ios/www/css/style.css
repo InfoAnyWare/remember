@@ -1,0 +1,70 @@
+/* Empty. Add your own CSS if you like */
+
+.forgot-password-div
+{
+	border-bottom:1px solid #ddd;
+	text-align:center;
+}
+.forgot-password-link
+{
+	color:blue;
+	cursor:pointer;
+}
+.login-submit-label
+{
+	border-bottom:none;
+	padding-top:2px;
+	padding-bottom:2px;
+}
+.login-submit-button
+{
+	margin-bottom:2px !important;
+}
+
+.loading-container .loading {
+    border-radius: 5px;
+    color: #fff;
+    font-size: 39px;
+    padding: 5px;
+    text-align: center;
+    text-overflow: ellipsis;
+	background:none;
+}
+.home-or-text
+{
+	vertical-align:middle;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.display-msg
+{
+	color:red;
+	white-space: normal;
+}
+.spinner svg {
+  width: 50px;
+  height: 50px;
+  stroke: #fff;
+  fill: #fff;
+}
+
+.logo-image {
+    height: 35px;
+}
+
+.m-star
+{
+	color: red;
+    font-size: 12px;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-align: right;
+}
+.m-star-field
+{
+    font-size: 12px;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-align: right;
+}

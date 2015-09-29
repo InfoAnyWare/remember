@@ -1,0 +1,81 @@
+<ion-view title="Add Memory">
+  <ion-content>
+    <form ng-submit="addMemory()" name="addMemoryForm" novalidate enctype="multipart/form-data">
+      <div class="list">
+      
+        <label class="item item-input item-stacked-label m-star">
+      		Fields marked with '<i class="ion-ios-medical assertive"></i>' are mandatory
+        </label>
+      
+       	<label class="item item-input display-msg" ng-show="addMemoryMsg">
+        	{{addMemoryValue}}
+        </label>
+        
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Title  <i class="ion-ios-medical assertive m-star-field"></i></span>
+          <input type="text" name="title" ng-model="addMemoryData.title" placeholder="Title" autocomplete="off" required>
+          <span style="color:red" ng-show="addMemoryForm.title.$dirty && addMemoryForm.title.$invalid">
+          	<span ng-show="addMemoryForm.title.$error.required">Title is required.</span>
+          </span>
+        </label>
+        
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Type Of Memory</span>
+          <input type="text" name="typeOfMemory" ng-model="addMemoryData.typeOfMemory" placeholder="Type Of Memory" autocomplete="off">
+        </label>
+        
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Date Of Memory</span>
+          <input type="date" name="dateOfMemory" ng-model="addMemoryData.dateOfMemory" placeholder="MM-DD-YYYY" value="">
+        </label>
+        
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Invite Users</span>
+          <textarea name="mentionTo" ng-model="addMemoryData.mentionTo" placeholder="Type CYRme users, facebook users or emails separated by comma" autocomplete="off"></textarea> 
+        </label>
+        
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Content</span>
+          <textarea name="content" ng-model="addMemoryData.content" placeholder="Content" autocomplete="off"></textarea> 
+        </label>
+        
+         <label class="item item-input">
+          <span class="input-label">Upload Photo</span>
+          <input type="file" name="memoryFileUpload" id="memoryFileUpload" ng-model="addMemoryData.photoFileUpload">
+        </label>
+        
+        <div class="list">
+        <label class="item item-input">
+            <span class="input-label">Privacy <i class="ion-ios-medical assertive m-star-field"></i></span>
+            <label class="item item-radio">
+            <input type="radio" name="privacy" ng-model="addMemoryData.privacy" value="Yes" required="required">
+            <div class="item-content">
+              Yes
+            </div>
+            <i class="radio-icon ion-checkmark"></i>
+            </label>
+            <label class="item item-radio">
+            <input type="radio" name="privacy" ng-model="addMemoryData.privacy" checked="checked" value="No" required="required">
+            <div class="item-content">
+              No
+            </div>
+            <i class="radio-icon ion-checkmark"></i>
+            </label>
+            <span style="color:red" ng-show="addMemoryForm.privacy.$dirty && addMemoryForm.privacy.$invalid">
+            <span ng-show="addMemoryForm.privacy.$error.required">Privacy is required.</span>
+            </span>
+          </label>
+		</div>
+        
+        <label class="item">
+          <button class="button button-block button-positive" type="submit" ng-disabled="((addMemoryForm.title.$dirty || addMemoryForm.title.$pristine) && addMemoryForm.title.$invalid) || ((addMemoryForm.privacy.$dirty || addMemoryForm.privacy.$pristine) && addMemoryForm.privacy.$invalid) ">
+         
+          <i class="ion-android-checkmark-circle"></i>
+          Submit</button>
+        </label>
+        
+      </div>
+    </form>
+  </div>
+  </ion-content>
+</ion-view>
