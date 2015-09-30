@@ -1004,7 +1004,7 @@ angular.module('starter.controllers', [])
 	
 	
 //CYRme Memory controller******************************Start************************************************
-	.controller('CYRmeMemory', function($scope,$state, $ionicLoading, $cordovaNetwork, $timeout) {
+	.controller('CYRmeMemory', function($scope,$state, $ionicLoading, $cordovaNetwork,ThumbnailService, $timeout) {
 		//msg false by default
 		$scope.addMemoryMsg = false;
 		$scope.addMemoryValue ="";
@@ -1030,10 +1030,158 @@ angular.module('starter.controllers', [])
 				}
 				CYRmeMemory.set("content", String($scope.addMemoryData['content']));
 				CYRmeMemory.set("privacy", String($scope.addMemoryData['privacy']));
+				
+				//upload file
 				var fileUploadControl = $("#memoryFileUpload")[0];
 				if (fileUploadControl.files.length > 0) {
+					
 					var file = fileUploadControl.files[0];
-					var name = "photo.png";
+				//alert(fileUploadControl.files[0]);
+					/*var thumbFile=  ThumbnailService.generate(file, {returnType: 'blob'}).then(
+							function success(blob) {
+							  alert(typeof blob);
+							},
+							function error(reason) {
+							  alert('Error: ' + reason);
+							}
+						  );*/
+						  
+						/*  var image = new Image();
+						 var thumbFile=image.file.scale({
+								  width: 64,
+								  height: 64
+								});*/
+						  
+						/*var thumbFile=  ThumbnailService.generate(file).then(
+						function success(data) {
+						  alert(data.substring(0, 30));
+						},
+						function error(reason) {
+						  alert('Error: ' + reason);
+						}
+					  );
+				*/
+						
+					 alert("photoThumb1111");
+					 
+					 ///
+					 $scope.img = {
+					  original: file,
+					  // this variable is defined in img/sample-base64.js
+					  other: sampleBase64
+					};
+					$scope.settings = {
+					  width: 50,
+					  height: 50
+					};
+					$scope.changeToOther = function changeToOther() {
+					  $scope.img.original = $scope.img.other;
+					};
+					$scope.getDataUrl = function getDataUrl() {
+					  ThumbnailService.generate($scope.img.original).then(
+						function success(data) {
+						  alert(data.substring(0, 30));
+						},
+						function error(reason) {
+						  alert('Error: ' + reason);
+						}
+					  );
+					};
+					$scope.getBlob = function getBlob() {
+					  ThumbnailService.generate($scope.img.original, {returnType: 'blob'}).then(
+						function success(blob) {
+						  alert(typeof blob);
+						},
+						function error(reason) {
+						  alert('Error: ' + reason);
+						}
+					  );
+					};
+					
+					// alert("scope.img obj=="+JSON.stringify($scope.img));
+					 alert("scope.img="+$scope.img);
+					 
+					 /////////////////////////////////////
+					/* var thumbFile= ThumbnailService.generate('http://www.w3schools.com/angular/pic_angular.jpg', {returnType: 'blob',type: 'image/jpeg'}).then(*/
+					 /*  ThumbnailService.generate('http://www.w3schools.com/angular/pic_angular.jpg', {returnType: 'blob',type: 'image/jpeg'}).then(
+					 
+						function success(blob) {
+						  alert(typeof blob);
+						   alert("blob=="+JSON.stringify(blob));
+						   
+						   var blobFile = blob[0];
+							if (blobFile.files.length > 0) {
+								alert("blobFile.files.name="+blobFile.files.name);
+							}
+							else
+							{
+								alert("error");
+							}
+						   for (var i = 0; i < blob[0].length; i++) { 
+								  //imageURLs.push(object.get('photoFile'));
+								 // var photoFileObj = object.property;
+								  var photoFileObj = object.name;
+								  alert("photoFileObj name=="+photoFileObj);
+								  alert("photoFileObj obj=="+JSON.stringify(photoFileObj));
+								  var url 		   = photoFileObj.url();
+							}
+						},
+						function error(reason) {
+						  alert('Error: ' + reason);
+						}
+					  );
+					  
+					  alert("thumbFile=="+JSON.stringify(thumbFile));*/
+					  alert("photoThumb2222");
+					
+					//alert("thumbFile="+thumbFile);
+					var name = "photoThumb.png";
+					
+						alert("thumbFile=="+JSON.stringify($scope.img.other));
+					  var parseFileThumb = new Parse.File(name, $scope.img.other);
+					  parseFileThumb.save().then(function(parseFileThumb) {
+					  CYRmeMemory.set("thumbnail", parseFileThumb);
+					  //save CYRmeMemory object
+					  CYRmeMemory.save();
+					   alert('success: file upload');
+					   
+					}, 
+					  function(error) {
+						// The file either could not be read, or could not be saved to Parse.
+						 alert("Error: " + error.code + " " + error.message);
+					  });
+	  
+	  
+					
+	  				/*var name = "photo.png";
+					var parseFile = new Parse.File(name, file);
+					parseFile.save().then(function(parseFile) {
+					   CYRmeMemory.set("image", parseFile);
+					   //save CYRmeMemory object
+					   CYRmeMemory.save();
+					   alert('success: file upload');
+					}, 
+					  function(error) {
+						// The file either could not be read, or could not be saved to Parse.
+						// alert("Error: " + error.code + " " + error.message);
+					  });*/
+					  
+					var name = "photoThumb.png";
+					alert("photoThumb1");
+					//var thumbFile=window.ImageResizer.resizeImage(successCallBack, failCallBack, file, 100, 100, options);
+					
+					/*window.imageResizer.resizeImage(
+					  function(data) { 
+					  alert("imageData="+data.imageData);
+						//image.src = "data:image/jpeg;base64," + data.imageData; 
+					  }, function (error) {
+						  alert("error="+error);
+						//console.log("Error : \r\n" + error);
+					  }, file, 0.5, 0.5, {resizeType:ImageResizer.RESIZE_TYPE_FACTOR ,format:'jpg'});*/
+	  
+	  				
+	  
+	  				/*var name = "photo.png";
 					var parseFile = new Parse.File(name, file);
 					parseFile.save().then(function(parseFile) {
 					   CYRmeMemory.set("image", parseFile);
@@ -1045,12 +1193,12 @@ angular.module('starter.controllers', [])
 					  function(error) {
 						// The file either could not be read, or could not be saved to Parse.
 						// alert("Error: " + error.code + " " + error.message);
-					  });
+					  });*/
 				}
 				else
 				{
 					//save CYRmeMemory object
-					CYRmeMemory.save();
+					//CYRmeMemory.save();
 				}
 				
 				$timeout(function() {

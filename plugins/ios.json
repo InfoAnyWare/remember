@@ -35,6 +35,10 @@
                         {
                             "xml": "<feature name=\"NetworkStatus\"><param name=\"ios-package\" value=\"CDVConnection\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"ImageResizePlugin\"><param name=\"ios-package\" value=\"ImageResize\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -122,6 +126,9 @@
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
         "org.apache.cordova.network-information": {
+            "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
+        },
+        "com.synconset.imageResizer": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         }
     },

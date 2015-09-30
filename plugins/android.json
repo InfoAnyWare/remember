@@ -35,6 +35,10 @@
                         {
                             "xml": "<feature name=\"NetworkStatus\"><param name=\"android-package\" value=\"org.apache.cordova.networkinformation.NetworkManager\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"ImageResizePlugin\"><param name=\"android-package\" value=\"com.synconset.ImageResizePlugin\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -131,6 +135,9 @@
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
         "org.apache.cordova.network-information": {
+            "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
+        },
+        "com.synconset.imageResizer": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         }
     },

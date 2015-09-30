@@ -203,6 +203,13 @@ module.exports = [
         "clobbers": [
             "Connection"
         ]
+    },
+    {
+        "file": "plugins/com.synconset.imageResizer/www/imageresize.js",
+        "id": "com.synconset.imageResizer.ImageResizePlugin",
+        "clobbers": [
+            "plugins.imageResizer"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -215,7 +222,8 @@ module.exports.metadata =
     "org.apache.cordova.dialogs": "0.3.0",
     "org.apache.cordova.file": "1.3.3",
     "org.apache.cordova.file-transfer": "0.5.0",
-    "org.apache.cordova.network-information": "0.2.15"
+    "org.apache.cordova.network-information": "0.2.15",
+    "com.synconset.imageResizer": "0.1.1"
 }
 // BOTTOM OF METADATA
 });

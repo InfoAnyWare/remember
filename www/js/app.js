@@ -9,6 +9,7 @@ angular.module('starter', [
 		'ionic',
   		'ngCordova',
 		'ngOpenFB',
+		'ui.thumbnail',
 		'starter.controllers',
 	])
 
@@ -32,8 +33,10 @@ angular.module('starter', [
 
 })
 
-.config(function ($stateProvider, $urlRouterProvider, $cordovaFacebookProvider, $cordovaAppRateProvider, $cordovaInAppBrowserProvider) 
+.config(function ($stateProvider, $urlRouterProvider, $cordovaFacebookProvider, $cordovaAppRateProvider, $cordovaInAppBrowserProvider, ThumbnailServiceProvider) 
  {
+	 ThumbnailServiceProvider.defaults.width = 150;
+     ThumbnailServiceProvider.defaults.height = 150;
 
     var browserOptions = {
       location: "yes",

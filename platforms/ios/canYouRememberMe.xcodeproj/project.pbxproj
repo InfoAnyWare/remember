@@ -55,6 +55,9 @@
 		7FD47A8C97CF4B879FB15FE6 /* CDVConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C27E1783A09430B90792793 /* CDVConnection.m */; };
 		A4101E6CFA30406FB2A87894 /* CDVReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E1D1A64C3E7409487906011 /* CDVReachability.m */; };
 		B94FD05DE51647FDADD345BF /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E035F01484594755A5C695DD /* SystemConfiguration.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		226E4CAC2A5F4E0B893F478E /* ImageResize.m in Sources */ = {isa = PBXBuildFile; fileRef = CFBAB1785A6740E89DCC620B /* ImageResize.m */; };
+		986C80F1087B46E7B23AEA2D /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 664942AE39A3404C9FA2C50B /* NSData+Base64.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		0FB0FA02257649C48FFDDEFD /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = 47A8C10AAF4B449B899252CE /* UIImage+Scale.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -147,6 +150,12 @@
 		43B6F9ACB19B4297B5A8D7F1 /* CDVConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVConnection.h"; path = "org.apache.cordova.network-information/CDVConnection.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		06548B2A51F84C76A7C4A3E1 /* CDVReachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVReachability.h"; path = "org.apache.cordova.network-information/CDVReachability.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		E035F01484594755A5C695DD /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "SystemConfiguration.framework"; path = "System/Library/Frameworks/SystemConfiguration.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
+		CFBAB1785A6740E89DCC620B /* ImageResize.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "ImageResize.m"; path = "com.synconset.imageResizer/ImageResize.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		664942AE39A3404C9FA2C50B /* NSData+Base64.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSData+Base64.m"; path = "com.synconset.imageResizer/NSData+Base64.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		47A8C10AAF4B449B899252CE /* UIImage+Scale.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Scale.m"; path = "com.synconset.imageResizer/UIImage+Scale.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		8EFF504C9B54430590F08130 /* ImageResize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ImageResize.h"; path = "com.synconset.imageResizer/ImageResize.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		5DFE181E262043B2BA5780AA /* NSData+Base64.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSData+Base64.h"; path = "com.synconset.imageResizer/NSData+Base64.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		8211D0BFC7D14C2A9DAACEAB /* UIImage+Scale.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UIImage+Scale.h"; path = "com.synconset.imageResizer/UIImage+Scale.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -276,6 +285,12 @@
 				3E1D1A64C3E7409487906011 /* CDVReachability.m */,
 				43B6F9ACB19B4297B5A8D7F1 /* CDVConnection.h */,
 				06548B2A51F84C76A7C4A3E1 /* CDVReachability.h */,
+				CFBAB1785A6740E89DCC620B /* ImageResize.m */,
+				664942AE39A3404C9FA2C50B /* NSData+Base64.m */,
+				47A8C10AAF4B449B899252CE /* UIImage+Scale.m */,
+				8EFF504C9B54430590F08130 /* ImageResize.h */,
+				5DFE181E262043B2BA5780AA /* NSData+Base64.h */,
+				8211D0BFC7D14C2A9DAACEAB /* UIImage+Scale.h */,
 			);
 			name = Plugins;
 			path = "canYouRememberMe/Plugins";
@@ -472,6 +487,9 @@
 				9C03015C47844ED08ABC3AE5 /* CDVFileTransfer.m in Sources */,
 				7FD47A8C97CF4B879FB15FE6 /* CDVConnection.m in Sources */,
 				A4101E6CFA30406FB2A87894 /* CDVReachability.m in Sources */,
+				226E4CAC2A5F4E0B893F478E /* ImageResize.m in Sources */,
+				986C80F1087B46E7B23AEA2D /* NSData+Base64.m in Sources */,
+				0FB0FA02257649C48FFDDEFD /* UIImage+Scale.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

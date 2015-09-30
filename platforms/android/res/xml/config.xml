@@ -25,6 +25,9 @@
     <feature name="NetworkStatus">
         <param name="android-package" value="org.apache.cordova.networkinformation.NetworkManager" />
     </feature>
+    <feature name="ImageResizePlugin">
+        <param name="android-package" value="com.synconset.ImageResizePlugin" />
+    </feature>
     <feature name="CordovaFacebook">
         <param name="android-package" value="com.blakeisrael.cordova.CordovaFacebook" />
         <param name="onload" value="true" />
