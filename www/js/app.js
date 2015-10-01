@@ -35,8 +35,9 @@ angular.module('starter', [
 
 .config(function ($stateProvider, $urlRouterProvider, $cordovaFacebookProvider, $cordovaAppRateProvider, $cordovaInAppBrowserProvider, ThumbnailServiceProvider) 
  {
-	 ThumbnailServiceProvider.defaults.width = 150;
-     ThumbnailServiceProvider.defaults.height = 150;
+	 //set default thumbnil width and height
+	 ThumbnailServiceProvider.defaults.width = 100;
+     ThumbnailServiceProvider.defaults.height = 100;
 
     var browserOptions = {
       location: "yes",
@@ -59,7 +60,8 @@ angular.module('starter', [
     url: '/search',
     views: {
       'menuContent': {
-        templateUrl: 'templates/search.html'
+        templateUrl: 'templates/search.html',
+		controller: 'AppCtrl'
       }
     }
   })
@@ -78,7 +80,8 @@ angular.module('starter', [
       url: '/home',
       views: {
         'menuContent': {
-          templateUrl: 'templates/home.html'
+          templateUrl: 'templates/home.html',
+		  controller: 'AppCtrl'
         }
       }
   });
