@@ -1005,6 +1005,9 @@ angular.module('starter.controllers', [])
 	
 //CYRme Memory controller******************************Start************************************************
 	.controller('CYRmeMemory', function($scope,$state, $ionicLoading, $cordovaNetwork,ThumbnailService, $timeout) {
+		// current user
+		var currentUser = Parse.User.current();
+		
 		//msg false by default
 		$scope.addMemoryMsg = false;
 		$scope.addMemoryValue ="";
@@ -1015,7 +1018,82 @@ angular.module('starter.controllers', [])
 		$scope.addMemory = function() {
 			$scope.showLoading();
 			
-			var currentUser = Parse.User.current();
+		//check email validation
+		$scope.validateInviteEmail = function(email) {
+			var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+			alert(email+"=validateEmail=="+re.test(email));
+			return re.test(email);
+		}
+		
+		//invite user function start******************************************	
+		$scope.inviteUsers=function(inviteUserListArray)
+		{
+			var sendCYRmeUserList=new Array; //CYRme user array for send notification on mobile
+			var sendOtherUserEmailList=new Array; //other user email array for send mail 
+			var sendOtherFacebookUserEmailList=new Array; //other user facebook email array for send mail
+			
+			if(Array.isArray(inviteUserListArray))
+			{	
+				for(var i=0; i<inviteUserListArray.length; i++)
+				{
+					var inviteUser = inviteUserListArray[i];
+					
+					//username field query var
+					var usernameQuery = new Parse.Query("User");
+						usernameQuery.notEqualTo("objectId", currentUser.id);
+						usernameQuery.equalTo("username", inviteUser);
+					
+					//email field query var	
+					var emailQuery 	  = new Parse.Query("User");
+						emailQuery.notEqualTo("objectId", currentUser.id);
+						emailQuery.equalTo("email", inviteUser);
+						
+					//Compound both username and email query var
+					var mainQuery = Parse.Query.or(usernameQuery, emailQuery);
+					mainQuery.find({
+					  success: function(results) {
+						 alert("results.length=="+results.length);
+						 if(results.length>0) //CYRme user
+						 {
+							 alert("anil 1");
+							 for (var i = 0; i < results.length; i++) { 
+								  var object = results[i];
+								  sendCYRmeUserList.push(object.get('name'));
+								}
+								//alert("sendCYRmeUserList=="+JSON.stringify(sendCYRmeUserList));
+								//call function for send notification to CYRme users
+						 }
+						 else //other email
+						 { 
+						 	 alert("anil 2");
+							 if($scope.validateInviteEmail(inviteUser)) // orher user check email
+							 {
+								 alert("anil 3");
+								 //Email id add in sendOtherUserEmailList array 
+								sendOtherUserEmailList.push(inviteUser);
+								alert("sendOtherUserEmailList=="+JSON.stringify(sendOtherUserEmailList));
+							 }
+							 else
+							 {
+								 alert("anil 4");
+								//Email id add in sendOtherFacebookUserEmailList array 
+								sendOtherFacebookUserEmailList.push(inviteUser);
+								alert("sendOtherFacebookUserEmailList=="+JSON.stringify(sendOtherFacebookUserEmailList));
+							 }
+						 }
+					  },
+					  error: function(error) {
+						  alert("Error: " + error.code + " " + error.message);
+					  }
+					});
+					
+				} //end for loop
+			}
+			return false;
+		}
+		//invite user function End****************************************	
+			
+			
 			if(currentUser && $cordovaNetwork.isOnline()) 
 			{
 				var CYRmeMemory = new Parse.Object("CYRme");
@@ -1026,6 +1104,9 @@ angular.module('starter.controllers', [])
 				if(String($scope.addMemoryData['mentionTo'])!="undefined")
 				{
 					CYRmeMemory.set("mentionTo", $scope.addMemoryData['mentionTo'].split(","));
+					
+					//call invite users
+					$scope.inviteUsers($scope.addMemoryData['mentionTo'].split(","));
 					
 				}
 				CYRmeMemory.set("content", String($scope.addMemoryData['content']));
