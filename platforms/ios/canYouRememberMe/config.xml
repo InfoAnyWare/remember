@@ -87,4 +87,7 @@
     <feature name="ImageResizePlugin">
         <param name="ios-package" value="ImageResize" />
     </feature>
+    <feature name="EmailComposer">
+        <param name="ios-package" value="APPEmailComposer" />
+    </feature>
 </widget>

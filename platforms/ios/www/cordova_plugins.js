@@ -210,6 +210,14 @@ module.exports = [
         "clobbers": [
             "plugins.imageResizer"
         ]
+    },
+    {
+        "file": "plugins/de.appplant.cordova.plugin.email-composer/www/email_composer.js",
+        "id": "de.appplant.cordova.plugin.email-composer.EmailComposer",
+        "clobbers": [
+            "cordova.plugins.email",
+            "plugin.email"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -223,7 +231,8 @@ module.exports.metadata =
     "org.apache.cordova.file": "1.3.3",
     "org.apache.cordova.file-transfer": "0.5.0",
     "org.apache.cordova.network-information": "0.2.15",
-    "com.synconset.imageResizer": "0.1.1"
+    "com.synconset.imageResizer": "0.1.1",
+    "de.appplant.cordova.plugin.email-composer": "0.8.3dev"
 }
 // BOTTOM OF METADATA
 });

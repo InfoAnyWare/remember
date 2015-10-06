@@ -1004,7 +1004,36 @@ angular.module('starter.controllers', [])
 	
 	
 //CYRme Memory controller******************************Start************************************************
-	.controller('CYRmeMemory', function($scope,$state, $ionicLoading, $cordovaNetwork,ThumbnailService, $timeout) {
+	.controller('CYRmeMemory', function($scope,$state, $ionicLoading, $cordovaNetwork,ThumbnailService,$cordovaEmailComposer, $timeout) {
+		
+		//check email composer
+		 document.addEventListener("deviceready", function () {
+		  $cordovaEmailComposer.isAvailable().then(function () {
+			//alert("Email composer is available")
+		  }, function () {
+			//alert("Email composer is NOT available")
+		  });
+		}, false);
+	
+		////////////////////////////////////sendmail with composer start///////////////////////////////////////////////////
+		$scope.sendmail=function(to,cc,bcc,subject,content,attachments)
+		{
+			var email = {
+			  to: to,
+			  cc: cc,
+			  bcc: bcc,
+			  attachments: attachments,
+			  subject: subject,
+			  body: content,
+			  isHtml: true,
+			};
+		
+			$cordovaEmailComposer.open(email).then(null, function () {
+			  // user cancelled email
+			});
+		}
+		///////////////////////////////////////sendmail with composer///////////////////////////////////////////////
+		
 		// current user
 		var currentUser = Parse.User.current();
 		
@@ -1021,75 +1050,96 @@ angular.module('starter.controllers', [])
 		//check email validation
 		$scope.validateInviteEmail = function(email) {
 			var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
-			alert(email+"=validateEmail=="+re.test(email));
+			//alert(email+"=validateEmail=="+re.test(email));
 			return re.test(email);
 		}
 		
 		//invite user function start******************************************	
 		$scope.inviteUsers=function(inviteUserListArray)
 		{
-			var sendCYRmeUserList=new Array; //CYRme user array for send notification on mobile
-			var sendOtherUserEmailList=new Array; //other user email array for send mail 
-			var sendOtherFacebookUserEmailList=new Array; //other user facebook email array for send mail
+			//alert("inviteUserListArray=="+JSON.stringify(inviteUserListArray));
+			var CYRmeUserNameList=new Array; //CYRme user name array for send notification on mobile
+			var CYRmeUserEmailList=new Array; //CYRme user email array for send notification on mobile
+			
+			
+			var otherUserEmailList=new Array; //other user email array for send mail 
+			var otherFacebookUserIdlList=new Array; //other facebook user id array for get email from facebook as per facebook userid
 			
 			if(Array.isArray(inviteUserListArray))
 			{	
-				for(var i=0; i<inviteUserListArray.length; i++)
-				{
-					var inviteUser = inviteUserListArray[i];
+				//var inviteUser = inviteUserListArray[i];
+				
+				//username field query var
+				var usernameQuery = new Parse.Query("User");
+					usernameQuery.notEqualTo("objectId", currentUser.id);
+					usernameQuery.containedIn("username", inviteUserListArray);
+				
+				//email field query var	
+				var emailQuery 	  = new Parse.Query("User");
+					emailQuery.notEqualTo("objectId", currentUser.id);
+					emailQuery.containedIn("email", inviteUserListArray);
 					
-					//username field query var
-					var usernameQuery = new Parse.Query("User");
-						usernameQuery.notEqualTo("objectId", currentUser.id);
-						usernameQuery.equalTo("username", inviteUser);
-					
-					//email field query var	
-					var emailQuery 	  = new Parse.Query("User");
-						emailQuery.notEqualTo("objectId", currentUser.id);
-						emailQuery.equalTo("email", inviteUser);
-						
-					//Compound both username and email query var
-					var mainQuery = Parse.Query.or(usernameQuery, emailQuery);
-					mainQuery.find({
-					  success: function(results) {
-						 alert("results.length=="+results.length);
-						 if(results.length>0) //CYRme user
-						 {
-							 alert("anil 1");
-							 for (var i = 0; i < results.length; i++) { 
-								  var object = results[i];
-								  sendCYRmeUserList.push(object.get('name'));
-								}
-								//alert("sendCYRmeUserList=="+JSON.stringify(sendCYRmeUserList));
-								//call function for send notification to CYRme users
-						 }
-						 else //other email
-						 { 
-						 	 alert("anil 2");
-							 if($scope.validateInviteEmail(inviteUser)) // orher user check email
+				//Compound both username and email query var
+				var mainQuery = Parse.Query.or(usernameQuery, emailQuery);
+				mainQuery.find({
+				  success: function(results) {
+					// alert("results.length=="+results.length);
+					 
+					 //check CYRme user
+					 for (var i = 0; i < results.length; i++) 
+					 { 
+						  var object = results[i];
+						  CYRmeUserNameList.push(object.get('name'));
+						  CYRmeUserEmailList.push(object.get('email'));
+					 }
+					 
+					//check other user
+					 //user input array loop start
+					 for(var j=0; j<inviteUserListArray.length; j++)
+					 {
+						 //user input value
+						 var inviteUser = inviteUserListArray[j];
+						 
+						if($scope.validateInviteEmail(inviteUser)) //check input value is email
+						{
+							 //check CYRme User Email List loop
+							 if(($.inArray( inviteUser, CYRmeUserEmailList )==-1) && (inviteUser!=currentUser.get('email')))
 							 {
-								 alert("anil 3");
-								 //Email id add in sendOtherUserEmailList array 
-								sendOtherUserEmailList.push(inviteUser);
-								alert("sendOtherUserEmailList=="+JSON.stringify(sendOtherUserEmailList));
+								//alert("orher user check email");
+								//Email id add in otherUserEmailList array 
+								otherUserEmailList.push(inviteUser);
 							 }
-							 else
+							 // alert("otherUserEmailList=="+JSON.stringify(otherUserEmailList));
+						}
+						else
+						{
+							 //check CYRme User Name List loop 
+							 if(($.inArray( inviteUser, CYRmeUserNameList )==-1) && (inviteUser!=currentUser.get('name')))
 							 {
-								 alert("anil 4");
-								//Email id add in sendOtherFacebookUserEmailList array 
-								sendOtherFacebookUserEmailList.push(inviteUser);
-								alert("sendOtherFacebookUserEmailList=="+JSON.stringify(sendOtherFacebookUserEmailList));
+								//alert("facebook check user id");
+								//Email id add in otherFacebookUserIdlList array 
+								otherFacebookUserIdlList.push(inviteUser);
 							 }
-						 }
-					  },
-					  error: function(error) {
-						  alert("Error: " + error.code + " " + error.message);
-					  }
-					});
-					
-				} //end for loop
-			}
-			return false;
+							 //alert("otherFacebookUserIdlList=="+JSON.stringify(otherFacebookUserIdlList));
+						}
+					 }
+					 
+					 //call function for send notification to CYRme users
+					  alert("CYRmeUserNameList=="+JSON.stringify(CYRmeUserNameList));
+					  alert("CYRmeUserEmailList=="+JSON.stringify(CYRmeUserEmailList));
+					 
+					 //call function for send email to other users
+					  alert("otherUserEmailList=="+JSON.stringify(otherUserEmailList));
+					  alert("otherFacebookUserIdlList=="+JSON.stringify(otherFacebookUserIdlList));
+					  //$scope.sendmail('anil@bunkerbound.net','','','test mail from CYRme','ddhdhdhdhdhdfh ssgsg','');
+					 
+				  },
+				  error: function(error) {
+					  //alert("Error: " + error.code + " " + error.message);
+				  }
+				}); //main query end
+				
+			} //invite array if end
 		}
 		//invite user function End****************************************	
 			
