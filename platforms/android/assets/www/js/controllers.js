@@ -1007,16 +1007,16 @@ angular.module('starter.controllers', [])
 	.controller('CYRmeMemory', function($scope,$state, $ionicLoading, $cordovaNetwork,ThumbnailService,$cordovaEmailComposer, $timeout) {
 		
 		//check email composer
-		 document.addEventListener("deviceready", function () {
+		/* document.addEventListener("deviceready", function () {
 		  $cordovaEmailComposer.isAvailable().then(function () {
 			//alert("Email composer is available")
 		  }, function () {
 			//alert("Email composer is NOT available")
 		  });
-		}, false);
+		}, false);*/
 	
 		////////////////////////////////////sendmail with composer start///////////////////////////////////////////////////
-		$scope.sendmail=function(to,cc,bcc,subject,content,attachments)
+		/*$scope.sendmail=function(to,cc,bcc,subject,content,attachments)
 		{
 			var email = {
 			  to: to,
@@ -1031,7 +1031,70 @@ angular.module('starter.controllers', [])
 			$cordovaEmailComposer.open(email).then(null, function () {
 			  // user cancelled email
 			});
+		}*/
+		/*var sendgrid  = require('sendgrid')('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');
+		
+		var payload   = {
+		  to      : 'anil@bunkerbound.net',
+		  from    : 'cyr@bunkerbound.net',
+		  subject : 'Saying Hi',
+		  text    : 'This is my first email through SendGrid'
 		}
+		
+		sendgrid.send(payload, function(err, json) {
+			  if (err) { console.error(err); }
+			  console.log(json);
+			});*/
+			
+		//var sendgrid = require("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");
+		
+		Parse.Cloud.run('hello', {}, {
+		  success: function(result) {
+			alert(result);
+		  },
+		  error: function(error) {
+			  alert(error);
+		  }
+		});
+		Parse.Cloud.run('sendEmailToUser', {}, {
+		  success: function(result) {
+			//alert(result);
+			alert("result=="+JSON.stringify(result));
+		  },
+		  error: function(error) {
+			 // alert(error);
+			  alert("error=="+JSON.stringify(error));
+		  }
+		});
+		alert("anil");
+		var sendgrid = require('sendgrid');
+		sendgrid.initialize('CYRme', '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');
+			
+	Parse.Cloud.run('sendgrid', {}, {
+		  success: function(SendGrid) {
+				SendGrid.sendEmail({
+				  to: ["anil@bunkerbound.net (mailto:anil@bunkerbound.net)"],
+				  from: "SendGrid@CloudCode.com (mailto:SendGrid@CloudCode.com)",
+				  subject: "Hello from Cloud Code!",
+				  text: "Using Parse and SendGrid is great!",
+				  replyto: "anil@bunkerbound.net (mailto:anil@bunkerbound.net)"
+				}).then(function(httpResponse) {
+				  console.log(httpResponse);
+				  response.success("Email sent!");
+				},function(httpResponse) {
+				  console.error(httpResponse);
+				  response.error("Uh oh, something went wrong");
+				});
+		  },
+		  error: function(error) {
+			  alert(error);
+		  }
+		});
+		//SendGrid = require('sendgrid')('CYRme','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')
+		alert("anil 1");
+		
+		
+		alert("anil 2");
 		///////////////////////////////////////sendmail with composer///////////////////////////////////////////////
 		
 		// current user

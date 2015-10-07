@@ -1,0 +1,10 @@
+{
+  "applications": {
+    "CanYouRememberMe": {
+      "applicationId": "3r4ZuAyiHxcZdRD5TGRURIg95HUNmIJYgfRaZZaZ"
+    },
+    "_default": {
+      "link": "CanYouRememberMe"
+    }
+  }
+}
