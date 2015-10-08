@@ -82,17 +82,5 @@
         },
         "is_top_level": true,
         "variables": {}
-    },
-    "org.apache.cordova.core.parseplugin": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/benjie/phonegap-parse-plugin",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {
-            "APP_ID": "3r4ZuAyiHxcZdRD5TGRURIg95HUNmIJYgfRaZZaZ",
-            "CLIENT_KEY": "70EeC8AhC8OePERtMVF3iiSLR0ivDlzMvrNXlqgf"
-        }
     }
 }

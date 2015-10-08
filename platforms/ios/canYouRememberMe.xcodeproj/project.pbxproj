@@ -55,15 +55,8 @@
 		7FD47A8C97CF4B879FB15FE6 /* CDVConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C27E1783A09430B90792793 /* CDVConnection.m */; };
 		A4101E6CFA30406FB2A87894 /* CDVReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E1D1A64C3E7409487906011 /* CDVReachability.m */; };
 		B94FD05DE51647FDADD345BF /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E035F01484594755A5C695DD /* SystemConfiguration.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		5CAE8D8B9299427BBD4B9996 /* AppDelegate+notification.m in Sources */ = {isa = PBXBuildFile; fileRef = 98591321BF404476B9C6A669 /* AppDelegate+notification.m */; };
-		A9D5DD4221B94CCEAB2A8EF8 /* PushPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = DD37ED5C2A804FA68FEC999C /* PushPlugin.m */; };
-		60047CF6C500461FBB898AD7 /* CDVParsePlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = EA3F59BA2AE6489AB78A9D1A /* CDVParsePlugin.m */; };
-		3B9E5DA46DBD4944AC41323A /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD75D379CF534A7DB8AA6B0F /* CFNetwork.framework */; };
-		61D5ACE1EA49430395D188A3 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CC8C5BC4A714108BCB48E80 /* CoreLocation.framework */; };
-		81838F4E408E4A36BF70A12D /* libz.1.1.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1766674380494987987838E7 /* libz.1.1.3.dylib */; };
-		50DABB3A5E5D457F9856B006 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B577FD9990FF44EB846CE0C8 /* QuartzCore.framework */; };
-		8FF702F008C54C0AB3C5DD9E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 659CB6E04F1A471C9D3C19B9 /* Security.framework */; };
-		B3A97CB80D2F4ECAA0B78FC3 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2637C4D8A1248B6A7AF7DD4 /* StoreKit.framework */; };
+		B074B3FF23F641CF971DB070 /* AppDelegate+notification.m in Sources */ = {isa = PBXBuildFile; fileRef = C556916C96C24B51AA2210AB /* AppDelegate+notification.m */; };
+		DBF877000F6E4F50BE8066B3 /* PushPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D81AF1C9B4F41CA91795400 /* PushPlugin.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -156,19 +149,10 @@
 		43B6F9ACB19B4297B5A8D7F1 /* CDVConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVConnection.h"; path = "org.apache.cordova.network-information/CDVConnection.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		06548B2A51F84C76A7C4A3E1 /* CDVReachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVReachability.h"; path = "org.apache.cordova.network-information/CDVReachability.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		E035F01484594755A5C695DD /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "SystemConfiguration.framework"; path = "System/Library/Frameworks/SystemConfiguration.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
-		98591321BF404476B9C6A669 /* AppDelegate+notification.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "AppDelegate+notification.m"; path = "com.phonegap.plugins.PushPlugin/AppDelegate+notification.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		DD37ED5C2A804FA68FEC999C /* PushPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "PushPlugin.m"; path = "com.phonegap.plugins.PushPlugin/PushPlugin.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		A7FA4535B3634FCA8F5D0538 /* AppDelegate+notification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+notification.h"; path = "com.phonegap.plugins.PushPlugin/AppDelegate+notification.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		3D414483105848D0B7718C7F /* PushPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "PushPlugin.h"; path = "com.phonegap.plugins.PushPlugin/PushPlugin.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		EA3F59BA2AE6489AB78A9D1A /* CDVParsePlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVParsePlugin.m"; path = "org.apache.cordova.core.parseplugin/CDVParsePlugin.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		36900FBD52DA4BA0B7044426 /* CDVParsePlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVParsePlugin.h"; path = "org.apache.cordova.core.parseplugin/CDVParsePlugin.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		AD75D379CF534A7DB8AA6B0F /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "CFNetwork.framework"; path = "System/Library/Frameworks/CFNetwork.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
-		8CC8C5BC4A714108BCB48E80 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "CoreLocation.framework"; path = "System/Library/Frameworks/CoreLocation.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
-		1766674380494987987838E7 /* libz.1.1.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libz.1.1.3.dylib"; path = "usr/lib/libz.1.1.3.dylib"; sourceTree = SDKROOT; fileEncoding = 4; };
-		B577FD9990FF44EB846CE0C8 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "QuartzCore.framework"; path = "System/Library/Frameworks/QuartzCore.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
-		659CB6E04F1A471C9D3C19B9 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Security.framework"; path = "System/Library/Frameworks/Security.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
-		D2637C4D8A1248B6A7AF7DD4 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "StoreKit.framework"; path = "System/Library/Frameworks/StoreKit.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
-		57DC559A97E94547A2DED69F /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Parse.framework"; path = "canYouRememberMe/Plugins/cordova-plugin-pushnotification-parsepushnotification/Parse.framework"; sourceTree = "<group>"; };
+		C556916C96C24B51AA2210AB /* AppDelegate+notification.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "AppDelegate+notification.m"; path = "com.phonegap.plugins.PushPlugin/AppDelegate+notification.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		2D81AF1C9B4F41CA91795400 /* PushPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "PushPlugin.m"; path = "com.phonegap.plugins.PushPlugin/PushPlugin.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		D4715510EC48499AB1ADF60B /* AppDelegate+notification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+notification.h"; path = "com.phonegap.plugins.PushPlugin/AppDelegate+notification.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		34E530D39A1E4116AA4143E2 /* PushPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "PushPlugin.h"; path = "com.phonegap.plugins.PushPlugin/PushPlugin.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -184,13 +168,6 @@
 				F3A1564A67264E21923D8C24 /* FBSDKLoginKit.framework in Frameworks */,
 				36AD99146C2143CDB2A2677A /* AudioToolbox.framework in Frameworks */,
 				B94FD05DE51647FDADD345BF /* SystemConfiguration.framework in Frameworks */,
-				3B9E5DA46DBD4944AC41323A /* CFNetwork.framework in Frameworks */,
-				61D5ACE1EA49430395D188A3 /* CoreLocation.framework in Frameworks */,
-				81838F4E408E4A36BF70A12D /* libz.1.1.3.dylib in Frameworks */,
-				50DABB3A5E5D457F9856B006 /* QuartzCore.framework in Frameworks */,
-				8FF702F008C54C0AB3C5DD9E /* Security.framework in Frameworks */,
-				B3A97CB80D2F4ECAA0B78FC3 /* StoreKit.framework in Frameworks */,
-				34B132DB134B4F77B4B18E49 /* Parse.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,13 +245,6 @@
 				1BAB4E2543FA488F83120671 /* FBSDKLoginKit.framework */,
 				6AFAFC5B9CF04A6882805265 /* AudioToolbox.framework */,
 				E035F01484594755A5C695DD /* SystemConfiguration.framework */,
-				AD75D379CF534A7DB8AA6B0F /* CFNetwork.framework */,
-				8CC8C5BC4A714108BCB48E80 /* CoreLocation.framework */,
-				1766674380494987987838E7 /* libz.1.1.3.dylib */,
-				B577FD9990FF44EB846CE0C8 /* QuartzCore.framework */,
-				659CB6E04F1A471C9D3C19B9 /* Security.framework */,
-				D2637C4D8A1248B6A7AF7DD4 /* StoreKit.framework */,
-				57DC559A97E94547A2DED69F /* Parse.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -312,12 +282,10 @@
 				3E1D1A64C3E7409487906011 /* CDVReachability.m */,
 				43B6F9ACB19B4297B5A8D7F1 /* CDVConnection.h */,
 				06548B2A51F84C76A7C4A3E1 /* CDVReachability.h */,
-				98591321BF404476B9C6A669 /* AppDelegate+notification.m */,
-				DD37ED5C2A804FA68FEC999C /* PushPlugin.m */,
-				A7FA4535B3634FCA8F5D0538 /* AppDelegate+notification.h */,
-				3D414483105848D0B7718C7F /* PushPlugin.h */,
-				EA3F59BA2AE6489AB78A9D1A /* CDVParsePlugin.m */,
-				36900FBD52DA4BA0B7044426 /* CDVParsePlugin.h */,
+				C556916C96C24B51AA2210AB /* AppDelegate+notification.m */,
+				2D81AF1C9B4F41CA91795400 /* PushPlugin.m */,
+				D4715510EC48499AB1ADF60B /* AppDelegate+notification.h */,
+				34E530D39A1E4116AA4143E2 /* PushPlugin.h */,
 			);
 			name = Plugins;
 			path = "canYouRememberMe/Plugins";
@@ -514,9 +482,8 @@
 				9C03015C47844ED08ABC3AE5 /* CDVFileTransfer.m in Sources */,
 				7FD47A8C97CF4B879FB15FE6 /* CDVConnection.m in Sources */,
 				A4101E6CFA30406FB2A87894 /* CDVReachability.m in Sources */,
-				5CAE8D8B9299427BBD4B9996 /* AppDelegate+notification.m in Sources */,
-				A9D5DD4221B94CCEAB2A8EF8 /* PushPlugin.m in Sources */,
-				60047CF6C500461FBB898AD7 /* CDVParsePlugin.m in Sources */,
+				B074B3FF23F641CF971DB070 /* AppDelegate+notification.m in Sources */,
+				DBF877000F6E4F50BE8066B3 /* PushPlugin.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -563,11 +530,6 @@
 					"$(inherited)",
 					"\"canYouRememberMe/Plugins/cordova-plugin-facebook\"",
 					"\"canYouRememberMe/Plugins/cordova-plugin-facebook\"",
-					"\"canYouRememberMe\Plugins\org.apache.cordova.core.parseplugin\"",
-					"\"canYouRememberMe\Plugins\cordova-plugin-pushnotification-parsepushnotification\"",
-					"\"canYouRememberMe\Plugins\cordova-plugin-pushnotification-parsepushnotification\"",
-					"\"canYouRememberMe\Plugins\cordova-plugin-pushnotification-parsepushnotification\"",
-					"\"canYouRememberMe\Plugins\cordova-plugin-pushnotification-parsepushnotification\"",
 				);
 			};
 			name = Debug;
@@ -602,11 +564,6 @@
 					"$(inherited)",
 					"\"canYouRememberMe/Plugins/cordova-plugin-facebook\"",
 					"\"canYouRememberMe/Plugins/cordova-plugin-facebook\"",
-					"\"canYouRememberMe\Plugins\org.apache.cordova.core.parseplugin\"",
-					"\"canYouRememberMe\Plugins\cordova-plugin-pushnotification-parsepushnotification\"",
-					"\"canYouRememberMe\Plugins\cordova-plugin-pushnotification-parsepushnotification\"",
-					"\"canYouRememberMe\Plugins\cordova-plugin-pushnotification-parsepushnotification\"",
-					"\"canYouRememberMe\Plugins\cordova-plugin-pushnotification-parsepushnotification\"",
 				);
 			};
 			name = Release;

@@ -87,7 +87,4 @@
     <feature name="PushPlugin">
         <param name="ios-package" value="PushPlugin" />
     </feature>
-    <feature name="ParsePlugin">
-        <param name="ios-package" value="CDVParsePlugin" />
-    </feature>
 </widget>

@@ -28,69 +28,105 @@ angular.module('starter', [
       StatusBar.styleDefault();
     }
 	
-	var appId 		= "3r4ZuAyiHxcZdRD5TGRURIg95HUNmIJYgfRaZZaZ";
-	var clientKey 	= "70EeC8AhC8OePERtMVF3iiSLR0ivDlzMvrNXlqgf";
-	parsePlugin.initialize(appId, clientKey, function() {
-	parsePlugin.subscribe('SampleChannel', function() {
-		parsePlugin.getInstallationId(function(id) {
-	
-				/**
-				 * Now you can construct an object and save it to your own services, or Parse, and corrilate users to parse installations
-				 * 
-				 var install_data = {
-					installation_id: id,
-					channels: ['SampleChannel']
-				 }
-				 *
-				 */
-				 var install_data = {
-					installation_id: id,
-					channels: ['SampleChannel']
-				 }
-				 
-			 /*var InstallationObj = new Parse.Object("Installation");
-				//InstallationObj.set("user", Parse.User.current());
-				InstallationObj.set("installation_id", id);
-				InstallationObj.set("SampleChannel", '')
-				InstallationObj.set("dateOfMemory", $scope.addMemoryData['dateOfMemory']);
-			    InstallationObj.save();*/
-					
-					   
-	alert("notification result11=="+JSON.stringify(id));
-			}, function(e) {
-				alert('error');
-			});
-	
-		}, function(e) {
-			alert('error');
-		});
-	
-	}, function(e) {
-		alert('error');
-	});
-
-	
   });
   
-  //cordove push notification for android
+  ///////////////////////////////////////////////////////////////////////
+  
   var androidConfig = {
-    "senderID": "478860020961",
-  };
-
-  document.addEventListener("deviceready", function(){
-    $cordovaPush.register(androidConfig).then(function(result) {
-      // Success
-	  alert("notification result=="+JSON.stringify(result));
-    }, function(err) {
-      // Error
-	   alert("notification err=="+JSON.stringify(err));
-    })
-
+			"senderID": "478860020961",
+		  };
+		  
+		  document.addEventListener("deviceready", function(){
+			$cordovaPush.register(androidConfig).then(function(result) {
+			  // Success
+			  alert("notification result=="+JSON.stringify(result));
+			}, function(err) {
+			  // Error
+			   alert("notification err=="+JSON.stringify(err));
+			})
+	
     $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
+		alert("anil11");
       switch(notification.event) {
         case 'registered':
           if (notification.regid.length > 0 ) {
-            alert('registration ID = ' + notification.regid);
+              //alert('registration ID = ' + notification.regid);
+			 alert("notification=="+JSON.stringify(notification));
+				
+				/* $http.get('https://api.parse.com/1/installations').then(function(resp) {
+					console.log('Success', resp);
+					// For JSON responses, resp.data contains the result
+				  }, function(err) {
+					console.error('ERR', err);
+					// err.status will contain the status code
+				  })*/
+				 /* $.ajax({
+						type: 'POST',
+						headers: {
+							'X-Parse-Application-Id': "3r4ZuAyiHxcZdRD5TGRURIg95HUNmIJYgfRaZZaZ",
+							'X-Parse-REST-API-Key': "GJvcxbzm0mnrYlWE2H0rdhaHCfBLkqZLOt40b73s"
+						},
+					    url: "https://api.parse.com/1/installations",
+					    data: {
+							deviceType: "android",
+							pushType: "gcm",
+							deviceToken: notification.regid,
+							channels: [
+								"Anil"
+							]
+						},
+						contentType: "application/json"
+					});*/
+					
+					// An object containing name, toEmail, fromEmail, subject and message
+					// current user
+					var currentUser = Parse.User.current();
+					var pushdata = { 
+					  deviceType: "android",
+					  pushType: "gcm",
+					  deviceToken: notification.regid,
+					  channels:  [
+								"Anil"
+							],
+					}
+					
+					// Run our Parse Cloud Code and pass our 'data' object to it
+					Parse.Cloud.run("registerForNotifications", pushdata, {
+					  success: function(object) {
+						alert("result11=="+JSON.stringify(object));
+					  },
+				
+					  error: function(error) {
+						alert("error=="+JSON.stringify(error));
+					  }
+					});
+					
+				
+							
+					var currentUser = Parse.User.current();
+					var pushdata = { 
+					  deviceType: "android",
+					  pushType: "gcm",
+					  channel: "aaaaaa",
+					  deviceToken: notification.regid,
+					  userId: currentUser.id,
+					  channels:  [
+								"Anil","Alok"
+							],
+					}
+					
+					alert("pushdata="+ JSON.stringify(pushdata));
+					// Run our Parse Cloud Code and pass our 'data' object to it
+					Parse.Cloud.run("subscribeToChannel", pushdata, {
+					  success: function(object) {
+						alert("result22=="+JSON.stringify(object));
+					  },
+				
+					  error: function(error) {
+						alert("error=="+JSON.stringify(error));
+					  }
+					});
+
           }
           break;
 
@@ -118,6 +154,7 @@ angular.module('starter', [
     })
 
   }, false);
+  ///////////////////////////////////////////////////////////////////////
   
 
 })
@@ -170,7 +207,6 @@ angular.module('starter', [
       views: {
         'menuContent': {
           templateUrl: 'templates/home.html',
-		  controller: 'AppCtrl'
         }
       }
   });
