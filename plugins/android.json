@@ -35,14 +35,6 @@
                         {
                             "xml": "<feature name=\"NetworkStatus\"><param name=\"android-package\" value=\"org.apache.cordova.networkinformation.NetworkManager\" /></feature>",
                             "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"ImageResizePlugin\"><param name=\"android-package\" value=\"com.synconset.ImageResizePlugin\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"EmailComposer\"><param name=\"android-package\" value=\"de.appplant.cordova.emailcomposer.EmailComposer\" /></feature>",
-                            "count": 1
                         }
                     ]
                 }
@@ -113,12 +105,7 @@
                             "count": 1
                         }
                     ],
-                    "/manifest": [
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\" />",
-                            "count": 1
-                        }
-                    ]
+                    "/manifest": []
                 }
             }
         }
@@ -145,12 +132,6 @@
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
         "org.apache.cordova.network-information": {
-            "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
-        },
-        "com.synconset.imageResizer": {
-            "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
-        },
-        "de.appplant.cordova.plugin.email-composer": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         }
     },

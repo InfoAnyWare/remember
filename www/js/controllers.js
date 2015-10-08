@@ -1004,97 +1004,35 @@ angular.module('starter.controllers', [])
 	
 	
 //CYRme Memory controller******************************Start************************************************
-	.controller('CYRmeMemory', function($scope,$state, $ionicLoading, $cordovaNetwork,ThumbnailService,$cordovaEmailComposer, $timeout) {
+	.controller('CYRmeMemory', function($scope,$state, $ionicLoading, $cordovaNetwork,ThumbnailService, $timeout) {
 		
-		//check email composer
-		/* document.addEventListener("deviceready", function () {
-		  $cordovaEmailComposer.isAvailable().then(function () {
-			//alert("Email composer is available")
-		  }, function () {
-			//alert("Email composer is NOT available")
-		  });
-		}, false);*/
-	
-		////////////////////////////////////sendmail with composer start///////////////////////////////////////////////////
-		/*$scope.sendmail=function(to,cc,bcc,subject,content,attachments)
+		//send mail function
+		$scope.sendMail=function(to,subject,message,from,fromName)
 		{
-			var email = {
-			  to: to,
-			  cc: cc,
-			  bcc: bcc,
-			  attachments: attachments,
+			// An object containing name, toEmail, fromEmail, subject and message
+			var data = { 
+			  toEmail: to,
 			  subject: subject,
-			  body: content,
-			  isHtml: true,
-			};
+			  message: message,
+			  fromEmail: from,
+			  fromName: fromName
+			}
 		
-			$cordovaEmailComposer.open(email).then(null, function () {
-			  // user cancelled email
+			// Run our Parse Cloud Code and pass our 'data' object to it
+			Parse.Cloud.run("sendEmail", data, {
+			  success: function(object) {
+				alert("result=="+JSON.stringify(object));
+			  },
+		
+			  error: function(object, error) {
+				alert("Error! Email not sent!");
+			  }
 			});
-		}*/
-		/*var sendgrid  = require('sendgrid')('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');
-		
-		var payload   = {
-		  to      : 'anil@bunkerbound.net',
-		  from    : 'cyr@bunkerbound.net',
-		  subject : 'Saying Hi',
-		  text    : 'This is my first email through SendGrid'
 		}
 		
-		sendgrid.send(payload, function(err, json) {
-			  if (err) { console.error(err); }
-			  console.log(json);
-			});*/
-			
-		//var sendgrid = require("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");
 		
-		Parse.Cloud.run('hello', {}, {
-		  success: function(result) {
-			alert(result);
-		  },
-		  error: function(error) {
-			  alert(error);
-		  }
-		});
-		Parse.Cloud.run('sendEmailToUser', {}, {
-		  success: function(result) {
-			//alert(result);
-			alert("result=="+JSON.stringify(result));
-		  },
-		  error: function(error) {
-			 // alert(error);
-			  alert("error=="+JSON.stringify(error));
-		  }
-		});
-		alert("anil");
-		var sendgrid = require('sendgrid');
-		sendgrid.initialize('CYRme', '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');
-			
-	Parse.Cloud.run('sendgrid', {}, {
-		  success: function(SendGrid) {
-				SendGrid.sendEmail({
-				  to: ["anil@bunkerbound.net (mailto:anil@bunkerbound.net)"],
-				  from: "SendGrid@CloudCode.com (mailto:SendGrid@CloudCode.com)",
-				  subject: "Hello from Cloud Code!",
-				  text: "Using Parse and SendGrid is great!",
-				  replyto: "anil@bunkerbound.net (mailto:anil@bunkerbound.net)"
-				}).then(function(httpResponse) {
-				  console.log(httpResponse);
-				  response.success("Email sent!");
-				},function(httpResponse) {
-				  console.error(httpResponse);
-				  response.error("Uh oh, something went wrong");
-				});
-		  },
-		  error: function(error) {
-			  alert(error);
-		  }
-		});
-		//SendGrid = require('sendgrid')('CYRme','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')
-		alert("anil 1");
+		//alert("anil");
 		
-		
-		alert("anil 2");
 		///////////////////////////////////////sendmail with composer///////////////////////////////////////////////
 		
 		// current user
@@ -1187,14 +1125,46 @@ angular.module('starter.controllers', [])
 						}
 					 }
 					 
-					 //call function for send notification to CYRme users
-					  alert("CYRmeUserNameList=="+JSON.stringify(CYRmeUserNameList));
-					  alert("CYRmeUserEmailList=="+JSON.stringify(CYRmeUserEmailList));
+					 var currentUserName  =currentUser.get('name');
+					 var currentUserEmail =currentUser.get('email');
 					 
+					 //call function for send notification to CYRme users
+					 alert("CYRmeUserNameList=="+JSON.stringify(CYRmeUserNameList));
+					 //alert("CYRmeUserEmailList=="+JSON.stringify(CYRmeUserEmailList));
+					if(CYRmeUserNameList.length>0)
+					{ 
+						 Parse.Push.send({
+						  channels: CYRmeUserNameList,
+						  data: {
+							alert: currentUserName+' have been Invited!'
+						  }
+						}, {
+						  success: function(pushResult) {
+							// Push was successful
+							 alert("pushResult=="+JSON.stringify(pushResult));
+						  },
+						  error: function(error) {
+							// Handle error
+							alert("pusherror=="+JSON.stringify(error));
+						  }
+						});
+					}
+					  
 					 //call function for send email to other users
-					  alert("otherUserEmailList=="+JSON.stringify(otherUserEmailList));
-					  alert("otherFacebookUserIdlList=="+JSON.stringify(otherFacebookUserIdlList));
-					  //$scope.sendmail('anil@bunkerbound.net','','','test mail from CYRme','ddhdhdhdhdhdfh ssgsg','');
+					 alert("otherUserEmailList=="+JSON.stringify(otherUserEmailList));
+					 if(otherUserEmailList.length>0)
+					 {
+						var  to			= otherUserEmailList;
+						var  subject	= 'Invite to CYRMe APP!';
+						var  message	= currentUserName+' have been Invited to CYRMe APP!';
+						var  from		= currentUserEmail;
+						var  fromName	= currentUserName;
+						
+						$scope.sendMail(to,subject,message,from,fromName);
+					 }
+					 
+					 //check facebook user and get there email for send invitation via email to these users
+					 alert("otherFacebookUserIdlList=="+JSON.stringify(otherFacebookUserIdlList));
 					 
 				  },
 				  error: function(error) {

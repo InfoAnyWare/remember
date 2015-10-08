@@ -55,12 +55,6 @@
 		7FD47A8C97CF4B879FB15FE6 /* CDVConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C27E1783A09430B90792793 /* CDVConnection.m */; };
 		A4101E6CFA30406FB2A87894 /* CDVReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E1D1A64C3E7409487906011 /* CDVReachability.m */; };
 		B94FD05DE51647FDADD345BF /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E035F01484594755A5C695DD /* SystemConfiguration.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		226E4CAC2A5F4E0B893F478E /* ImageResize.m in Sources */ = {isa = PBXBuildFile; fileRef = CFBAB1785A6740E89DCC620B /* ImageResize.m */; };
-		986C80F1087B46E7B23AEA2D /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 664942AE39A3404C9FA2C50B /* NSData+Base64.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		0FB0FA02257649C48FFDDEFD /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = 47A8C10AAF4B449B899252CE /* UIImage+Scale.m */; };
-		4C4D37446047498DBCB49D77 /* APPEmailComposer.m in Sources */ = {isa = PBXBuildFile; fileRef = CE6909874D2A4188BDF1FEF2 /* APPEmailComposer.m */; };
-		3FEC0F7C17234110A08F6760 /* APPEmailComposerImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = B814DF2123574F588931305D /* APPEmailComposerImpl.m */; };
-		0EC8AB557D414488ACE7345A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4575ACD39DB84647B5AFAB09 /* MessageUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -153,17 +147,6 @@
 		43B6F9ACB19B4297B5A8D7F1 /* CDVConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVConnection.h"; path = "org.apache.cordova.network-information/CDVConnection.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		06548B2A51F84C76A7C4A3E1 /* CDVReachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVReachability.h"; path = "org.apache.cordova.network-information/CDVReachability.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		E035F01484594755A5C695DD /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "SystemConfiguration.framework"; path = "System/Library/Frameworks/SystemConfiguration.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
-		CFBAB1785A6740E89DCC620B /* ImageResize.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "ImageResize.m"; path = "com.synconset.imageResizer/ImageResize.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		664942AE39A3404C9FA2C50B /* NSData+Base64.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSData+Base64.m"; path = "com.synconset.imageResizer/NSData+Base64.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		47A8C10AAF4B449B899252CE /* UIImage+Scale.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Scale.m"; path = "com.synconset.imageResizer/UIImage+Scale.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		8EFF504C9B54430590F08130 /* ImageResize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ImageResize.h"; path = "com.synconset.imageResizer/ImageResize.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		5DFE181E262043B2BA5780AA /* NSData+Base64.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSData+Base64.h"; path = "com.synconset.imageResizer/NSData+Base64.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		8211D0BFC7D14C2A9DAACEAB /* UIImage+Scale.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UIImage+Scale.h"; path = "com.synconset.imageResizer/UIImage+Scale.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		CE6909874D2A4188BDF1FEF2 /* APPEmailComposer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "APPEmailComposer.m"; path = "de.appplant.cordova.plugin.email-composer/APPEmailComposer.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		B814DF2123574F588931305D /* APPEmailComposerImpl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "APPEmailComposerImpl.m"; path = "de.appplant.cordova.plugin.email-composer/APPEmailComposerImpl.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		CB12267B17334FD68FC0F189 /* APPEmailComposer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "APPEmailComposer.h"; path = "de.appplant.cordova.plugin.email-composer/APPEmailComposer.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		BA67B2921F7442148AAEC2BF /* APPEmailComposerImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "APPEmailComposerImpl.h"; path = "de.appplant.cordova.plugin.email-composer/APPEmailComposerImpl.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		4575ACD39DB84647B5AFAB09 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "MessageUI.framework"; path = "System/Library/Frameworks/MessageUI.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -179,7 +162,6 @@
 				F3A1564A67264E21923D8C24 /* FBSDKLoginKit.framework in Frameworks */,
 				36AD99146C2143CDB2A2677A /* AudioToolbox.framework in Frameworks */,
 				B94FD05DE51647FDADD345BF /* SystemConfiguration.framework in Frameworks */,
-				0EC8AB557D414488ACE7345A /* MessageUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,7 +239,6 @@
 				1BAB4E2543FA488F83120671 /* FBSDKLoginKit.framework */,
 				6AFAFC5B9CF04A6882805265 /* AudioToolbox.framework */,
 				E035F01484594755A5C695DD /* SystemConfiguration.framework */,
-				4575ACD39DB84647B5AFAB09 /* MessageUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -295,16 +276,6 @@
 				3E1D1A64C3E7409487906011 /* CDVReachability.m */,
 				43B6F9ACB19B4297B5A8D7F1 /* CDVConnection.h */,
 				06548B2A51F84C76A7C4A3E1 /* CDVReachability.h */,
-				CFBAB1785A6740E89DCC620B /* ImageResize.m */,
-				664942AE39A3404C9FA2C50B /* NSData+Base64.m */,
-				47A8C10AAF4B449B899252CE /* UIImage+Scale.m */,
-				8EFF504C9B54430590F08130 /* ImageResize.h */,
-				5DFE181E262043B2BA5780AA /* NSData+Base64.h */,
-				8211D0BFC7D14C2A9DAACEAB /* UIImage+Scale.h */,
-				CE6909874D2A4188BDF1FEF2 /* APPEmailComposer.m */,
-				B814DF2123574F588931305D /* APPEmailComposerImpl.m */,
-				CB12267B17334FD68FC0F189 /* APPEmailComposer.h */,
-				BA67B2921F7442148AAEC2BF /* APPEmailComposerImpl.h */,
 			);
 			name = Plugins;
 			path = "canYouRememberMe/Plugins";
@@ -501,11 +472,6 @@
 				9C03015C47844ED08ABC3AE5 /* CDVFileTransfer.m in Sources */,
 				7FD47A8C97CF4B879FB15FE6 /* CDVConnection.m in Sources */,
 				A4101E6CFA30406FB2A87894 /* CDVReachability.m in Sources */,
-				226E4CAC2A5F4E0B893F478E /* ImageResize.m in Sources */,
-				986C80F1087B46E7B23AEA2D /* NSData+Base64.m in Sources */,
-				0FB0FA02257649C48FFDDEFD /* UIImage+Scale.m in Sources */,
-				4C4D37446047498DBCB49D77 /* APPEmailComposer.m in Sources */,
-				3FEC0F7C17234110A08F6760 /* APPEmailComposerImpl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

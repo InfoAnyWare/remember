@@ -84,10 +84,4 @@
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="4000" />
     <icon src="resources/android/icon/drawable-xhdpi-icon.png" />
-    <feature name="ImageResizePlugin">
-        <param name="ios-package" value="ImageResize" />
-    </feature>
-    <feature name="EmailComposer">
-        <param name="ios-package" value="APPEmailComposer" />
-    </feature>
 </widget>
