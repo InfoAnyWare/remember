@@ -43,11 +43,47 @@
     <script src="js/controllers.js"></script>
     <script src="js/openfb.js"></script>
 	<script src="js/ngopenfb.js"></script>
+   <!-- <script src="js/parsepushnotification.js"></script>-->
     
     
   </head>
 
-  <body ng-app="starter" class="platform-android platform-cordova platform-webview">
+  <body ng-app="starter">
     <ion-nav-view></ion-nav-view>
+ <!--	<script>   
+    var applicationId 	= "3r4ZuAyiHxcZdRD5TGRURIg95HUNmIJYgfRaZZaZ";
+	var clientKey 		= "70EeC8AhC8OePERtMVF3iiSLR0ivDlzMvrNXlqgf";
+
+document.addEventListener("deviceready", function(){
+
+	window.parsepushnotification.setUp(applicationId, clientKey);
+	
+	//registerAsPushNotificationClient callback (called after setUp)
+	window.parsepushnotification.onRegisterAsPushNotificationClientSucceeded = function() {
+		alert('onRegisterAsPushNotificationClientSucceeded');
+	};
+	window.parsepushnotification.onRegisterAsPushNotificationClientFailed = function() {
+		alert('onRegisterAsPushNotificationClientFailed');
+	};
+	
+	//subscribe callback
+	window.parsepushnotification.onSubscribeToChannelSucceeded = function() {
+		alert('onSubscribeToChannelSucceeded');
+	};
+	window.parsepushnotification.onSubscribeToChannelFailed = function() {
+		alert('onSubscribeToChannelFailed');
+	};	
+	//unsubscribe callback
+	window.parsepushnotification.onUnsubscribeSucceeded = function() {
+		alert('onUnsubscribeSucceeded');
+	};
+	window.parsepushnotification.onUnsubscribeFailed = function() {
+		alert('onUnsubscribeFailed');
+	};	
+}, false);
+</script>
+
+<p><button onClick="window.parsepushnotification.subscribeToChannel('Game');">subscribeToChannel</button></p>
+<p><button onClick="window.parsepushnotification.unsubscribe('Game');">unsubscribe</button></p>-->
   </body>
 </html>

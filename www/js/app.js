@@ -14,7 +14,7 @@ angular.module('starter', [
 	])
 
 
-.run(function($ionicPlatform,$rootScope) {
+.run(function($ionicPlatform,$rootScope,$cordovaPush) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -28,7 +28,96 @@ angular.module('starter', [
       StatusBar.styleDefault();
     }
 	
+	var appId 		= "3r4ZuAyiHxcZdRD5TGRURIg95HUNmIJYgfRaZZaZ";
+	var clientKey 	= "70EeC8AhC8OePERtMVF3iiSLR0ivDlzMvrNXlqgf";
+	parsePlugin.initialize(appId, clientKey, function() {
+	parsePlugin.subscribe('SampleChannel', function() {
+		parsePlugin.getInstallationId(function(id) {
+	
+				/**
+				 * Now you can construct an object and save it to your own services, or Parse, and corrilate users to parse installations
+				 * 
+				 var install_data = {
+					installation_id: id,
+					channels: ['SampleChannel']
+				 }
+				 *
+				 */
+				 var install_data = {
+					installation_id: id,
+					channels: ['SampleChannel']
+				 }
+				 
+			 /*var InstallationObj = new Parse.Object("Installation");
+				//InstallationObj.set("user", Parse.User.current());
+				InstallationObj.set("installation_id", id);
+				InstallationObj.set("SampleChannel", '')
+				InstallationObj.set("dateOfMemory", $scope.addMemoryData['dateOfMemory']);
+			    InstallationObj.save();*/
+					
+					   
+	alert("notification result11=="+JSON.stringify(id));
+			}, function(e) {
+				alert('error');
+			});
+	
+		}, function(e) {
+			alert('error');
+		});
+	
+	}, function(e) {
+		alert('error');
+	});
+
+	
   });
+  
+  //cordove push notification for android
+  var androidConfig = {
+    "senderID": "478860020961",
+  };
+
+  document.addEventListener("deviceready", function(){
+    $cordovaPush.register(androidConfig).then(function(result) {
+      // Success
+	  alert("notification result=="+JSON.stringify(result));
+    }, function(err) {
+      // Error
+	   alert("notification err=="+JSON.stringify(err));
+    })
+
+    $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
+      switch(notification.event) {
+        case 'registered':
+          if (notification.regid.length > 0 ) {
+            alert('registration ID = ' + notification.regid);
+          }
+          break;
+
+        case 'message':
+          // this is the actual push notification. its format depends on the data model from the push server
+          alert('message = ' + notification.message + ' msgCount = ' + notification.msgcnt);
+          break;
+
+        case 'error':
+          alert('GCM error = ' + notification.msg);
+          break;
+
+        default:
+          alert('An unknown GCM event has occurred');
+          break;
+      }
+    });
+
+
+    // WARNING: dangerous to unregister (results in loss of tokenID)
+    $cordovaPush.unregister(options).then(function(result) {
+      // Success!
+    }, function(err) {
+      // Error
+    })
+
+  }, false);
   
 
 })

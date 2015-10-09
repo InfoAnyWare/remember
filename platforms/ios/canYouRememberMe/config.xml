@@ -84,4 +84,10 @@
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="4000" />
     <icon src="resources/android/icon/drawable-xhdpi-icon.png" />
+    <feature name="PushPlugin">
+        <param name="ios-package" value="PushPlugin" />
+    </feature>
+    <feature name="ParsePlugin">
+        <param name="ios-package" value="CDVParsePlugin" />
+    </feature>
 </widget>
