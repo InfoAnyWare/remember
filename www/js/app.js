@@ -36,126 +36,126 @@ angular.module('starter', [
 			"senderID": "478860020961",
 		  };
 		  
-		  document.addEventListener("deviceready", function(){
-			$cordovaPush.register(androidConfig).then(function(result) {
-			  // Success
-			  alert("notification result=="+JSON.stringify(result));
-			}, function(err) {
-			  // Error
-			   alert("notification err=="+JSON.stringify(err));
-			})
+  document.addEventListener("deviceready", function(){
+	  
+		$cordovaPush.register(androidConfig).then(function(result) {
+		  // Success
+		  alert("notification result=="+JSON.stringify(result));
+		}, function(err) {
+		  // Error
+		   alert("notification err=="+JSON.stringify(err));
+		})
 	
-    $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
-		alert("anil11");
-      switch(notification.event) {
-        case 'registered':
-          if (notification.regid.length > 0 ) {
-              //alert('registration ID = ' + notification.regid);
-			 alert("notification=="+JSON.stringify(notification));
-				
-				/* $http.get('https://api.parse.com/1/installations').then(function(resp) {
-					console.log('Success', resp);
-					// For JSON responses, resp.data contains the result
-				  }, function(err) {
-					console.error('ERR', err);
-					// err.status will contain the status code
-				  })*/
-				 /* $.ajax({
-						type: 'POST',
-						headers: {
-							'X-Parse-Application-Id': "3r4ZuAyiHxcZdRD5TGRURIg95HUNmIJYgfRaZZaZ",
-							'X-Parse-REST-API-Key': "GJvcxbzm0mnrYlWE2H0rdhaHCfBLkqZLOt40b73s"
-						},
-					    url: "https://api.parse.com/1/installations",
-					    data: {
-							deviceType: "android",
-							pushType: "gcm",
-							deviceToken: notification.regid,
-							channels: [
-								"Anil"
-							]
-						},
-						contentType: "application/json"
-					});*/
+    	$rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
+		  switch(notification.event) {
+			case 'registered':
+			  if (notification.regid.length > 0 ) {
+				  //alert('registration ID = ' + notification.regid);
+				  alert("notification=="+JSON.stringify(notification));
 					
-					// An object containing name, toEmail, fromEmail, subject and message
-					// current user
-					var currentUser = Parse.User.current();
-					var pushdata = { 
-					  deviceType: "android",
-					  pushType: "gcm",
-					  deviceToken: notification.regid,
-					  channels:  [
-								"Anil"
-							],
-					}
+					/* $http.get('https://api.parse.com/1/installations').then(function(resp) {
+						console.log('Success', resp);
+						// For JSON responses, resp.data contains the result
+					  }, function(err) {
+						console.error('ERR', err);
+						// err.status will contain the status code
+					  })*/
+					 /* $.ajax({
+							type: 'POST',
+							headers: {
+								'X-Parse-Application-Id': "3r4ZuAyiHxcZdRD5TGRURIg95HUNmIJYgfRaZZaZ",
+								'X-Parse-REST-API-Key': "GJvcxbzm0mnrYlWE2H0rdhaHCfBLkqZLOt40b73s"
+							},
+							url: "https://api.parse.com/1/installations",
+							data: {
+								deviceType: "android",
+								pushType: "gcm",
+								deviceToken: notification.regid,
+								channels: [
+									"Anil"
+								]
+							},
+							contentType: "application/json"
+						});*/
+						
+						
+						///////////////////////////////////////////////////////////////
+						// current user
+						var currentUser = Parse.User.current();
+						var pushdata = { 
+						  deviceType: "android",
+						  pushType: "gcm",
+						  deviceToken: notification.regid,
+						  channels:  [
+									"Anil"
+								],
+						}
+						
+						// Run our Parse Cloud Code and pass our 'data' object to it
+						Parse.Cloud.run("registerForNotifications", pushdata, {
+						  success: function(object) {
+							alert("result11=="+JSON.stringify(object));
+						  },
 					
-					// Run our Parse Cloud Code and pass our 'data' object to it
-					Parse.Cloud.run("registerForNotifications", pushdata, {
-					  success: function(object) {
-						alert("result11=="+JSON.stringify(object));
-					  },
-				
-					  error: function(error) {
-						alert("error=="+JSON.stringify(error));
-					  }
-					});
+						  error: function(error) {
+							alert("error=="+JSON.stringify(error));
+						  }
+						});
+						/////////////////////////////////////////////////////////////////
 					
-				
-							
-					var currentUser = Parse.User.current();
-					var pushdata = { 
-					  deviceType: "android",
-					  pushType: "gcm",
-					  channel: "aaaaaa",
-					  deviceToken: notification.regid,
-					  userId: currentUser.id,
-					  channels:  [
-								"Anil","Alok"
-							],
-					}
+						/////////////////////////////////////////////////////////////////		
+						var currentUser = Parse.User.current();
+						var pushdata = { 
+						  deviceType: "android",
+						  pushType: "gcm",
+						  channel: "aaaaaa",
+						  deviceToken: notification.regid,
+						  userId: currentUser.id,
+						  channels:  [
+									"Anil","Alok"
+								],
+						}
+						
+						alert("pushdata="+ JSON.stringify(pushdata));
+						// Run our Parse Cloud Code and pass our 'data' object to it
+						Parse.Cloud.run("subscribeToChannel", pushdata, {
+						  success: function(object) {
+							alert("result22=="+JSON.stringify(object));
+						  },
 					
-					alert("pushdata="+ JSON.stringify(pushdata));
-					// Run our Parse Cloud Code and pass our 'data' object to it
-					Parse.Cloud.run("subscribeToChannel", pushdata, {
-					  success: function(object) {
-						alert("result22=="+JSON.stringify(object));
-					  },
-				
-					  error: function(error) {
-						alert("error=="+JSON.stringify(error));
-					  }
-					});
-
-          }
-          break;
-
-        case 'message':
-          // this is the actual push notification. its format depends on the data model from the push server
-          alert('message = ' + notification.message + ' msgCount = ' + notification.msgcnt);
-          break;
-
-        case 'error':
-          alert('GCM error = ' + notification.msg);
-          break;
-
-        default:
-          alert('An unknown GCM event has occurred');
-          break;
-      }
-    });
+						  error: function(error) {
+							alert("error=="+JSON.stringify(error));
+						  }
+						});
+					  ///////////////////////////////////////////////////////
+			  }
+			  break;
+	
+			case 'message':
+			  // this is the actual push notification. its format depends on the data model from the push server
+			  alert('message = ' + notification.message + ' msgCount = ' + notification.msgcnt);
+			  break;
+	
+			case 'error':
+			  alert('GCM error = ' + notification.msg);
+			  break;
+	
+			default:
+			  alert('An unknown GCM event has occurred');
+			  break;
+		  }
+		});
 
 
-    // WARNING: dangerous to unregister (results in loss of tokenID)
-    $cordovaPush.unregister(options).then(function(result) {
-      // Success!
-    }, function(err) {
-      // Error
-    })
+		// WARNING: dangerous to unregister (results in loss of tokenID)
+		$cordovaPush.unregister(options).then(function(result) {
+		  // Success!
+		}, function(err) {
+		  // Error
+		})
 
   }, false);
   ///////////////////////////////////////////////////////////////////////
-  
 
 })
 
