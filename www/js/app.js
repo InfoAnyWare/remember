@@ -40,10 +40,10 @@ angular.module('starter', [
 	  
 		$cordovaPush.register(androidConfig).then(function(result) {
 		  // Success
-		  alert("notification result=="+JSON.stringify(result));
+		 // alert("notification result=="+JSON.stringify(result));
 		}, function(err) {
 		  // Error
-		   alert("notification err=="+JSON.stringify(err));
+		  // alert("notification err=="+JSON.stringify(err));
 		})
 	
     	$rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
@@ -51,7 +51,7 @@ angular.module('starter', [
 			case 'registered':
 			  if (notification.regid.length > 0 ) {
 				  //alert('registration ID = ' + notification.regid);
-				  alert("notification=="+JSON.stringify(notification));
+				  //alert("notification=="+JSON.stringify(notification));
 					
 					/* $http.get('https://api.parse.com/1/installations').then(function(resp) {
 						console.log('Success', resp);
@@ -60,7 +60,7 @@ angular.module('starter', [
 						console.error('ERR', err);
 						// err.status will contain the status code
 					  })*/
-					 /* $.ajax({
+					   /*$.ajax({
 							type: 'POST',
 							headers: {
 								'X-Parse-Application-Id': "3r4ZuAyiHxcZdRD5TGRURIg95HUNmIJYgfRaZZaZ",
@@ -71,6 +71,7 @@ angular.module('starter', [
 								deviceType: "android",
 								pushType: "gcm",
 								deviceToken: notification.regid,
+								GCMSenderId:"478860020961",
 								channels: [
 									"Anil"
 								]
@@ -81,7 +82,7 @@ angular.module('starter', [
 						
 						///////////////////////////////////////////////////////////////
 						// current user
-						var currentUser = Parse.User.current();
+						/*var currentUser = Parse.User.current();
 						var pushdata = { 
 						  deviceType: "android",
 						  pushType: "gcm",
@@ -100,11 +101,11 @@ angular.module('starter', [
 						  error: function(error) {
 							alert("error=="+JSON.stringify(error));
 						  }
-						});
+						});*/
 						/////////////////////////////////////////////////////////////////
 					
 						/////////////////////////////////////////////////////////////////		
-						var currentUser = Parse.User.current();
+						/*var currentUser = Parse.User.current();
 						var pushdata = { 
 						  deviceType: "android",
 						  pushType: "gcm",
@@ -126,7 +127,7 @@ angular.module('starter', [
 						  error: function(error) {
 							alert("error=="+JSON.stringify(error));
 						  }
-						});
+						});*/
 					  ///////////////////////////////////////////////////////
 			  }
 			  break;
