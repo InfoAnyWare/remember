@@ -6,7 +6,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', [
 
-		'ionic',
+		'ionic','ionic.service.core',
   		'ngCordova',
 		'ngOpenFB',
 		'ui.thumbnail',
@@ -28,136 +28,116 @@ angular.module('starter', [
       StatusBar.styleDefault();
     }
 	
+	////////////////////////////////////
+	
+	var rrrrr="";
+	Ionic.io();
+	var push = new Ionic.Push({
+      "debug": false
+    });
+	
+	push.init({
+		"android": {
+			"senderID": "478860020961"
+		},
+		"ios": {"alert": "true", "badge": "true", "sound": "true"}, 
+		"windows": {} 
+	});
+	
+	push.register(function(token) {
+      console.log("Device token:",token.token);
+	  alert("Device token=="+JSON.stringify(token.token));
+	  
+	   //Define relevant info
+		var privateKey = 'cbabd704feea5fb593a58acb1a6da7e29fba8d4b1511cd0a';
+		var tokens = ['your', 'target', token.token];
+		var appId = 'c89f83f4';
+		
+		// Encode your key
+		var auth = btoa(privateKey + ':');
+		
+		// Build the request object
+		var req = {
+		  method: 'POST',
+		  url: 'https://push.ionic.io/api/v1/push',
+		  headers: {
+			'Content-Type': 'application/json',
+			'X-Ionic-Application-Id': appId,
+			'Authorization': 'basic ' + auth
+		  },
+		  data: {
+			"tokens": tokens,
+			"notification": {
+			  "alert":"Hello World!"
+			}
+		  }
+		};
+
+		// Make the API call
+		$http(req).success(function(resp){
+		  // Handle success
+		  console.log("Ionic Push: Push success!");
+		}).error(function(error){
+		  // Handle error 
+		  console.log("Ionic Push: Push error...");
+		});
+	  
+	//////////////////////////////
+		// this will give you a fresh user or the previously saved 'current user'
+		var user = Ionic.User.current();
+		
+		// if the user doesn't have an id, you'll need to give it one.
+		if (!user.id) {
+		  user.id = Ionic.User.anonymousId();
+		  // user.id = 'your-custom-user-id';
+		}
+		
+		// strings
+		user.set('name', 'Anil Kumar');
+		
+		// numbers
+		user.set('tokens', token.token);
+		user.set('device_token', token.token);
+		//persist the user
+		user.save();
+		
+		
+		
+		/*var ionicPushServer = require('ionic-push-server');
+
+		var credentials = {
+			IonicApplicationID : "c89f83f4",
+			IonicApplicationAPIsecret : "cbabd704feea5fb593a58acb1a6da7e29fba8d4b1511cd0a"
+		};
+		
+		var notification = {
+		  "tokens":token.token,
+		  "notification":{
+			"alert":"Hi from Ionic Push Service!",
+			"android":{
+			  "senderID":478860020961
+			}
+		  } 
+		};
+		
+		ionicPushServer(credentials, notification);*/
+	//////////////////////////////
+	});
+	
+	
+	
+	
+    
   });
   
-  ///////////////////////////////////////////////////////////////////////
   
-  var androidConfig = {
-			"senderID": "478860020961",
-		  };
-		  
-  document.addEventListener("deviceready", function(){
-	  
-		$cordovaPush.register(androidConfig).then(function(result) {
-		  // Success
-		 // alert("notification result=="+JSON.stringify(result));
-		}, function(err) {
-		  // Error
-		  // alert("notification err=="+JSON.stringify(err));
-		})
+  //alert("anil");
+  
+  /////////////////////////////////
+ 
 	
-    	$rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
-		  switch(notification.event) {
-			case 'registered':
-			  if (notification.regid.length > 0 ) {
-				  //alert('registration ID = ' + notification.regid);
-				  //alert("notification=="+JSON.stringify(notification));
-					
-					/* $http.get('https://api.parse.com/1/installations').then(function(resp) {
-						console.log('Success', resp);
-						// For JSON responses, resp.data contains the result
-					  }, function(err) {
-						console.error('ERR', err);
-						// err.status will contain the status code
-					  })*/
-					   /*$.ajax({
-							type: 'POST',
-							headers: {
-								'X-Parse-Application-Id': "3r4ZuAyiHxcZdRD5TGRURIg95HUNmIJYgfRaZZaZ",
-								'X-Parse-REST-API-Key': "GJvcxbzm0mnrYlWE2H0rdhaHCfBLkqZLOt40b73s"
-							},
-							url: "https://api.parse.com/1/installations",
-							data: {
-								deviceType: "android",
-								pushType: "gcm",
-								deviceToken: notification.regid,
-								GCMSenderId:"478860020961",
-								channels: [
-									"Anil"
-								]
-							},
-							contentType: "application/json"
-						});*/
-						
-						
-						///////////////////////////////////////////////////////////////
-						// current user
-						/*var currentUser = Parse.User.current();
-						var pushdata = { 
-						  deviceType: "android",
-						  pushType: "gcm",
-						  deviceToken: notification.regid,
-						  channels:  [
-									"Anil"
-								],
-						}
-						
-						// Run our Parse Cloud Code and pass our 'data' object to it
-						Parse.Cloud.run("registerForNotifications", pushdata, {
-						  success: function(object) {
-							alert("result11=="+JSON.stringify(object));
-						  },
-					
-						  error: function(error) {
-							alert("error=="+JSON.stringify(error));
-						  }
-						});*/
-						/////////////////////////////////////////////////////////////////
-					
-						/////////////////////////////////////////////////////////////////		
-						/*var currentUser = Parse.User.current();
-						var pushdata = { 
-						  deviceType: "android",
-						  pushType: "gcm",
-						  channel: "aaaaaa",
-						  deviceToken: notification.regid,
-						  userId: currentUser.id,
-						  channels:  [
-									"Anil","Alok"
-								],
-						}
-						
-						alert("pushdata="+ JSON.stringify(pushdata));
-						// Run our Parse Cloud Code and pass our 'data' object to it
-						Parse.Cloud.run("subscribeToChannel", pushdata, {
-						  success: function(object) {
-							alert("result22=="+JSON.stringify(object));
-						  },
-					
-						  error: function(error) {
-							alert("error=="+JSON.stringify(error));
-						  }
-						});*/
-					  ///////////////////////////////////////////////////////
-			  }
-			  break;
-	
-			case 'message':
-			  // this is the actual push notification. its format depends on the data model from the push server
-			  alert('message = ' + notification.message + ' msgCount = ' + notification.msgcnt);
-			  break;
-	
-			case 'error':
-			  alert('GCM error = ' + notification.msg);
-			  break;
-	
-			default:
-			  alert('An unknown GCM event has occurred');
-			  break;
-		  }
-		});
-
-
-		// WARNING: dangerous to unregister (results in loss of tokenID)
-		$cordovaPush.unregister(options).then(function(result) {
-		  // Success!
-		}, function(err) {
-		  // Error
-		})
-
-  }, false);
-  ///////////////////////////////////////////////////////////////////////
-
+	 
+	 
 })
 
 .config(function ($stateProvider, $urlRouterProvider, $cordovaFacebookProvider, $cordovaAppRateProvider, $cordovaInAppBrowserProvider, ThumbnailServiceProvider) 

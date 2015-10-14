@@ -37,7 +37,7 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"PushPlugin\"><param name=\"ios-package\" value=\"PushPlugin\" /></feature>",
+                            "xml": "<feature name=\"PushNotification\"><param name=\"ios-package\" value=\"PushPlugin\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -129,7 +129,7 @@
         "org.apache.cordova.network-information": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
-        "com.phonegap.plugins.PushPlugin": {
+        "phonegap-plugin-push": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         }
     },
