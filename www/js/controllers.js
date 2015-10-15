@@ -1004,7 +1004,98 @@ angular.module('starter.controllers', [])
 	
 	
 //CYRme Memory controller******************************Start************************************************
-	.controller('CYRmeMemory', function($scope,$state, $ionicLoading, $cordovaNetwork,ThumbnailService, $timeout) {
+	.controller('CYRmeMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork,ThumbnailService,$ionicPush,$ionicUser, $http, $timeout) {
+		
+		alert("anil");
+		
+			$ionicPush.init({
+			  "android": {"senderID": "478860020961"},
+			  "debug": false,
+			  "vibrate":true,
+			  "message":"Hello World!",
+			  "clearNotifications":false,
+			  "forceShow":true,
+			  "icon": "phonegap", 
+			  "iconColor": "blue",
+			  
+			  "onNotification": function(notification) {
+				var payload = notification.payload;
+				console.log(notification, payload);
+				alert("notification=="+notification);
+				alert("payload=="+JSON.stringify(payload));
+			  },
+			  "onRegister": function(data) {
+				  
+				data.message="Hello Cordova!";
+				data.title='Push Notification Sample';
+				data.msgcnt='2'; // Shows up in the notification in the status bar
+				//message.addData('soundname','beep.wav'); //Sound to play upon notification receipt - put in the www folder in app
+				data.collapseKey = 'demo';
+				data.delayWhileIdle = true; //Default is false
+				data.timeToLive = 3000;// Duration in seconds to hold in GCM and retry before timing out. Default 4 weeks (2,419,200 seconds) if not specified.
+				  
+				  
+				console.log(data.token);
+				alert("data=="+JSON.stringify(data));
+				$scope.sendNotification(data);
+			  }
+			});
+			
+		$ionicPush.register({
+		   canShowAlert: true, //Can pushes show an alert on your screen?
+		   canSetBadge: true, //Can pushes update app icon badges?
+		   canPlaySound: true, //Can notifications play a sound?
+		   canRunActionsOnWake: true, //Can run actions outside the app,
+		   onNotification: function(notification) {
+			 // Handle new push notifications here
+			 alert("notification new=="+JSON.stringify(notification));
+			 return true;
+		   }
+		 });
+			
+	   //Define Send Notification function
+		$scope.sendNotification=function(data)
+		{	
+			var privateKey = '86463055733ab9c6afa85c593bf782c748d3e9ba2a1ea7be';
+			var tokens = [data.token];
+			var appId = 'c89f83f4';
+			
+			// Encode your key
+			var auth = btoa(privateKey + ':');
+			
+			// Build the request object
+			var req = {
+			  method: 'POST',
+			  url: 'https://push.ionic.io/api/v1/push',
+			  headers: {
+				'Content-Type': 'application/json',
+				'X-Ionic-Application-Id': appId,
+				'Authorization': 'basic ' + auth
+			  },
+			  data: {
+				"tokens": tokens,
+				"notification": {
+				  "alert":"Hello World!",
+				  "iconColor": "#343434"
+				}
+			  }
+			};
+	
+			// Make the API call
+			$http(req).success(function(resp){
+			  // Handle success
+			  console.log("Ionic Push: Push success!");
+			  alert("resp=="+JSON.stringify(resp));
+			}).error(function(error){
+			  // Handle error 
+			  console.log("Ionic Push: Push error...");
+			  alert("error=="+JSON.stringify(error));
+			});
+		}
+		
+		//////////////////////////////////////////////////////////////////////////
+		
+		
 		
 		//send mail function
 		$scope.sendMail=function(to,subject,message,from,fromName)
@@ -1029,6 +1120,8 @@ angular.module('starter.controllers', [])
 			  }
 			});
 		}
+		
+		
 		
 		
 		//alert("anil");

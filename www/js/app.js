@@ -6,7 +6,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', [
 
-		'ionic','ionic.service.core',
+		'ionic','ionic.service.core','ionic.service.push',
   		'ngCordova',
 		'ngOpenFB',
 		'ui.thumbnail',
@@ -14,7 +14,7 @@ angular.module('starter', [
 	])
 
 
-.run(function($ionicPlatform,$rootScope,$cordovaPush) {
+.run(function($ionicPlatform,$rootScope,$cordovaPush,$http) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -28,29 +28,91 @@ angular.module('starter', [
       StatusBar.styleDefault();
     }
 	
-	////////////////////////////////////
 	
-	var rrrrr="";
-	Ionic.io();
-	var push = new Ionic.Push({
-      "debug": false
+	var androidConfig = {
+    "senderID": "478860020961",
+  };
+
+  document.addEventListener("deviceready", function(){
+    $cordovaPush.register(androidConfig).then(function(result) {
+      // Success
+    }, function(err) {
+      // Error
+    })
+
+    $rootScope.$on('$cordovaPush:notificationReceived', function(event, notification) {
+      switch(notification.event) {
+        case 'registered':
+          if (notification.regid.length > 0 ) {
+            alert('registration ID = ' + notification.regid);
+          }
+          break;
+
+        case 'message':
+          // this is the actual push notification. its format depends on the data model from the push server
+          alert('message = ' + notification.message + ' msgCount = ' + notification.msgcnt);
+          break;
+
+        case 'error':
+          alert('GCM error = ' + notification.msg);
+          break;
+
+        default:
+          alert('An unknown GCM event has occurred');
+          break;
+      }
     });
+
+
+    // WARNING: dangerous to unregister (results in loss of tokenID)
+    $cordovaPush.unregister(options).then(function(result) {
+      // Success!
+    }, function(err) {
+      // Error
+    })
+
+  }, false);
+
 	
-	push.init({
+	////////////////////////////////////
+	/*push.init({
 		"android": {
 			"senderID": "478860020961"
 		},
 		"ios": {"alert": "true", "badge": "true", "sound": "true"}, 
 		"windows": {} 
-	});
+	});*/
 	
-	push.register(function(token) {
+	/*Ionic.io();
+
+	var push = new Ionic.Push({
+	  "debug": true,
+	  "onNotification": function(notification) {
+		var payload = notification.payload;
+		console.log(notification, payload);
+	  },
+	  "onRegister": function(data) {
+		console.log(data.token);
+	  },
+	  "pluginConfig": {
+			"ios": {
+			  "badge": true,
+			  "sound": true
+			 },
+			 "android": {
+			   "iconColor": "#343434",
+			   "senderID": "478860020961"
+			 }
+		}
+	});*/
+	
+	/*push.register(function(token) {
       console.log("Device token:",token.token);
 	  alert("Device token=="+JSON.stringify(token.token));
 	  
 	   //Define relevant info
 		var privateKey = 'cbabd704feea5fb593a58acb1a6da7e29fba8d4b1511cd0a';
-		var tokens = ['your', 'target', token.token];
+		var tokens = ['c89f83f4', token.token, token.token];
 		var appId = 'c89f83f4';
 		
 		// Encode your key
@@ -77,9 +139,11 @@ angular.module('starter', [
 		$http(req).success(function(resp){
 		  // Handle success
 		  console.log("Ionic Push: Push success!");
+		  alert("resp=="+JSON.stringify(resp));
 		}).error(function(error){
 		  // Handle error 
 		  console.log("Ionic Push: Push error...");
+		  alert("error=="+JSON.stringify(error));
 		});
 	  
 	//////////////////////////////
@@ -97,9 +161,12 @@ angular.module('starter', [
 		
 		// numbers
 		user.set('tokens', token.token);
-		user.set('device_token', token.token);
+		//user.set('_push', {'android_tokens[]"':+token.token+'"]'});
+		//user.set('android_tokens', token.token);
 		//persist the user
-		user.save();
+		push.addTokenToUser(user);
+		user.save();*/
+		
 		
 		
 		
@@ -122,7 +189,7 @@ angular.module('starter', [
 		
 		ionicPushServer(credentials, notification);*/
 	//////////////////////////////
-	});
+	//});
 	
 	
 	
@@ -139,6 +206,7 @@ angular.module('starter', [
 	 
 	 
 })
+
 
 .config(function ($stateProvider, $urlRouterProvider, $cordovaFacebookProvider, $cordovaAppRateProvider, $cordovaInAppBrowserProvider, ThumbnailServiceProvider) 
  {
