@@ -1004,61 +1004,73 @@ angular.module('starter.controllers', [])
 	
 	
 //CYRme Memory controller******************************Start************************************************
-	.controller('CYRmeMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork,ThumbnailService,$ionicPush,$ionicUser, $http, $timeout) {
+	.controller('CYRmeMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork,ThumbnailService,$ionicPush, $http, $timeout) {
 		
-		alert("anil");
-		
-			$ionicPush.init({
-			  "android": {"senderID": "478860020961"},
-			  "debug": false,
-			  "vibrate":true,
-			  "message":"Hello World!",
-			  "clearNotifications":false,
-			  "forceShow":true,
-			  "icon": "phonegap", 
-			  "iconColor": "blue",
-			  
-			  "onNotification": function(notification) {
-				var payload = notification.payload;
-				console.log(notification, payload);
-				alert("notification=="+notification);
-				alert("payload=="+JSON.stringify(payload));
+		//ionic init push service
+		$ionicPush.init({
+		  "debug": false,
+		  "onNotification": function(notification) {
+			var payload = notification.payload;
+			//console.log(notification, payload);
+		  },
+		  "onRegister": function(data) {
+			//console.log(data.token);
+			//alert("data=="+JSON.stringify(data));
+			
+			//function call send notification
+			//$scope.sendNotification(data.token,'','','Anil');
+			//$scope.sendMail("anil@bunkerbound.net",'tocken',data.token,'anil@bunkerbound.net','aaa');
+			
+			//store device detail for userin Installation class
+			var InstallationQuery = new Parse.Query("Installation");
+			InstallationQuery.equalTo("userId", Parse.User.current().id);
+			InstallationQuery.find({
+			  success: function(results){
+				   //alert("results=="+JSON.stringify(results));
+				   if(results.length>0)
+				   {
+					   //do nothing
+				   }
+				   else
+				   {
+						var pushdata = { 
+						  deviceType: "android",
+						  pushType: "gcm",
+						  deviceToken: data.token
+						}
+						
+						// Run our Parse Cloud Code and pass our 'data' object to it
+						Parse.Cloud.run("registerForNotifications", pushdata, {
+						  success: function(object) {
+							//alert("result11=="+JSON.stringify(object));
+						  },
+						  error: function(error) {
+							//alert("error=="+JSON.stringify(error));
+						  }
+						});
+				  }
 			  },
-			  "onRegister": function(data) {
-				  
-				data.message="Hello Cordova!";
-				data.title='Push Notification Sample';
-				data.msgcnt='2'; // Shows up in the notification in the status bar
-				//message.addData('soundname','beep.wav'); //Sound to play upon notification receipt - put in the www folder in app
-				data.collapseKey = 'demo';
-				data.delayWhileIdle = true; //Default is false
-				data.timeToLive = 3000;// Duration in seconds to hold in GCM and retry before timing out. Default 4 weeks (2,419,200 seconds) if not specified.
-				  
-				  
-				console.log(data.token);
-				alert("data=="+JSON.stringify(data));
-				$scope.sendNotification(data);
+			  error: function(error){
+				 // alert("Error: " + error.code + " " + error.message);
 			  }
 			});
+		  }
+		});
 			
-		$ionicPush.register({
-		   canShowAlert: true, //Can pushes show an alert on your screen?
-		   canSetBadge: true, //Can pushes update app icon badges?
-		   canPlaySound: true, //Can notifications play a sound?
-		   canRunActionsOnWake: true, //Can run actions outside the app,
-		   onNotification: function(notification) {
-			 // Handle new push notifications here
-			 alert("notification new=="+JSON.stringify(notification));
-			 return true;
-		   }
-		 });
+		//register ionic	
+		$ionicPush.register();
 			
 	   //Define Send Notification function
-		$scope.sendNotification=function(data)
+		$scope.sendNotification=function(deviceToken,deviceType,pushType,fromUserName)
 		{	
-			var privateKey = '86463055733ab9c6afa85c593bf782c748d3e9ba2a1ea7be';
-			var tokens = [data.token];
-			var appId = 'c89f83f4';
+			//var tokens = ['APA91bGNTyF_7W_0wfy2UUkQiI65YhJl_h0aR4U-vcAs6ZZCX6fxhVz_IRyna6Ef4Sudlx412mJctmyc7G3Ohuk9phvRMyc4q-PfeWJk6CJnYlcntlnv4FJU8pX7eCdYDjUfxRI_cuJPjbR-SWT1eQ8K3u2IC5b61A'];
+			
+			var tokens = [deviceToken];
+			
+			//Ionic CYRme App ID
+			var appId 		= 'c89f83f4';
+			//Ionic CYRme App Key
+			var privateKey  = '86463055733ab9c6afa85c593bf782c748d3e9ba2a1ea7be';
 			
 			// Encode your key
 			var auth = btoa(privateKey + ':');
@@ -1074,22 +1086,24 @@ angular.module('starter.controllers', [])
 			  },
 			  data: {
 				"tokens": tokens,
+				"production": false,
 				"notification": {
-				  "alert":"Hello World!",
-				  "iconColor": "#343434"
+				  "alert":fromUserName+" has invited you!",
 				}
 			  }
 			};
 	
+			//alert("req"+JSON.stringify(req));
 			// Make the API call
 			$http(req).success(function(resp){
 			  // Handle success
-			  console.log("Ionic Push: Push success!");
-			  alert("resp=="+JSON.stringify(resp));
+			  //console.log("Ionic Push: Push success!");
+			  $scope.sendMail("anil@bunkerbound.net",'Ionic Push success',JSON.stringify(resp),'anil@bunkerbound.net','anil');
+			 // alert("Ionic Push: Push success!=="+JSON.stringify(resp));
 			}).error(function(error){
 			  // Handle error 
-			  console.log("Ionic Push: Push error...");
-			  alert("error=="+JSON.stringify(error));
+			 // console.log("Ionic Push: Push error...");
+			 // alert("error=="+JSON.stringify(error));
 			});
 		}
 		
@@ -1112,11 +1126,11 @@ angular.module('starter.controllers', [])
 			// Run our Parse Cloud Code and pass our 'data' object to it
 			Parse.Cloud.run("sendEmail", data, {
 			  success: function(object) {
-				alert("result=="+JSON.stringify(object));
+				//alert("result=="+JSON.stringify(object));
 			  },
 		
 			  error: function(object, error) {
-				alert("Error! Email not sent!");
+				//alert("Error! Email not sent!");
 			  }
 			});
 		}
@@ -1154,6 +1168,7 @@ angular.module('starter.controllers', [])
 			//alert("inviteUserListArray=="+JSON.stringify(inviteUserListArray));
 			var CYRmeUserNameList=new Array; //CYRme user name array for send notification on mobile
 			var CYRmeUserEmailList=new Array; //CYRme user email array for send notification on mobile
+			var CYRmeUserIdList=new Array; //CYRme user email array for send notification on mobile
 			
 			
 			var otherUserEmailList=new Array; //other user email array for send mail 
@@ -1185,6 +1200,7 @@ angular.module('starter.controllers', [])
 						  var object = results[i];
 						  CYRmeUserNameList.push(object.get('name'));
 						  CYRmeUserEmailList.push(object.get('email'));
+						  CYRmeUserIdList.push(object.id);
 					 }
 					 
 					//check other user
@@ -1222,11 +1238,11 @@ angular.module('starter.controllers', [])
 					 var currentUserEmail =currentUser.get('email');
 					 
 					 //call function for send notification to CYRme users
-					 alert("CYRmeUserNameList=="+JSON.stringify(CYRmeUserNameList));
+					// alert("CYRmeUserNameList=="+JSON.stringify(CYRmeUserNameList));
 					 //alert("CYRmeUserEmailList=="+JSON.stringify(CYRmeUserEmailList));
 					if(CYRmeUserNameList.length>0)
 					{ 
-						 Parse.Push.send({
+						/* Parse.Push.send({
 						  channels: CYRmeUserNameList,
 						  data: {
 							alert: currentUserName+' have been Invited!'
@@ -1240,11 +1256,36 @@ angular.module('starter.controllers', [])
 							// Handle error
 							alert("pusherror=="+JSON.stringify(error));
 						  }
+						});*/
+						
+						//function call send notification by ionic
+						
+						
+					//find device token invited users
+						var InstallationQuery = new Parse.Query("Installation");
+						InstallationQuery.containedIn("userId", CYRmeUserIdList);
+						//InstallationQuery.equalTo("user", {__type: "Pointer",className: "_User",objectId: CYRmeUserIdList[0]});
+						InstallationQuery.find({
+						  success: function(results){
+							   //alert("results=="+JSON.stringify(results));
+								for (var i = 0; i < results.length; i++) { 
+								  var InstallationResultObject = results[i];
+								  var deviceToken  = InstallationResultObject.get("deviceToken");
+								  var deviceType   = InstallationResultObject.get("deviceType");
+								  var pushType     = InstallationResultObject.get("pushType");
+								  var fromUserName = currentUserName;
+								  $scope.sendNotification(deviceToken,deviceType,pushType,fromUserName);
+								}
+						  },
+						   error: function(error){
+							 // alert("Error: " + error.code + " " + error.message);
+						  }
 						});
+						
 					}
 					  
 					 //call function for send email to other users
-					 alert("otherUserEmailList=="+JSON.stringify(otherUserEmailList));
+					 //alert("otherUserEmailList=="+JSON.stringify(otherUserEmailList));
 					 if(otherUserEmailList.length>0)
 					 {
 						var  to			= otherUserEmailList;
@@ -1257,7 +1298,7 @@ angular.module('starter.controllers', [])
 					 }
 					 
 					 //check facebook user and get there email for send invitation via email to these users
-					 alert("otherFacebookUserIdlList=="+JSON.stringify(otherFacebookUserIdlList));
+					 //alert("otherFacebookUserIdlList=="+JSON.stringify(otherFacebookUserIdlList));
 					 
 				  },
 				  error: function(error) {
