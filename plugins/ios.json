@@ -39,6 +39,10 @@
                         {
                             "xml": "<feature name=\"PushNotification\"><param name=\"ios-package\" value=\"PushPlugin\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Device\"><param name=\"ios-package\" value=\"CDVDevice\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -130,6 +134,9 @@
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
         "phonegap-plugin-push": {
+            "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
+        },
+        "org.apache.cordova.device": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         }
     },

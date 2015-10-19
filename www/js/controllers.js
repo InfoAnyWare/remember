@@ -1,5 +1,5 @@
 angular.module('starter.controllers', [])
-.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $state, $filter, $ionicLoading, $cordovaFacebook, ngFB, $cordovaFile, $cordovaFileTransfer, $cordovaNetwork, $timeout) {
+.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $state, $filter, $ionicLoading, $cordovaFacebook, ngFB, $cordovaFile, $cordovaFileTransfer, $cordovaNetwork, $timeout,$ionicPush, $http, $cordovaDevice) {
 	
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -294,7 +294,9 @@ angular.module('starter.controllers', [])
 								$scope.downloadFile(url);
 						  }
 						});
-					  
+				   //call function store Device Info for notification
+					$scope.storeDeviceInfo(); 
+					
 					$scope.hideLoading();
 					$scope.$apply();
 					
@@ -465,6 +467,9 @@ angular.module('starter.controllers', [])
 						 
 						 $scope.downloadFile(url);
 					     //////////////////////////////FB local store data start////////////////////////////////////
+						 
+						 //call function store Device Info for notification
+						 $scope.storeDeviceInfo(); 
 						 
 						 $scope.hideLoading();
 		   				 $scope.$apply();
@@ -991,6 +996,54 @@ angular.module('starter.controllers', [])
 		 //show user data from local storage  ***********End***********
 		 
 		 
+		 
+		 ///////////////////////////////////////////
+		 //function define for store device info for notification
+		 $scope.storeDeviceInfo=function()
+		 {
+			//ionic init push service
+			$ionicPush.init({
+			  "debug": false,
+			  "onNotification": function(notification) {
+				var payload = notification.payload;
+				//console.log(notification, payload);
+			  },
+			  "onRegister": function(data) {
+				//console.log(data.token);
+				//alert("data=="+JSON.stringify(data));
+				//store device detail for userin Installation class
+				
+				var platform = $cordovaDevice.getPlatform();
+			   if(platform=="Android")
+			   {
+				   var pushType='gcm';
+			   }
+			   else if(platform=="iOS")
+			   {
+					var pushType='APNS';
+			   }
+			   else
+			   {
+					var pushType='';
+			   }
+			   var pushdata = { 
+								  deviceType: platform,
+								  pushType: pushType,
+								  deviceToken: data.token
+								 };
+					// Run our Parse Cloud Code and pass our 'data' object to it
+					Parse.Cloud.run("registerForNotifications", pushdata, {
+					  success: function(object) {
+						//alert("result11=="+JSON.stringify(object));
+					  },
+					  error: function(error) {
+						//alert("error=="+JSON.stringify(error));
+					  }
+					});
+			  }
+			});
+			$ionicPush.register();	
+		 }
 		////////////////////////////////////////////
 	  	
 		console.log('afterloginLinks=='+$scope.afterloginLinks);
@@ -1004,69 +1057,12 @@ angular.module('starter.controllers', [])
 	
 	
 //CYRme Memory controller******************************Start************************************************
-	.controller('CYRmeMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork,ThumbnailService,$ionicPush, $http, $timeout) {
+	.controller('CYRmeMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork,ThumbnailService,$ionicPush, $http,$cordovaDevice, $timeout) {
 		
-		//ionic init push service
-		$ionicPush.init({
-		  "debug": false,
-		  "onNotification": function(notification) {
-			var payload = notification.payload;
-			//console.log(notification, payload);
-		  },
-		  "onRegister": function(data) {
-			//console.log(data.token);
-			//alert("data=="+JSON.stringify(data));
-			
-			//function call send notification
-			//$scope.sendNotification(data.token,'','','Anil');
-			//$scope.sendMail("anil@bunkerbound.net",'tocken',data.token,'anil@bunkerbound.net','aaa');
-			
-			//store device detail for userin Installation class
-			var InstallationQuery = new Parse.Query("Installation");
-			InstallationQuery.equalTo("userId", Parse.User.current().id);
-			InstallationQuery.find({
-			  success: function(results){
-				   //alert("results=="+JSON.stringify(results));
-				   if(results.length>0)
-				   {
-					   //do nothing
-				   }
-				   else
-				   {
-						var pushdata = { 
-						  deviceType: "android",
-						  pushType: "gcm",
-						  deviceToken: data.token
-						}
-						
-						// Run our Parse Cloud Code and pass our 'data' object to it
-						Parse.Cloud.run("registerForNotifications", pushdata, {
-						  success: function(object) {
-							//alert("result11=="+JSON.stringify(object));
-						  },
-						  error: function(error) {
-							//alert("error=="+JSON.stringify(error));
-						  }
-						});
-				  }
-			  },
-			  error: function(error){
-				 // alert("Error: " + error.code + " " + error.message);
-			  }
-			});
-		  }
-		});
-			
-		//register ionic	
-		$ionicPush.register();
-			
 	   //Define Send Notification function
 		$scope.sendNotification=function(deviceToken,deviceType,pushType,fromUserName)
 		{	
-			//var tokens = ['APA91bGNTyF_7W_0wfy2UUkQiI65YhJl_h0aR4U-vcAs6ZZCX6fxhVz_IRyna6Ef4Sudlx412mJctmyc7G3Ohuk9phvRMyc4q-PfeWJk6CJnYlcntlnv4FJU8pX7eCdYDjUfxRI_cuJPjbR-SWT1eQ8K3u2IC5b61A'];
-			
 			var tokens = [deviceToken];
-			
 			//Ionic CYRme App ID
 			var appId 		= 'c89f83f4';
 			//Ionic CYRme App Key
@@ -1098,7 +1094,7 @@ angular.module('starter.controllers', [])
 			$http(req).success(function(resp){
 			  // Handle success
 			  //console.log("Ionic Push: Push success!");
-			  $scope.sendMail("anil@bunkerbound.net",'Ionic Push success',JSON.stringify(resp),'anil@bunkerbound.net','anil');
+			 // $scope.sendMail("anil@bunkerbound.net",'Ionic Push success',JSON.stringify(resp),'anil@bunkerbound.net','anil');
 			 // alert("Ionic Push: Push success!=="+JSON.stringify(resp));
 			}).error(function(error){
 			  // Handle error 
@@ -1108,7 +1104,6 @@ angular.module('starter.controllers', [])
 		}
 		
 		//////////////////////////////////////////////////////////////////////////
-		
 		
 		
 		//send mail function

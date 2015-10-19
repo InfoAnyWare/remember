@@ -57,6 +57,7 @@
 		B94FD05DE51647FDADD345BF /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E035F01484594755A5C695DD /* SystemConfiguration.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		7F9D015FF61A47EA9B687903 /* AppDelegate+notification.m in Sources */ = {isa = PBXBuildFile; fileRef = 162C82187C5C45F8ACE38D34 /* AppDelegate+notification.m */; };
 		3BC5C3356B8C4E489913E882 /* PushPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C681E2C37F842CC98A4CE4E /* PushPlugin.m */; };
+		31230DA0EE5248A39F7843D3 /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 3615F653BBB047389601A868 /* CDVDevice.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -153,6 +154,8 @@
 		1C681E2C37F842CC98A4CE4E /* PushPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "PushPlugin.m"; path = "phonegap-plugin-push/PushPlugin.m"; sourceTree = "<group>"; fileEncoding = 4; };
 		832156CE6A0243B3A2B4F8FB /* AppDelegate+notification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+notification.h"; path = "phonegap-plugin-push/AppDelegate+notification.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		7DF4BB7E71C6437883640344 /* PushPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "PushPlugin.h"; path = "phonegap-plugin-push/PushPlugin.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		3615F653BBB047389601A868 /* CDVDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVDevice.m"; path = "org.apache.cordova.device/CDVDevice.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		E11C7878B2B4451A9A136957 /* CDVDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVDevice.h"; path = "org.apache.cordova.device/CDVDevice.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -286,6 +289,8 @@
 				1C681E2C37F842CC98A4CE4E /* PushPlugin.m */,
 				832156CE6A0243B3A2B4F8FB /* AppDelegate+notification.h */,
 				7DF4BB7E71C6437883640344 /* PushPlugin.h */,
+				3615F653BBB047389601A868 /* CDVDevice.m */,
+				E11C7878B2B4451A9A136957 /* CDVDevice.h */,
 			);
 			name = Plugins;
 			path = "canYouRememberMe/Plugins";
@@ -484,6 +489,7 @@
 				A4101E6CFA30406FB2A87894 /* CDVReachability.m in Sources */,
 				7F9D015FF61A47EA9B687903 /* AppDelegate+notification.m in Sources */,
 				3BC5C3356B8C4E489913E882 /* PushPlugin.m in Sources */,
+				31230DA0EE5248A39F7843D3 /* CDVDevice.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
