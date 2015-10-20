@@ -1104,7 +1104,43 @@ angular.module('starter.controllers', [])
 		}
 		
 		//////////////////////////////////////////////////////////////////////////
-		
+		 //Define Send Notification to facebook user function
+		$scope.sendNotificationToFacebookUser=function(userFbId,fromName)
+		{	
+			// Build the request object
+			var reqFacebook = {
+			  method: 'POST',
+			  url: 'https://graph.facebook.com/oauth/access_token?client_id=1442568932738358&client_secret=bedac52dfa99af6e2e3ee9a5d1fb4eb3&grant_type=client_credentials',
+			  headers: {
+				'Content-Type': 'application/json'
+			  }
+			};
+			// Make the API call
+			$http(reqFacebook).success(function(respFacebook){
+			  //send notification to facebook
+			  var reqNotificationFacebook = {
+				  method: 'POST',
+				  url: 'https://graph.facebook.com/'+userFbId+'/notifications?'+respFacebook+'&template="'+fromName+' has seen this awesome app and has invited you to join and take a look."',
+					
+				  headers: {
+					'Content-Type': 'application/json'
+				  }
+				};
+				// Make the API call
+				$http(reqNotificationFacebook).success(function(respNotificationFacebook){
+				 // alert("respFacebook success!=="+JSON.stringify(respNotificationFacebook));
+				  
+				}).error(function(error){
+				  //alert("error=="+JSON.stringify(error));
+				});
+			  
+			  
+			  
+			}).error(function(error){
+			 // alert("error=="+JSON.stringify(error));
+			});
+		}
+		/////////////////////////////////////////////////////////////////////////
 		
 		//send mail function
 		$scope.sendMail=function(to,subject,message,from,fromName)
@@ -1292,8 +1328,16 @@ angular.module('starter.controllers', [])
 						$scope.sendMail(to,subject,message,from,fromName);
 					 }
 					 
-					 //check facebook user and get there email for send invitation via email to these users
+					 //send notification to facebook user
 					 //alert("otherFacebookUserIdlList=="+JSON.stringify(otherFacebookUserIdlList));
+					  if(otherFacebookUserIdlList.length>0)
+					  {
+						  for (var f = 0; f < otherFacebookUserIdlList.length; f++)
+						  {
+							 //call send notification to Facebook User
+							$scope.sendNotificationToFacebookUser(otherFacebookUserIdlList[f],currentUserName);
+						  }
+					  }
 					 
 				  },
 				  error: function(error) {
