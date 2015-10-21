@@ -1495,3 +1495,170 @@ angular.module('starter.controllers', [])
 	})
 //CYRme Memory controller******************************End************************************************
 	
+
+
+//View Memory controller******************************Start************************************************
+	.controller('viewMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork, $cordovaFile, $filter, $timeout) {
+		
+		//show view Memory
+			$scope.viewMemory = function() {
+				var memoryListArray	=new Array(); //store all memory data
+				// check current user are present or not
+				var currentUser = Parse.User.current();
+				if (currentUser) 
+				{
+					//$scope.memoryUserName 			= currentUser.get("name");
+					//$scope.memoryAddOnDateTime 		= $filter('date')(currentUser.get("dateOfBirth"), "dd/MM/yyyy");
+					//check user login with facebook
+					//var uPhotolocalPath 	= window.localStorage.getItem("uPhotolocalPath");
+					
+					// Make a new post
+					/*var allUserquery = Parse.Object.extend("User");
+					query.equalTo("user", user);
+					query.find({
+					  success: function(usersPosts) {
+						// userPosts contains all of the posts by the current user.
+					  }
+					});*/
+					alert("anil");
+					var User 		= Parse.Object.extend("User");
+					var UserQuery 	= new Parse.Query(User);
+					UserQuery.equalTo("objectId", currentUser.id);
+					UserQuery.find({
+					  success: function(UserResults) {
+						
+						alert("UserResults=="+JSON.stringify(UserResults));
+						for (var i = 0; i < UserResults.length; i++) 
+						{ 
+							var UserResultsObj = UserResults[i];
+							//alert("UserResults id=="+UserResultsObj.id);			  
+							var CYRme   = Parse.Object.extend("CYRme");
+							var memoryQuery = new Parse.Query(CYRme);
+							memoryQuery.equalTo("user", {__type: "Pointer",className: "_User",objectId: UserResultsObj.id});
+							memoryQuery.descending("createdAt");
+							memoryQuery.limit(1); // limit to at most 1 results
+							memoryQuery.find({
+					  			success: function(memoryResults) {
+									//alert("memoryResults=="+JSON.stringify(memoryResults));
+									
+									memoryListArray = [];
+									for (var i = 0; i < memoryResults.length; i++) 
+									{ 
+									  var memoryResObj = memoryResults[i];
+									  //alert("memoryResObj id=="+UserResultsObj.id);
+									  
+									  var memoryThumbnailObj = memoryResObj.get("thumbnail");
+									  var memoryThumbnailurl = memoryThumbnailObj.url();
+									   memoryListArray['memoryTitle']		 =memoryResObj.get('title');
+									   memoryListArray['memoryContent'] 	 =memoryResObj.get('content');
+									   memoryListArray['memoryImg']			 =memoryThumbnailurl;
+									   memoryListArray['memoryAddOnDateTime']=$filter('date')(memoryResObj.get("dateOfMemory"), "dd/MM/yyyy");
+									   //push user detail
+									   memoryListArray['memoryUserName']	=UserResultsObj.get('title');
+									   
+									   //get user profile pic 
+									   var query = new Parse.Query("ProfilePhoto");
+										query.equalTo("userObjectId", UserResultsObj.id);
+										query.equalTo("author", UserResultsObj.get("name"));
+										query.find({
+										  success: function(results){
+												for (var um = 0; um < results.length; um++) { 
+												  var object = results[um];
+												  var photoFileObj  = object.get("photoFile");
+												  var memoryUserImg = photoFileObj.url();
+												}
+												memoryListArray['memoryUserImg']=memoryUserImg;
+												$scope.memoryListArr 	= JSON.stringify(memoryListArray);
+												$scope.$apply();
+												alert("memoryListArray=="+JSON.stringify(memoryListArray));
+										  }
+										});
+										
+									} //End memoryResults for loop
+									
+								 },
+						      error: function(error){
+									  alert("Error: " + error.code + " " + error.message);
+								 }
+							 }); // End memoryQuery find
+						   } //End For loop user result
+						  // $scope.memoryListArr 	= memoryListArray;
+						 },
+				     error: function(error){
+							 alert("Error: " + error.code + " " + error.message);
+						}
+				 }); // End UserQuery find
+					 
+					
+					
+					
+					
+					
+					
+					/*var memoryQuery = Parse.Object.extend("CYRme");
+					memoryQuery.find({
+					  success: function(results){
+						  // If the query is successful, store each image URL in an array of image URL's
+							//imageURLs = [];
+							for (var i = 0; i < results.length; i++) { 
+							
+							  var memoryResObj = results[i];
+							  //imageURLs.push(object.get('photoFile'));
+							  var memoryThumbnailObj = memoryResObj.get("thumbnail");
+							  var memoryThumbnailurl = memoryThumbnailObj.url();
+							}
+							
+							$scope.memoryUserImg 	= url;
+							$scope.memoryImg 		= url;
+							$scope.$apply();
+					  }
+					});*/
+					
+					
+					
+					
+					
+					/*if(uPhotolocalPath != null && uPhotolocalPath != '')
+					{
+						$scope.memoryUserImg 	= uPhotolocalPath;
+						$scope.memoryImg 		= uPhotolocalPath;
+					}
+					else
+					{
+						var query = new Parse.Query("ProfilePhoto");
+						query.equalTo("userObjectId", currentUser.id);
+						query.equalTo("author", currentUser.get("name"));
+						query.find({
+						  success: function(results){
+							  // If the query is successful, store each image URL in an array of image URL's
+								//imageURLs = [];
+								for (var i = 0; i < results.length; i++) { 
+								  var object = results[i];
+								  //imageURLs.push(object.get('photoFile'));
+								  var photoFileObj = object.get("photoFile");
+								  var url 		   = photoFileObj.url();
+								}
+								$scope.memoryUserImg 	= url;
+								$scope.memoryImg 		= url;
+								$scope.$apply();
+						  }
+						});
+					}*/
+					
+				} else {
+					
+					$timeout(function() {
+						$scope.hideLoading();
+						$state.go("app.home"); // go to home page
+						$scope.$apply();
+				   }, 300);
+				}
+			};
+			
+		//call view memory function	
+			$scope.viewMemory();
+		
+		
+	})
+//View Memory controller******************************End************************************************	
+	

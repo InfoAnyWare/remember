@@ -1,0 +1,32 @@
+<ion-view title="View Memory">
+  <ion-content ng-show="afterloginLinks">
+    <div class="list">
+    
+        <div class="card" ng-repeat="memoryItem in memoryListArr">
+            <a class="item item-avatar item-divider" href="#/app/detailMemory">
+                 <img src="{{memoryItem.memoryUserImg}}">
+                  <strong>{{memoryItem.memoryUserName}}</strong>
+                  <p>{{memoryItem.memoryAddOnDateTime}}</p>
+             </a>
+             <a class="item item-thumbnail-right" href="#/app/detailMemory">
+                <img src="{{memoryItem.memoryImg}}">
+                <strong>{{memoryItem.memoryTitle}}</strong>
+                <p>{{memoryItem.memoryContent}}</p>
+            </a>
+        </div>
+        
+        
+       <!-- <div class="card">
+            <a class="item item-avatar item-divider" href="#/app/detailMemory">
+             <img align="absmiddle" src="{{memoryUserImg}}">
+             <strong>{{memoryUserName}}</strong>
+             <p>{{memoryAddOnDateTime}}</p>
+             <span class="item-thumbnail-right">
+                <img align="absmiddle" src="{{memoryImg}}">
+             </span>
+            </a>
+        </div>-->
+        
+    </div>
+  </ion-content>
+</ion-view>

@@ -75,6 +75,16 @@ angular.module('starter', [
       }
     }
   })
+  
+   .state('app.viewMemory', {
+    url: '/viewMemory',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/viewMemory.html',
+		 controller: "viewMemory"
+      }
+    }
+  })
 
   .state('app.home', {
       url: '/home',
