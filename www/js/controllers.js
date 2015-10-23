@@ -276,36 +276,32 @@ angular.module('starter.controllers', [])
 					 window.localStorage.setItem("uLoginThroughMsg", $scope.loginThroughMsg);
 					 //////////////////////////////CYR local store data start////////////////////////////////////
 					  
-					  //get profile image
-					  var query = new Parse.Query("ProfilePhoto");
-						query.equalTo("userObjectId", user.id);
-						query.equalTo("author", user.get("name"));
-						query.find({
-						  success: function(results){
-							 // If the query is successful, store each image URL in an array of image URL's
-        						//imageURLs = [];
-							    for (var i = 0; i < results.length; i++) { 
-								  var object = results[i];
-								  //imageURLs.push(object.get('photoFile'));
-								  var photoFileObj = object.get("photoFile");
-								  var url 		   = photoFileObj.url();
-								}
-								$scope.photo 	= url;
-								$scope.downloadFile(url);
-						  }
-						});
-				   //call function store Device Info for notification
-					$scope.storeDeviceInfo(); 
-					
+					//get user image
+					var photoFileObj = user.get("photoFile");
+					if(photoFileObj!=undefined)
+					{
+						var url 		  = photoFileObj.url();
+						$scope.photo 	  = url;
+						//call function for download ing
+						$scope.downloadFile(url);
+					}
+					else
+					{
+						$scope.photo 	  = '';
+						window.localStorage.removeItem("uPhotolocalPath");
+					}
+					//call function store Device Info for notification
+					$scope.storeDeviceInfo();
 					$scope.hideLoading();
 					$scope.$apply();
 					
 					$state.go("app.home"); // go to home page
 					$timeout(function() {
+						 $scope.hideLoading();
 						 $scope.showHomeMsg = false;
-						}, 5000);
+						 $scope.$apply();
+						}, 4000);
 				  }
-				  
 			  },
 			  error: function(user, error) {
 				// The login failed. Check error to see.
@@ -592,61 +588,69 @@ angular.module('starter.controllers', [])
 			userRegister.set("surName", String($scope.registerData['surName']));
 			userRegister.set("dateOfBirth", $scope.registerData['dateOfBirth']);
 			
-			userRegister.signUp(null, {
-			  success: function(userRegisterResponse) {
+			//var userObjectID=userRegisterResponse.id;
+			var fileUploadControl = $("#photoFileUpload")[0];
+			if (fileUploadControl.files.length > 0) 
+			{
+				var file = fileUploadControl.files[0];
+				var name = "photo.png";
+				var parseFile = new Parse.File(name, file);
+				parseFile.save().then(function(parseFile) {
 				  
-				var userObjectID=userRegisterResponse.id;
-				
-				var fileUploadControl = $("#photoFileUpload")[0];
-				if (fileUploadControl.files.length > 0) {
-					var file = fileUploadControl.files[0];
-					var name = "photo.png";
-					var parseFile = new Parse.File(name, file);
-					parseFile.save().then(function(parseFile,userRegisterResponse) {
-					  // The file has been saved to Parse. file's URL is only available 
-					  //after you save the file or after you get the file from a Parse.Object.
-					  //Get the function url() on the Parse.File object.
-					   var ProfilePhoto =Parse.Object.extend("ProfilePhoto");
-					   var photo = new ProfilePhoto();
-						   photo.set("title", "Profile");
-						   photo.set("photoFile", parseFile);
-						   photo.set("author", String($scope.registerData['username']));
-						   photo.set("userObjectId", userObjectID);
-						   photo.save();
-						  
-						//url = parseFile.url();
-						 console.log("success: file upload");
-					}, 
-					  function(error) {
-						// The file either could not be read, or could not be saved to Parse.
+					userRegister.set("photoFile", parseFile);
+					//////////////////////////////////////////////
+					userRegister.signUp(null, {
+					  success: function(userRegisterResponse) {
+						$scope.hideLoading();
+						Parse.User.logOut();
+						$scope.beforeloginLinks	 = true;
+						$scope.afterloginLinks   = false;
+						
+						$scope.registerThanks();
+						$scope.registerMsg = true;
+						$scope.registerMsgValue ="Please verifying your email address before Login.";
+						$scope.$apply();
+					  },
+					  error: function(userRegisterResponse, error) {
+						// Show the error message somewhere and let the user try again.
+						$scope.hideLoading();
+						$scope.registerMsg = true;
+						$scope.registerMsgValue = $scope.firstCharCapital(error.message);
 						console.log("Error: " + error.code + " " + error.message);
-					  });
-				};
-				  
-				  
-				$scope.hideLoading();
-				Parse.User.logOut();
-				$scope.beforeloginLinks	 = true;
-				$scope.afterloginLinks   = false;
-				
-				$scope.registerThanks();
-				$scope.registerMsg = true;
-				$scope.registerMsgValue ="Please verifying your email address before Login.";
-				$scope.$apply();
-				//console.log("Register: " + userRegisterResponse.code + " " + userRegisterResponse.message);
-				
-				///////////////////////////////////////
-				
-			  },
-			  error: function(userRegisterResponse, error) {
-				// Show the error message somewhere and let the user try again.
-				$scope.hideLoading();
-				$scope.registerMsg = true;
-				$scope.registerMsgValue = $scope.firstCharCapital(error.message);
-				console.log("Error: " + error.code + " " + error.message);
-				$scope.$apply();
-			  }
-			});
+						$scope.$apply();
+					  }
+					});
+					//////////////////////////////////////////////
+				}, 
+				  function(error) {
+					// The file either could not be read, or could not be saved to Parse.
+					console.log("Error: " + error.code + " " + error.message);
+				  });
+			}
+			else
+			{
+				userRegister.signUp(null, {
+				  success: function(userRegisterResponse) {
+					$scope.hideLoading();
+					Parse.User.logOut();
+					$scope.beforeloginLinks	 = true;
+					$scope.afterloginLinks   = false;
+					
+					$scope.registerThanks();
+					$scope.registerMsg = true;
+					$scope.registerMsgValue ="Please verifying your email address before Login.";
+					$scope.$apply();
+				  },
+				  error: function(userRegisterResponse, error) {
+					// Show the error message somewhere and let the user try again.
+					$scope.hideLoading();
+					$scope.registerMsg = true;
+					$scope.registerMsgValue = $scope.firstCharCapital(error.message);
+					console.log("Error: " + error.code + " " + error.message);
+					$scope.$apply();
+				  }
+				});
+			}
 			
 		};
 		
@@ -722,26 +726,22 @@ angular.module('starter.controllers', [])
 					}
 					else
 					{
-						var query = new Parse.Query("ProfilePhoto");
-						query.equalTo("userObjectId", currentUser.id);
-						query.equalTo("author", currentUser.get("name"));
-						query.find({
-						  success: function(results){
-							  // If the query is successful, store each image URL in an array of image URL's
-								//imageURLs = [];
-								for (var i = 0; i < results.length; i++) { 
-								  var object = results[i];
-								  //imageURLs.push(object.get('photoFile'));
-								  var photoFileObj = object.get("photoFile");
-								  var url 		   = photoFileObj.url();
-								}
-								$scope.photo 	= url;
-								$scope.$apply();
-						  }
-						});
+						var photoFileObj = currentUser.get("photoFile");
+						if(photoFileObj!=undefined)
+						{
+							var url 		 = photoFileObj.url();
+							$scope.photo 	 = url;
+						}
+						else
+						{
+							$scope.photo 	  = '';
+							window.localStorage.removeItem("uPhotolocalPath");
+						}
 					}
-				} else {
-					
+					$scope.$apply();
+				} 
+				else 
+				{
 					$timeout(function() {
 						$scope.showLocalStorageData();
 				   }, 300);
@@ -1501,162 +1501,114 @@ angular.module('starter.controllers', [])
 	.controller('viewMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork, $cordovaFile, $filter, $timeout) {
 		
 		//show view Memory
-			$scope.viewMemory = function() {
+		$scope.viewMemory = function() {
 				var memoryListArray	=new Array(); //store all memory data
 				// check current user are present or not
 				var currentUser = Parse.User.current();
 				if (currentUser) 
 				{
-					//$scope.memoryUserName 			= currentUser.get("name");
-					//$scope.memoryAddOnDateTime 		= $filter('date')(currentUser.get("dateOfBirth"), "dd/MM/yyyy");
-					//check user login with facebook
-					//var uPhotolocalPath 	= window.localStorage.getItem("uPhotolocalPath");
+					var memoryQuery   	= Parse.Object.extend("CYRme");
+					var query 			= new Parse.Query(memoryQuery);
+					query.include("user");
 					
-					// Make a new post
-					/*var allUserquery = Parse.Object.extend("User");
-					query.equalTo("user", user);
 					query.find({
-					  success: function(usersPosts) {
-						// userPosts contains all of the posts by the current user.
-					  }
-					});*/
-					alert("anil");
-					var User 		= Parse.Object.extend("User");
-					var UserQuery 	= new Parse.Query(User);
-					UserQuery.equalTo("objectId", currentUser.id);
-					UserQuery.find({
-					  success: function(UserResults) {
-						
-						alert("UserResults=="+JSON.stringify(UserResults));
-						for (var i = 0; i < UserResults.length; i++) 
-						{ 
-							var UserResultsObj = UserResults[i];
-							//alert("UserResults id=="+UserResultsObj.id);			  
-							var CYRme   = Parse.Object.extend("CYRme");
-							var memoryQuery = new Parse.Query(CYRme);
-							memoryQuery.equalTo("user", {__type: "Pointer",className: "_User",objectId: UserResultsObj.id});
-							memoryQuery.descending("createdAt");
-							memoryQuery.limit(1); // limit to at most 1 results
-							memoryQuery.find({
-					  			success: function(memoryResults) {
-									//alert("memoryResults=="+JSON.stringify(memoryResults));
-									
-									memoryListArray = [];
-									for (var i = 0; i < memoryResults.length; i++) 
-									{ 
-									  var memoryResObj = memoryResults[i];
-									  //alert("memoryResObj id=="+UserResultsObj.id);
-									  
-									  var memoryThumbnailObj = memoryResObj.get("thumbnail");
+						success: function(memoryResults) {
+							//alert("memoryResults=="+JSON.stringify(memoryResults));
+							
+							for(i in memoryResults){
+								//Set memoryResObj to current Memory
+								  var memoryResObj = memoryResults[i];
+								
+								  var memoryTitle		 	=memoryResObj.get('title');
+								  var memoryContent 	 	=memoryResObj.get('content');
+								  var memoryAddOnDateTime 	=$filter('date')(memoryResObj.get("dateOfMemory"), "dd/MM/yyyy");
+								   
+								  //get memory thumbnill
+								  var memoryThumbnailObj = memoryResObj.get("thumbnail");
+								  if(memoryThumbnailObj!=undefined)
+								  {
 									  var memoryThumbnailurl = memoryThumbnailObj.url();
-									   memoryListArray['memoryTitle']		 =memoryResObj.get('title');
-									   memoryListArray['memoryContent'] 	 =memoryResObj.get('content');
-									   memoryListArray['memoryImg']			 =memoryThumbnailurl;
-									   memoryListArray['memoryAddOnDateTime']=$filter('date')(memoryResObj.get("dateOfMemory"), "dd/MM/yyyy");
-									   //push user detail
-									   memoryListArray['memoryUserName']	=UserResultsObj.get('title');
-									   
-									   //get user profile pic 
-									   var query = new Parse.Query("ProfilePhoto");
-										query.equalTo("userObjectId", UserResultsObj.id);
-										query.equalTo("author", UserResultsObj.get("name"));
-										query.find({
-										  success: function(results){
-												for (var um = 0; um < results.length; um++) { 
-												  var object = results[um];
-												  var photoFileObj  = object.get("photoFile");
-												  var memoryUserImg = photoFileObj.url();
-												}
-												memoryListArray['memoryUserImg']=memoryUserImg;
-												$scope.memoryListArr 	= JSON.stringify(memoryListArray);
-												$scope.$apply();
-												alert("memoryListArray=="+JSON.stringify(memoryListArray));
-										  }
-										});
-										
-									} //End memoryResults for loop
-									
-								 },
-						      error: function(error){
-									  alert("Error: " + error.code + " " + error.message);
+									  var memoryImg 	 	 = memoryThumbnailurl;
+								  }
+								  else
+								  {
+									   var memoryImg 	 	 = '';
+								  }
+								  
+								 //get user profile pic 
+								 var memoryUserImgObj 	 = memoryResObj.get("user").get("photoFile");
+								 if(memoryUserImgObj!=undefined)
+								 {
+									 var memoryUserImgUrl 	 = memoryUserImgObj.url();
+									 var memoryUserImg 	 	 = memoryUserImgUrl;
 								 }
-							 }); // End memoryQuery find
-						   } //End For loop user result
-						  // $scope.memoryListArr 	= memoryListArray;
-						 },
-				     error: function(error){
-							 alert("Error: " + error.code + " " + error.message);
-						}
-				 }); // End UserQuery find
-					 
-					
-					
-					
-					
-					
-					
-					/*var memoryQuery = Parse.Object.extend("CYRme");
-					memoryQuery.find({
-					  success: function(results){
-						  // If the query is successful, store each image URL in an array of image URL's
-							//imageURLs = [];
-							for (var i = 0; i < results.length; i++) { 
-							
-							  var memoryResObj = results[i];
-							  //imageURLs.push(object.get('photoFile'));
-							  var memoryThumbnailObj = memoryResObj.get("thumbnail");
-							  var memoryThumbnailurl = memoryThumbnailObj.url();
-							}
-							
-							$scope.memoryUserImg 	= url;
-							$scope.memoryImg 		= url;
-							$scope.$apply();
-					  }
-					});*/
-					
-					
-					
-					
-					
-					/*if(uPhotolocalPath != null && uPhotolocalPath != '')
-					{
-						$scope.memoryUserImg 	= uPhotolocalPath;
-						$scope.memoryImg 		= uPhotolocalPath;
-					}
-					else
-					{
-						var query = new Parse.Query("ProfilePhoto");
-						query.equalTo("userObjectId", currentUser.id);
-						query.equalTo("author", currentUser.get("name"));
-						query.find({
-						  success: function(results){
-							  // If the query is successful, store each image URL in an array of image URL's
-								//imageURLs = [];
-								for (var i = 0; i < results.length; i++) { 
-								  var object = results[i];
-								  //imageURLs.push(object.get('photoFile'));
-								  var photoFileObj = object.get("photoFile");
-								  var url 		   = photoFileObj.url();
+								 else
+								 {
+									  var memoryUserImg 	 	 = 'img/user.png';
+								 }
+								  
+								 /* Get Memory Author's Name */
+								 var memoryUserName   	= memoryResObj.get("user").get("name");
+								 var memoryUserId   	= memoryResObj.get("user").id;
+								//check user memory privacy
+								if(memoryResObj.get('privacy')=="No")
+								{
+									/* Let's Put the memoryListArray Information in an Array as an Object*/
+									memoryListArray.push(
+									{
+										memoryTitle			: memoryTitle,
+										memoryContent		: memoryContent,
+										memoryAddOnDateTime	: memoryAddOnDateTime,
+										memoryImg			: memoryImg,
+										
+										memoryUserName		: memoryUserName,
+										memoryUserImg		: memoryUserImg
+											
+									});
 								}
-								$scope.memoryUserImg 	= url;
-								$scope.memoryImg 		= url;
-								$scope.$apply();
-						  }
-						});
-					}*/
-					
-				} else {
-					
+								else
+								{
+									// check username or name or email present in user group
+									if((currentUser.id==memoryUserId) || ($.inArray(currentUser.get("name"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("username"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("email"), memoryResObj.get('mentionTo') )>=0))
+									{
+										/* Let's Put the memoryListArray Information in an Array as an Object*/
+										memoryListArray.push(
+										{
+											memoryTitle			: memoryTitle,
+											memoryContent		: memoryContent,
+											memoryAddOnDateTime	: memoryAddOnDateTime,
+											memoryImg			: memoryImg,
+											
+											memoryUserName		: memoryUserName,
+											memoryUserImg		: memoryUserImg
+												
+										});
+									}
+								}
+								
+							} // End for loop
+							
+							$scope.memoryListArr 	= memoryListArray;
+							$scope.$apply();
+						},
+						error: function(error){
+							//alert("Error: " + error.code + " " + error.message);
+						}
+					}); // End memoryQuery find
+				} 
+				else 
+				{
 					$timeout(function() {
 						$scope.hideLoading();
 						$state.go("app.home"); // go to home page
 						$scope.$apply();
 				   }, 300);
 				}
-			};
+			};	
+			
 			
 		//call view memory function	
-			$scope.viewMemory();
+		$scope.viewMemory();
 		
 		
 	})
