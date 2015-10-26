@@ -85,6 +85,27 @@ angular.module('starter', [
       }
     }
   })
+  
+  .state('app.memoryDetails', {
+	url: "/memoryDetails/:id",
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/memoryDetails.html',
+		 controller: "memoryDetails"
+      }
+    }
+  })
+  
+  .state('app.activity', {
+	url: "/activity/:id,toUser",
+	//url: "/activity?id&toUser",
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/activity.html',
+		 controller: "activity"
+      }
+    }
+  })
 
   .state('app.home', {
       url: '/home',
