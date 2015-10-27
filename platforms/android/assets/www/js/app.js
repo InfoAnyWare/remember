@@ -97,8 +97,7 @@ angular.module('starter', [
   })
   
   .state('app.activity', {
-	url: "/activity/:id,toUser",
-	//url: "/activity?id&toUser",
+	url: "/activity/:id/:toUser",
     views: {
       'menuContent': {
         templateUrl: 'templates/activity.html',
@@ -106,6 +105,27 @@ angular.module('starter', [
       }
     }
   })
+  
+   .state('app.viewAllActivities', {
+	url: "/viewAllActivities/:id/:mTitle",
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/viewAllActivities.html',
+		 controller: "viewAllActivities"
+      }
+    }
+  })
+  
+  .state('app.activityDetails', {
+	url: "/activityDetails/:id/:mTitle",
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/activityDetails.html',
+		 controller: "activityDetails"
+      }
+    }
+  })
+
 
   .state('app.home', {
       url: '/home',

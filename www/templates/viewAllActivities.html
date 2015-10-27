@@ -1,0 +1,34 @@
+<ion-view title="{{memoryTitle}} : View All Activities">
+  <ion-content ng-show="afterloginLinks">
+    <div class="list" ng-show="showActivities">
+    
+        <div class="card" ng-repeat="activitiesItem in activitiesListArr">
+              <div class="row item item-divider">
+                  <div class="col col-67"> 
+                      <a class="item item-avatar item-divider" href="#/app/activityDetails/{{activitiesItem.activitiesId}}/{{memoryTitle}}">
+                         <img src="{{activitiesItem.activitiesUserImg}}">
+                          <strong>{{activitiesItem.activitiesUserName}}</strong>
+                          <p>{{activitiesItem.activitiesAddOnDateTime}}</p>
+                     </a>
+              	  </div>
+                  <div class="col col-33 text-right">
+                      <strong>Type: {{activitiesItem.activitiesType}}</strong>
+                  </div>
+              </div>
+             
+             <a class="item item-thumbnail-right" href="#/app/activityDetails/{{activitiesItem.activitiesId}}/{{memoryTitle}}">
+                <img src="{{activitiesItem.activitiesImg}}">
+                <p>{{activitiesItem.activitiesContent}}</p>
+            </a>
+        </div>
+        
+    </div>
+    
+    <div class="list" ng-show="!showActivities">
+        <div class="card text-center">
+             <strong>No Activity found</strong>
+        </div>
+    </div>
+    
+  </ion-content>
+</ion-view>

@@ -13,14 +13,18 @@
         
         <label class="item item-input item-select">
             <div class="input-label">
-              Activity Type
+              Activity Type <i class="ion-ios-medical assertive m-star-field"></i></span>
             </div>
-            <select name="activityType" ng-model="addActivityData.activityType">
-              <option>IREM</option>
-              <option selected>LIKE</option>
-              <option>FOLLOW</option>
-               <option>MEM</option>
+            <select name="activityType" ng-model="addActivityData.activityType" required="required">
+              <option value="IREM">IREM</option>
+              <option selected value="LIKE">LIKE</option>
+              <option value="FOLLOW">FOLLOW</option>
+               <option value="MEM">MEM</option>
             </select>
+            
+            <span style="color:red" ng-show="addActivityForm.activityType.$dirty && addActivityForm.activityType.$invalid">
+            <span ng-show="addActivityForm.activityType.$error.required">Activity Type is required.</span>
+            </span>
         </label>
 
         
@@ -70,7 +74,7 @@
         
         
         <label class="item">
-          <button class="button button-block button-positive" type="submit" ng-disabled="((addActivityForm.privacy.$dirty || addActivityForm.privacy.$pristine) && addActivityForm.privacy.$invalid) ">
+          <button class="button button-block button-positive" type="submit" ng-disabled="((addActivityForm.activityType.$dirty || addActivityForm.activityType.$pristine) && addActivityForm.activityType.$invalid) || ((addActivityForm.privacy.$dirty || addActivityForm.privacy.$pristine) && addActivityForm.privacy.$invalid)">
          
           <i class="ion-android-checkmark-circle"></i>
           Submit</button>
