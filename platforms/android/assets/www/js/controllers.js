@@ -1786,6 +1786,10 @@ angular.module('starter.controllers', [])
 //activity controller******************************Start************************************************
 	.controller('activity', function($scope ,$rootScope, $state, $stateParams, $ionicLoading, $cordovaNetwork,ThumbnailService,$ionicPush, $http,$cordovaDevice, $timeout) {
 		
+		
+		 //var fromName_arr		="anil".split(',');
+		 //alert("fromName_arr=="+JSON.stringify(fromName_arr));
+		 
 		// current user
 		var currentUser = Parse.User.current();
 		//msg false by default
@@ -2025,25 +2029,63 @@ angular.module('starter.controllers', [])
 					}
 					  
 					 //call function for send email to other users
-					 //alert("otherUserEmailList=="+JSON.stringify(otherUserEmailList));
+					 alert("otherUserEmailList=="+JSON.stringify(otherUserEmailList));
 					 if(otherUserEmailList.length>0)
 					 {
 						var  to			= otherUserEmailList;
 						var  subject	= currentUserName+' have been Invited to CYRMe APP!';
-						//var  message	= currentUserName+' have been Invited to CYRMe APP!';
+						var  message	= '.';
 						var  from		= currentUserEmail;
 						//var  from		= "CanYouRemember.me";
 						var  fromName	= currentUserName;
 						//var  fromName	= "(CYR.me)" ;
 						
+						
+						
+						
+						// An object containing name, toEmail, fromEmail, subject and message
+						var data = { 
+						  toEmail: to,
+						  subject: subject,
+						  message: message,
+						  fromEmail: from,
+						  fromName: fromName,
+						  memoryImg:'<img src="http://files.parsetfss.com/c64b6b03-0caa-4218-8329-5e1bd26fdedc/tfss-685af0f4-8368-4271-9ceb-b337f2627a2a-photoThumb.png" width="500" height="500"/>',
+						  memoryContent: "Test Memory",
+						  template_id: "5e5dd99c-08ca-4126-873f-9a08b8f4c1af"
+						}
+					
+						// Run our Parse Cloud Code and pass our 'data' object to it
+						Parse.Cloud.run("sendEmail", data, {
+						  success: function(object) {
+							alert("result=="+JSON.stringify(object));
+						  },
+					
+						  error: function(error) {
+							//alert("Error! Email not sent!");
+							alert("error=="+JSON.stringify(error));
+						  }
+						});
+						
+						
+						/*var message = ""
++"<img src='img/logo.png' width='192' height='192' />,\n"
++"\n"
++"Hello from the CYR.me team,.\n"
++""+fromName+" has seen this awesome app and has invited you to join and take a look.\n"
++"CYR.me is a great place to store your life memories and share them with others. You can invite others or add their memories and photos to yours creating a digital diary of events that have happened in your life.\n"
++"\n"
++""+fromName+" has mention you in this memory\n"
++"";*/
+						$scope.sendMailActivity(to,subject,message,from,fromName);
 						// get email template
-						$(function() {
+						/*$(function() {
 							$.get('inviteUsersEmailTemp.html', function(data) {
 								data.replace('userName', currentUserName);
 								var message=data;
 								$scope.sendMailActivity(to,subject,message,from,fromName);
 							});
-						});
+						});*/
 						//$scope.sendMail(to,subject,message,from,fromName);
 					 }
 					 
