@@ -325,7 +325,79 @@ angular.module('starter.controllers', [])
 	
 	
 	
+	//define function update Memory MentionTo field*************************************start***************
+		$scope.updateMemoryMentionTo = function(userRegisterResponse) {
+			var userRegisterResponse	= userRegisterResponse;
+			var registerUserEmail		= userRegisterResponse.get("email");
+			if(registerUserEmail) 
+			{
+				var memoryQuery   	= Parse.Object.extend("CYRme");
+				var query 			= new Parse.Query(memoryQuery);
+				query.equalTo("mentionTo", registerUserEmail);
+				query.find({
+					success: function(memoryResults) {
+						for(i in memoryResults){
+							//Set memoryResObj to current Memory
+							  var memoryResObj = memoryResults[i];
+							  var memoryMentionTo	=memoryResObj.get('mentionTo');
+							  
+							 //check email present in maintion field 
+							  var index = $.inArray(registerUserEmail, memoryMentionTo)
+							  if (index !== -1) {
+								memoryMentionTo[index] = userRegisterResponse.get("username");
+								memoryResObj.set("mentionTo",memoryMentionTo);
+								memoryResObj.save();
+							  }
+						} // End for loop
+						$scope.hideLoading();
+						$scope.$apply();
+					},
+					error: function(error){
+						//alert("Error: " + error.code + " " + error.message);
+						 $scope.hideLoading();
+						 $scope.$apply();
+					}
+				}); // End memoryQuery find
+			} 
+		};	
+	//function update Memory MentionTo field*************************************End***********************
 	
+	//Define function update Activity MentionTo field*************************************start***************
+		$scope.updateActivityMentionTo = function(userRegisterResponse) {
+			var userRegisterResponse	= userRegisterResponse;
+			var registerUserEmail		= userRegisterResponse.get("email");
+			if(registerUserEmail) 
+			{
+				var activityQuery   = Parse.Object.extend("Activity");
+				var query 			= new Parse.Query(activityQuery);
+				query.equalTo("mentionTo", registerUserEmail);
+				query.find({
+					success: function(activityResults) {
+						for(i in activityResults){
+							//Set activityResObj to current Activity
+							  var activityResObj = activityResults[i];
+							  var activityMentionTo	=activityResObj.get('mentionTo');
+							  
+							 //check email present in maintion field 
+							  var index = $.inArray(registerUserEmail, activityMentionTo)
+							  if (index !== -1) {
+								activityMentionTo[index] = userRegisterResponse.get("username");
+								activityResObj.set("mentionTo",activityMentionTo);
+								activityResObj.save();
+							  }
+						} // End for loop
+						$scope.hideLoading();
+						$scope.$apply();
+					},
+					error: function(error){
+						//alert("Error: " + error.code + " " + error.message);
+						 $scope.hideLoading();
+						 $scope.$apply();
+					}
+				}); // End activityQuery find
+			} 
+		};	
+	//function update Activity MentionTo field*************************************End*****************
 	
 	
 	// Perform the login with FB ****************************************start***************************
@@ -467,6 +539,11 @@ angular.module('starter.controllers', [])
 						 //call function store Device Info for notification
 						 $scope.storeDeviceInfo(); 
 						 
+						 //call function for update Memory MentionTo field
+						  $scope.updateMemoryMentionTo(userRegisterResponse);
+						 //call function for update Activity MentionTo field
+						  $scope.updateActivityMentionTo(userRegisterResponse);
+				   
 						 $scope.hideLoading();
 		   				 $scope.$apply();
 							
@@ -522,10 +599,6 @@ angular.module('starter.controllers', [])
 		   }
 		}
 	// Perform the login with FB *****************************************END*******************************
-	
-	
-	
-	
 	
 	
 	
@@ -601,6 +674,13 @@ angular.module('starter.controllers', [])
 					//////////////////////////////////////////////
 					userRegister.signUp(null, {
 					  success: function(userRegisterResponse) {
+						//alert("userRegisterResponse=="+JSON.stringify(userRegisterResponse));
+						
+					   //call function for update Memory MentionTo field
+					   $scope.updateMemoryMentionTo(userRegisterResponse);
+					   //call function for update Activity MentionTo field
+					   $scope.updateActivityMentionTo(userRegisterResponse);
+				   
 						$scope.hideLoading();
 						Parse.User.logOut();
 						$scope.beforeloginLinks	 = true;
@@ -631,6 +711,13 @@ angular.module('starter.controllers', [])
 			{
 				userRegister.signUp(null, {
 				  success: function(userRegisterResponse) {
+				  // alert("userRegisterResponse=="+JSON.stringify(userRegisterResponse));
+				   
+				   //call function for update Memory MentionTo field
+				   $scope.updateMemoryMentionTo(userRegisterResponse);
+				   //call function for update Activity MentionTo field
+				   $scope.updateActivityMentionTo(userRegisterResponse);
+				   
 					$scope.hideLoading();
 					Parse.User.logOut();
 					$scope.beforeloginLinks	 = true;
@@ -1057,8 +1144,18 @@ angular.module('starter.controllers', [])
 	
 	
 //CYRme Memory controller******************************Start************************************************
-	.controller('CYRmeMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork,ThumbnailService,$ionicPush, $http,$cordovaDevice, $timeout) {
+	.controller('CYRmeMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork, ThumbnailService, $ionicPush, $http, $cordovaDevice, $timeout) {
 		
+		// current user
+		var currentUser = Parse.User.current();
+		
+		//msg false by default
+		$scope.addMemoryMsg = false;
+		$scope.addMemoryValue ="";
+		// Form data for add Memory
+		$scope.addMemoryData = [];
+		
+		//////////////////////////////////////////////////////////////////////////
 	   //Define Send Notification function
 		$scope.sendNotification=function(deviceToken,deviceType,pushType,fromUserName)
 		{	
@@ -1102,6 +1199,7 @@ angular.module('starter.controllers', [])
 			 // alert("error=="+JSON.stringify(error));
 			});
 		}
+		//////////////////////////////////////////////////////////////////////////
 		
 		//////////////////////////////////////////////////////////////////////////
 		 //Define Send Notification to facebook user function
@@ -1142,7 +1240,8 @@ angular.module('starter.controllers', [])
 		}
 		/////////////////////////////////////////////////////////////////////////
 		
-		//send mail function
+		//////////////////////////////////////////////////////////////////////////
+		//Define send mail function
 		$scope.sendMail=function(to,subject,message,from,fromName)
 		{
 			// An object containing name, toEmail, fromEmail, subject and message
@@ -1165,36 +1264,21 @@ angular.module('starter.controllers', [])
 			  }
 			});
 		}
+		//////////////////////////////////////////////////////////////////////////
 		
-		
-		
-		
-		//alert("anil");
-		
-		///////////////////////////////////////sendmail with composer///////////////////////////////////////////////
-		
-		// current user
-		var currentUser = Parse.User.current();
-		
-		//msg false by default
-		$scope.addMemoryMsg = false;
-		$scope.addMemoryValue ="";
-		// Form data for add Memory
-		$scope.addMemoryData = [];
-			
-		//Add CYRme Memory
-		$scope.addMemory = function() {
-			$scope.showLoading();
-			
-		//check email validation
-		$scope.validateInviteEmail = function(email) {
+		//////////////////////////////////////////////////////////////////////////
+		//Define check email validation
+		$scope.validateInviteEmail = function(email) 
+		{
 			var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
 			//alert(email+"=validateEmail=="+re.test(email));
 			return re.test(email);
 		}
+		//////////////////////////////////////////////////////////////////////////
 		
-		//invite user function start******************************************	
-		$scope.inviteUsers=function(inviteUserListArray)
+		//////////////////////////////////////////////////////////////////////////
+		//Define invite user function start******************************************	
+		$scope.inviteUsers=function(inviteUserListArray,memoryImg,memoryContent)
 		{
 			//alert("inviteUserListArray=="+JSON.stringify(inviteUserListArray));
 			var CYRmeUserNameList=new Array; //CYRme user name array for send notification on mobile
@@ -1273,30 +1357,13 @@ angular.module('starter.controllers', [])
 					 //alert("CYRmeUserEmailList=="+JSON.stringify(CYRmeUserEmailList));
 					if(CYRmeUserNameList.length>0)
 					{ 
-						/* Parse.Push.send({
-						  channels: CYRmeUserNameList,
-						  data: {
-							alert: currentUserName+' have been Invited!'
-						  }
-						}, {
-						  success: function(pushResult) {
-							// Push was successful
-							 alert("pushResult=="+JSON.stringify(pushResult));
-						  },
-						  error: function(error) {
-							// Handle error
-							alert("pusherror=="+JSON.stringify(error));
-						  }
-						});*/
-						
 						//function call send notification by ionic
-						
-						
-					//find device token invited users
+					    //find device token invited users
 						var InstallationQuery = new Parse.Query("Installation");
 						InstallationQuery.containedIn("userId", CYRmeUserIdList);
 						//InstallationQuery.equalTo("user", {__type: "Pointer",className: "_User",objectId: CYRmeUserIdList[0]});
 						InstallationQuery.find({
+
 						  success: function(results){
 							   //alert("results=="+JSON.stringify(results));
 								for (var i = 0; i < results.length; i++) { 
@@ -1320,12 +1387,32 @@ angular.module('starter.controllers', [])
 					 if(otherUserEmailList.length>0)
 					 {
 						var  to			= otherUserEmailList;
-						var  subject	= 'Invite to CYRMe APP!';
-						var  message	= currentUserName+' have been Invited to CYRMe APP!';
+						var  subject	= currentUserName+' have been Invited to CYRMe APP';
+						var  message	= '.';
 						var  from		= currentUserEmail;
 						var  fromName	= currentUserName;
-						
-						$scope.sendMail(to,subject,message,from,fromName);
+						// An object containing name, toEmail, fromEmail, subject,image,content and message
+						var data = { 
+						  toEmail: to,
+						  subject: subject,
+						  message: message,
+						  fromEmail: from,
+						  fromName: fromName,
+						  memoryImg: memoryImg,
+						  memoryContent: memoryContent,
+						  template_id: "5e5dd99c-08ca-4126-873f-9a08b8f4c1af"
+						}
+					
+						// Run sendEmail Parse Cloud function and pass 'data' object to it
+						Parse.Cloud.run("sendEmail", data, {
+						  success: function(object) {
+							//alert("result=="+JSON.stringify(object));
+						  },
+						  error: function(error) {
+							//alert("Error! Email not sent!");
+							//alert("error=="+JSON.stringify(error));
+						  }
+						});
 					 }
 					 
 					 //send notification to facebook user
@@ -1348,7 +1435,14 @@ angular.module('starter.controllers', [])
 			} //invite array if end
 		}
 		//invite user function End****************************************	
-			
+		//////////////////////////////////////////////////////////////////////////
+		
+		
+		//////////////////////////////////////////////////////////////////////////	
+		//Define Add CYRme Memory
+		$scope.addMemory = function() 
+		{
+			$scope.showLoading();
 			
 			if(currentUser && $cordovaNetwork.isOnline()) 
 			{
@@ -1359,11 +1453,8 @@ angular.module('starter.controllers', [])
 				CYRmeMemory.set("dateOfMemory", $scope.addMemoryData['dateOfMemory']);
 				if(String($scope.addMemoryData['mentionTo'])!="undefined")
 				{
-					CYRmeMemory.set("mentionTo", $scope.addMemoryData['mentionTo'].split(","));
-					
-					//call invite users
-					$scope.inviteUsers($scope.addMemoryData['mentionTo'].split(","));
-					
+					var mentionToArray=$scope.addMemoryData['mentionTo'].split(",");
+					CYRmeMemory.set("mentionTo", mentionToArray);
 				}
 				CYRmeMemory.set("content", String($scope.addMemoryData['content']));
 				CYRmeMemory.set("privacy", String($scope.addMemoryData['privacy']));
@@ -1380,36 +1471,37 @@ angular.module('starter.controllers', [])
 					parseFile.save().then(function(parseFile) {
 						CYRmeMemory.set("image", parseFile);
 					   //save CYRmeMemory object
-					   CYRmeMemory.save();
-					   
-					   //hide blow code this code get file from parse and create thumbnil and call save thumbnil to parse.
-					  /* CYRmeMemory.save(null,{
-						success:function(CYRmeObj)
-						{
-							//alert("obj="+CYRmeObj.id);
-							var CYRmeObjId=CYRmeObj.id;
-							var CYRmeQuery = new Parse.Query("CYRme");
-							CYRmeQuery.equalTo("objectId", CYRmeObjId);
-							CYRmeQuery.find({
-							  success: function(results){
-									for (var i = 0; i < results.length; i++) { 
-									  var CYRmeImageObject = results[i];
-									  var CYRmeImageFileObj = CYRmeImageObject.get("image");
-									  var CYRmeImageUrl 	= CYRmeImageFileObj.url();
-									}
-									//call function for generate thumbnail and save in Parse server
-									var fileDataUrl = CYRmeImageUrl;
-									var thumbSizeObj={ width:100, height:100};
-									$scope.generateThumbnailAndSaveParse(fileDataUrl,thumbSizeObj);
-									$scope.$apply();
-							  },
-							   error: function(error){
-								  //alert("Error: " + error.code + " " + error.message);
-							  }
-							});
+					   CYRmeMemory.save(null, {
+						  success: function(memoryRes) {
+							//get activity image
+							var memoryImgObj = memoryRes.get("image");
+							if(memoryImgObj!=undefined)
+							{
+								var memoryImg   = '<img src="'+memoryImgObj.url()+'" >';
+							}
+							else
+							{
+								var memoryImg   = '';
+							}
+							//get memory content
+							 var memoryContent 	 	=memoryRes.get('content');
+							 if(memoryContent!="undefined")
+							 {
+								memoryContent 	 =memoryContent;
+							 }
+							 else
+							 { 
+								 memoryContent 	 ="";
+							 }
+							//call invite users function
+							$scope.inviteUsers(mentionToArray,memoryImg,memoryContent);
+							$scope.$apply();
+						  },
+						  error: function(error) {
+							//alert("Error: " + error.code + " " + error.message);
+							$scope.$apply();
 						  }
-					   }) */
-					   //alert('success: file upload');
+						});
 					}, 
 					  function(error) {
 						// The file either could not be read, or could not be saved to Parse.
@@ -1464,23 +1556,34 @@ angular.module('starter.controllers', [])
 				else
 				{
 					//save CYRmeMemory object
-					CYRmeMemory.save();
+					CYRmeMemory.save(null, {
+						  success: function(memoryRes) {
+							 //get memory content
+							  var memoryContent 	=memoryRes.get('content');
+							  if(memoryContent!="undefined")
+							  {
+								 memoryContent 	 =memoryContent;
+							  }
+							  else
+							  { 
+								  memoryContent  ="";
+							  }
+							 //call invite users function
+							 $scope.inviteUsers(mentionToArray,'',memoryContent);
+							 $scope.$apply();
+						  },
+						  error: function(error) {
+							//alert("Error1: " + error.code + " " + error.message);
+							$scope.$apply();
+						  }
+						});
 				}
 				
 				$timeout(function() {
 					$scope.hideLoading();
-					$state.go("app.viewMemory"); // go to home page
-					$scope.showHomeMsg 	 	= true;
-					$scope.homeMsgValue 	= "Memory has been Added successfully.";
+					$state.go('app.viewMemory',null,{reload:true});// go to viewMemory page
 					$scope.$apply();
 				}, 10000);
-				
-				$timeout(function() {
-					$scope.showHomeMsg 	 	= false;
-				  	$scope.homeMsgValue 	= "";
-					$scope.$apply();
-				}, 20000);
-				
 			}
 			else
 			{
@@ -1491,7 +1594,7 @@ angular.module('starter.controllers', [])
 				$scope.$apply();
 			}
 		};
-		
+		//////////////////////////////////////////////////////////////////////////
 	})
 //CYRme Memory controller******************************End************************************************
 	
@@ -1784,12 +1887,8 @@ angular.module('starter.controllers', [])
 
 
 //activity controller******************************Start************************************************
-	.controller('activity', function($scope ,$rootScope, $state, $stateParams, $ionicLoading, $cordovaNetwork,ThumbnailService,$ionicPush, $http,$cordovaDevice, $timeout) {
+	.controller('activity', function($scope ,$rootScope, $state, $stateParams, $ionicLoading, $cordovaNetwork, ThumbnailService,$ionicPush, $http, $cordovaDevice, $timeout) {
 		
-		
-		 //var fromName_arr		="anil".split(',');
-		 //alert("fromName_arr=="+JSON.stringify(fromName_arr));
-		 
 		// current user
 		var currentUser = Parse.User.current();
 		//msg false by default
@@ -1801,7 +1900,7 @@ angular.module('starter.controllers', [])
 		
 	   //////////////////////////////////////////////////////////////////////////
 	   //Define Send Notification function
-		$scope.sendNotification=function(deviceToken,deviceType,pushType,fromUserName)
+		$scope.sendNotificationActivity=function(deviceToken,deviceType,pushType,fromUserName)
 		{	
 			var tokens = [deviceToken];
 			//Ionic CYRme App ID
@@ -1848,7 +1947,7 @@ angular.module('starter.controllers', [])
 		
 		//////////////////////////////////////////////////////////////////////////
 		 //Define Send Notification to facebook user function
-		$scope.sendNotificationToFacebookUser=function(userFbId,fromName)
+		$scope.sendNotificationToFacebookUserActivity=function(userFbId,fromName)
 		{	
 			// Build the request object
 			var reqFacebook = {
@@ -1887,34 +1986,8 @@ angular.module('starter.controllers', [])
 		
 		
 		//////////////////////////////////////////////////////////////////////////
-		//Define send mail function
-		$scope.sendMailActivity=function(to,subject,message,from,fromName)
-		{
-			// An object containing name, toEmail, fromEmail, subject and message
-			var data = { 
-			  toEmail: to,
-			  subject: subject,
-			  message: message,
-			  fromEmail: from,
-			  fromName: fromName
-			}
-		
-			// Run our Parse Cloud Code and pass our 'data' object to it
-			Parse.Cloud.run("sendEmail", data, {
-			  success: function(object) {
-				//alert("result=="+JSON.stringify(object));
-			  },
-		
-			  error: function(object, error) {
-				//alert("Error! Email not sent!");
-			  }
-			});
-		}
-		//////////////////////////////////////////////////////////////////////////
-		
-		//////////////////////////////////////////////////////////////////////////
 		//Define check email validation
-		$scope.validateInviteEmail = function(email) 
+		$scope.validateInviteEmailActivity = function(email) 
 		{
 			var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
 			//alert(email+"=validateEmail=="+re.test(email));
@@ -1924,7 +1997,7 @@ angular.module('starter.controllers', [])
 		
 		//////////////////////////////////////////////////////////////////////////
 		//Define invite user function start******************************************	
-		$scope.inviteUsers=function(inviteUserListArray)
+		$scope.inviteUsersActivity=function(inviteUserListArray,activityImg,activityContent)
 		{
 			//alert("inviteUserListArray=="+JSON.stringify(inviteUserListArray));
 			var CYRmeUserNameList=new Array; //CYRme user name array for send notification on mobile
@@ -1971,7 +2044,7 @@ angular.module('starter.controllers', [])
 						 //user input value
 						 var inviteUser = inviteUserListArray[j];
 						 
-						if($scope.validateInviteEmail(inviteUser)) //check input value is email
+						if($scope.validateInviteEmailActivity(inviteUser)) //check input value is email
 						{
 							 //check CYRme User Email List loop
 							 if(($.inArray( inviteUser, CYRmeUserEmailList )==-1) && (inviteUser!=currentUser.get('email')))
@@ -2018,7 +2091,7 @@ angular.module('starter.controllers', [])
 								  var deviceType   = InstallationResultObject.get("deviceType");
 								  var pushType     = InstallationResultObject.get("pushType");
 								  var fromUserName = currentUserName;
-								  $scope.sendNotification(deviceToken,deviceType,pushType,fromUserName);
+								  $scope.sendNotificationActivity(deviceToken,deviceType,pushType,fromUserName);
 								}
 						  },
 						   error: function(error){
@@ -2029,64 +2102,36 @@ angular.module('starter.controllers', [])
 					}
 					  
 					 //call function for send email to other users
-					 alert("otherUserEmailList=="+JSON.stringify(otherUserEmailList));
+					// alert("otherUserEmailList=="+JSON.stringify(otherUserEmailList));
 					 if(otherUserEmailList.length>0)
 					 {
 						var  to			= otherUserEmailList;
-						var  subject	= currentUserName+' have been Invited to CYRMe APP!';
+						var  subject	= currentUserName+' have been Invited to CYRMe APP';
 						var  message	= '.';
 						var  from		= currentUserEmail;
-						//var  from		= "CanYouRemember.me";
 						var  fromName	= currentUserName;
-						//var  fromName	= "(CYR.me)" ;
-						
-						
-						
-						
-						// An object containing name, toEmail, fromEmail, subject and message
+						// An object containing name, toEmail, fromEmail, subject,image,content and message
 						var data = { 
 						  toEmail: to,
 						  subject: subject,
 						  message: message,
 						  fromEmail: from,
 						  fromName: fromName,
-						  memoryImg:'<img src="http://files.parsetfss.com/c64b6b03-0caa-4218-8329-5e1bd26fdedc/tfss-685af0f4-8368-4271-9ceb-b337f2627a2a-photoThumb.png" width="500" height="500"/>',
-						  memoryContent: "Test Memory",
+						  memoryImg: activityImg,
+						  memoryContent: activityContent,
 						  template_id: "5e5dd99c-08ca-4126-873f-9a08b8f4c1af"
 						}
 					
-						// Run our Parse Cloud Code and pass our 'data' object to it
+						// Run sendEmail Parse Cloud function and pass 'data' object to it
 						Parse.Cloud.run("sendEmail", data, {
 						  success: function(object) {
-							alert("result=="+JSON.stringify(object));
+							//alert("result=="+JSON.stringify(object));
 						  },
-					
 						  error: function(error) {
 							//alert("Error! Email not sent!");
-							alert("error=="+JSON.stringify(error));
+							//alert("error=="+JSON.stringify(error));
 						  }
 						});
-						
-						
-						/*var message = ""
-+"<img src='img/logo.png' width='192' height='192' />,\n"
-+"\n"
-+"Hello from the CYR.me team,.\n"
-+""+fromName+" has seen this awesome app and has invited you to join and take a look.\n"
-+"CYR.me is a great place to store your life memories and share them with others. You can invite others or add their memories and photos to yours creating a digital diary of events that have happened in your life.\n"
-+"\n"
-+""+fromName+" has mention you in this memory\n"
-+"";*/
-						$scope.sendMailActivity(to,subject,message,from,fromName);
-						// get email template
-						/*$(function() {
-							$.get('inviteUsersEmailTemp.html', function(data) {
-								data.replace('userName', currentUserName);
-								var message=data;
-								$scope.sendMailActivity(to,subject,message,from,fromName);
-							});
-						});*/
-						//$scope.sendMail(to,subject,message,from,fromName);
 					 }
 					 
 					 //send notification to facebook user
@@ -2096,7 +2141,7 @@ angular.module('starter.controllers', [])
 						  for (var f = 0; f < otherFacebookUserIdlList.length; f++)
 						  {
 							 //call send notification to Facebook User
-							$scope.sendNotificationToFacebookUser(otherFacebookUserIdlList[f],currentUserName);
+							$scope.sendNotificationToFacebookUserActivity(otherFacebookUserIdlList[f],currentUserName);
 						  }
 					  }
 					 
@@ -2127,7 +2172,7 @@ angular.module('starter.controllers', [])
 			}
 			else
 			{
-				$state.go("app.viewMemory"); // go to view Memory page
+				$state.go('app.viewMemory',null,{reload:true});// go to viewMemory page
 				var toUser='';
 				$scope.$apply();
 			}
@@ -2144,11 +2189,11 @@ angular.module('starter.controllers', [])
 					
 				if(String($scope.addActivityData['mentionTo'])!="undefined")
 				{
-					Activity.set("mentionTo", $scope.addActivityData['mentionTo'].split(","));
+					var mentionToArray=$scope.addActivityData['mentionTo'].split(",");
+					Activity.set("mentionTo", mentionToArray);
 					//call invite users function
-					$scope.inviteUsers($scope.addActivityData['mentionTo'].split(","));
+					//$scope.inviteUsersActivity(mentionToArray);
 				}
-				
 				//upload file
 				var fileUploadControl = $("#memoryFileUpload")[0];
 				if (fileUploadControl.files.length > 0) {
@@ -2161,7 +2206,38 @@ angular.module('starter.controllers', [])
 					parseFile.save().then(function(parseFile) {
 						Activity.set("image", parseFile);
 					   //save Activity object
-					   Activity.save();
+					   Activity.save(null, {
+						  success: function(activityRes) {
+							 //alert("activityRes=="+JSON.stringify(activityRes));
+							//get activity image
+							var activityImgObj = activityRes.get("image");
+							if(activityImgObj!=undefined)
+							{
+								var activityImg   = '<img src="'+activityImgObj.url()+'" >';
+							}
+							else
+							{
+								var activityImg   = '';
+							}
+							//get activity content
+							 var activityContent 	 	=activityRes.get('content');
+							 if(activityContent!="undefined")
+							 {
+								activityContent 	 =activityContent;
+							 }
+							 else
+							 { 
+								 activityContent 	 ="";
+							 }
+							//call invite users function
+							$scope.inviteUsersActivity(mentionToArray,activityImg,activityContent);
+							$scope.$apply();
+						  },
+						  error: function(error) {
+							//alert("Error: " + error.code + " " + error.message);
+							$scope.$apply();
+						  }
+						});
 					}, 
 					  function(error) {
 						// The file either could not be read, or could not be saved to Parse.
@@ -2216,23 +2292,34 @@ angular.module('starter.controllers', [])
 				else
 				{
 					//save Activity object
-					Activity.save();
+					Activity.save(null, {
+						  success: function(activityRes) {
+							//get activity content
+							 var activityContent 	 	=activityRes.get('content');
+							  if(activityContent!="undefined")
+							  {
+								 activityContent 	 	=activityContent;
+							  }
+							  else
+							  { 
+								  activityContent 	 	="";
+							  }
+							//call invite users function
+							$scope.inviteUsersActivity(mentionToArray,'',activityContent);
+							$scope.$apply();
+						  },
+						  error: function(error) {
+							//alert("Error1: " + error.code + " " + error.message);
+							$scope.$apply();
+						  }
+						});
 				}
 				
 				$timeout(function() {
 					$scope.hideLoading();
-					$state.go("app.viewMemory"); // go to home page
-					$scope.showHomeMsg 	 	= true;
-					$scope.homeMsgValue 	= "Memory has been Added successfully.";
+					$state.go('app.viewMemory',null,{reload:true});// go to viewMemory page
 					$scope.$apply();
 				}, 10000);
-				
-				$timeout(function() {
-					$scope.showHomeMsg 	 	= false;
-				  	$scope.homeMsgValue 	= "";
-					$scope.$apply();
-				}, 20000);
-				
 			}
 			else
 			{
@@ -2279,9 +2366,18 @@ angular.module('starter.controllers', [])
 								  var activitiesResObj = activitiesResults[i];
 								
 								  var activitiesType		 	=activitiesResObj.get('activityType');
-								  var activitiesContent 	 	=activitiesResObj.get('content');
 								  var activitiesAddOnDateTime 	=$filter('date')(activitiesResObj.get("dateOfMemory"), "dd/MM/yyyy");
 								  
+								  var activitiesContent 	 	=activitiesResObj.get('content');
+								  //get Content
+								  if(activitiesContent!="undefined")
+								  {
+									 activitiesContent 	 	=activitiesContent;
+								  }
+								  else
+								  { 
+									  activitiesContent 	 	="";
+								  }
 								  //get activities thumbnill
 								  var activitiesThumbnailObj = activitiesResObj.get("thumbnail");
 								  if(activitiesThumbnailObj!=undefined)
@@ -2392,7 +2488,7 @@ angular.module('starter.controllers', [])
 		}
 		else
 		{
-			$state.go("app.viewMemory"); // go to view Memory page
+			$state.go('app.viewMemory',null,{reload:true});// go to viewMemory page
 			$scope.$apply();
 		}
 		
@@ -2492,7 +2588,7 @@ angular.module('starter.controllers', [])
 		}
 		else
 		{
-			$state.go("app.viewMemory"); // go to view Memory page
+			$state.go('app.viewMemory',null,{reload:true});// go to viewMemory page
 			$scope.$apply();
 		}
 		
