@@ -2,6 +2,10 @@
   <ion-content ng-show="afterloginLinks">
     <div class="list">
     
+        <div class="row card" ng-show="showViewMemoryMsg">
+        	<div class="col"><h4 class="display-msg">{{showViewMemoryValue}}</h4></div>
+   		</div>
+         
         <div class="card" ng-repeat="memoryItem in memoryListArr">
             <a class="item item-avatar item-divider" href="#/app/memoryDetails/{{memoryItem.memoryId}}">
                  <img src="{{memoryItem.memoryUserImg}}">

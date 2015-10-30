@@ -78,6 +78,7 @@ angular.module('starter', [
   
    .state('app.viewMemory', {
     url: '/viewMemory',
+	cache: false,
     views: {
       'menuContent': {
         templateUrl: 'templates/viewMemory.html',

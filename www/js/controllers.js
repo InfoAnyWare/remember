@@ -1603,13 +1603,18 @@ angular.module('starter.controllers', [])
 //View Memory controller******************************Start************************************************
 	.controller('viewMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork, $cordovaFile, $filter, $timeout) {
 		
+		
+		//msg false by default
+		$scope.showViewMemoryMsg 	= false;
+		$scope.showViewMemoryValue  ="";
+		
 		//define function view Memory
 		$scope.viewMemory = function() {
 				$scope.showLoading();
 				var memoryListArray	=new Array(); //store all memory data
 				// check current user are present or not
 				var currentUser = Parse.User.current();
-				if (currentUser) 
+				if(currentUser && $cordovaNetwork.isOnline())  
 				{
 					var memoryQuery   	= Parse.Object.extend("CYRme");
 					var query 			= new Parse.Query(memoryQuery);
@@ -1708,19 +1713,24 @@ angular.module('starter.controllers', [])
 				} 
 				else 
 				{
+				   // Show the error message somewhere and let the user try again.
+					$scope.showViewMemoryMsg = true;
+					$scope.showViewMemoryValue ="Please check your network connection and try again";
+					$scope.hideLoading();
+					$scope.$apply();
+					
 					$timeout(function() {
 						$scope.hideLoading();
 						$state.go("app.home"); // go to home page
 						$scope.$apply();
-				   }, 300);
+				   }, 1000);
 				}
 			};	
 			
 			
 			
-		//call function view memory function	
+		//call function view memory function
 		$scope.viewMemory();
-		
 		
 	})
 //View Memory controller******************************End************************************************	
