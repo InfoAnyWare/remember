@@ -1,0 +1,20 @@
+<ion-view title="{{memoryTitle}} : Type - {{activityDetailsType}}">
+  <ion-content ng-show="afterloginLinks">
+ 
+    <div class="list card">
+      <div class="item item-avatar">
+        <img src="{{activityDetailsUserImg}}">
+        <h2>{{activityDetailsUserName}}</h2>
+        <p>{{activityDetailsAddOnDateTime}}</p>
+      </div>
+    
+      <div class="item item-body">
+        <img class="full-image" src="{{activityDetailsImg}}">
+        <p>
+         {{activityDetailsContent}}
+        </p>
+      </div>
+    </div>
+  
+  </ion-content>
+</ion-view>

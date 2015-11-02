@@ -1,0 +1,55 @@
+<ion-view title="{{memoryDetailsTitle}}">
+  <ion-content ng-show="afterloginLinks">
+ 
+    <div class="list card">
+
+      <div class="item item-avatar">
+        <img src="{{memoryDetailsUserImg}}">
+        <h2>{{memoryDetailsUserName}}</h2>
+        <p>{{memoryDetailsAddOnDateTime}}</p>
+      </div>
+    
+      <div class="item item-body">
+        <img class="full-image" src="{{memoryDetailsImg}}">
+        <p>
+         {{memoryDetailsContent}}
+        </p>
+      </div>
+    
+      <div class="item tabs tabs-secondary tabs-icon-left">
+      
+        <a class="tab-item" href="#" title="I remember this">
+          <strong>{{IREMcount}}</strong>&nbsp;&nbsp;
+          <i class="icon ion-information"></i>
+          IREM
+        </a>
+        
+        <a class="tab-item" href="#" title="Like">
+         <strong> {{LIKEcount}}</strong>&nbsp;&nbsp;
+          <i class="icon ion-thumbsup"></i>
+          Like
+        </a>
+        <a class="tab-item" href="#" title="Follower">
+          <strong>{{FOLLOWcount}}</strong>&nbsp;&nbsp;
+          <i class="icon ion-ios-people"></i>
+          Follower
+        </a>
+      </div>
+      
+      
+      <div class="item tabs tabs-secondary tabs-icon-left">
+      
+        <a class="tab-item" href="#/app/viewAllActivities/{{memoryDetailsId}}/{{memoryDetailsTitle}}">
+          <i class="icon ion-eye"></i>
+          View All Activities
+        </a>
+        <a class="tab-item" href="#/app/activity/{{memoryDetailsId}}/{{memoryDetailsUserId}}">
+          <i class="icon ion-share"></i>
+          Do Activity
+        </a>
+      </div>
+    
+    </div>
+  
+  </ion-content>
+</ion-view>

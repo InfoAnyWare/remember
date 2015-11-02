@@ -42,6 +42,15 @@
          Forgot your password?
         </ion-item>
         
+       <!-- After login show links-->
+        <ion-item menu-close ng-show="afterloginLinks" href="#/app/Memory">
+         <i class="icon ion-plus"></i>
+          Add Memory
+        </ion-item>
+         <ion-item menu-close ng-show="afterloginLinks" href="#/app/viewMemory">
+         <i class="icon ion-images"></i>
+          View Memories
+        </ion-item>
         <ion-item menu-close class="icon ion-person" ng-click="userDetails()" ng-show="afterloginLinks">
          My Account Details
         </ion-item>

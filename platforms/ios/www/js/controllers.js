@@ -1,5 +1,5 @@
 angular.module('starter.controllers', [])
-.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $state, $filter, $ionicLoading, $cordovaFacebook, ngFB, $cordovaFile, $cordovaFileTransfer, $cordovaNetwork, $timeout) {
+.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $state, $filter, $ionicLoading, $cordovaFacebook, ngFB, $cordovaFile, $cordovaFileTransfer, $cordovaNetwork, $timeout,$ionicPush, $http, $cordovaDevice) {
 	
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -276,34 +276,32 @@ angular.module('starter.controllers', [])
 					 window.localStorage.setItem("uLoginThroughMsg", $scope.loginThroughMsg);
 					 //////////////////////////////CYR local store data start////////////////////////////////////
 					  
-					  //get profile image
-					  var query = new Parse.Query("ProfilePhoto");
-						query.equalTo("userObjectId", user.id);
-						query.equalTo("author", user.get("name"));
-						query.find({
-						  success: function(results){
-							 // If the query is successful, store each image URL in an array of image URL's
-        						//imageURLs = [];
-							    for (var i = 0; i < results.length; i++) { 
-								  var object = results[i];
-								  //imageURLs.push(object.get('photoFile'));
-								  var photoFileObj = object.get("photoFile");
-								  var url 		   = photoFileObj.url();
-								}
-								$scope.photo 	= url;
-								$scope.downloadFile(url);
-						  }
-						});
-					  
+					//get user image
+					var photoFileObj = user.get("photoFile");
+					if(photoFileObj!=undefined)
+					{
+						var url 		  = photoFileObj.url();
+						$scope.photo 	  = url;
+						//call function for download ing
+						$scope.downloadFile(url);
+					}
+					else
+					{
+						$scope.photo 	  = '';
+						window.localStorage.removeItem("uPhotolocalPath");
+					}
+					//call function store Device Info for notification
+					$scope.storeDeviceInfo();
 					$scope.hideLoading();
 					$scope.$apply();
 					
 					$state.go("app.home"); // go to home page
 					$timeout(function() {
+						 $scope.hideLoading();
 						 $scope.showHomeMsg = false;
-						}, 5000);
+						 $scope.$apply();
+						}, 4000);
 				  }
-				  
 			  },
 			  error: function(user, error) {
 				// The login failed. Check error to see.
@@ -327,7 +325,79 @@ angular.module('starter.controllers', [])
 	
 	
 	
+	//define function update Memory MentionTo field*************************************start***************
+		$scope.updateMemoryMentionTo = function(userRegisterResponse) {
+			var userRegisterResponse	= userRegisterResponse;
+			var registerUserEmail		= userRegisterResponse.get("email");
+			if(registerUserEmail) 
+			{
+				var memoryQuery   	= Parse.Object.extend("CYRme");
+				var query 			= new Parse.Query(memoryQuery);
+				query.equalTo("mentionTo", registerUserEmail);
+				query.find({
+					success: function(memoryResults) {
+						for(i in memoryResults){
+							//Set memoryResObj to current Memory
+							  var memoryResObj = memoryResults[i];
+							  var memoryMentionTo	=memoryResObj.get('mentionTo');
+							  
+							 //check email present in maintion field 
+							  var index = $.inArray(registerUserEmail, memoryMentionTo)
+							  if (index !== -1) {
+								memoryMentionTo[index] = userRegisterResponse.get("username");
+								memoryResObj.set("mentionTo",memoryMentionTo);
+								memoryResObj.save();
+							  }
+						} // End for loop
+						$scope.hideLoading();
+						$scope.$apply();
+					},
+					error: function(error){
+						//alert("Error: " + error.code + " " + error.message);
+						 $scope.hideLoading();
+						 $scope.$apply();
+					}
+				}); // End memoryQuery find
+			} 
+		};	
+	//function update Memory MentionTo field*************************************End***********************
 	
+	//Define function update Activity MentionTo field*************************************start***************
+		$scope.updateActivityMentionTo = function(userRegisterResponse) {
+			var userRegisterResponse	= userRegisterResponse;
+			var registerUserEmail		= userRegisterResponse.get("email");
+			if(registerUserEmail) 
+			{
+				var activityQuery   = Parse.Object.extend("Activity");
+				var query 			= new Parse.Query(activityQuery);
+				query.equalTo("mentionTo", registerUserEmail);
+				query.find({
+					success: function(activityResults) {
+						for(i in activityResults){
+							//Set activityResObj to current Activity
+							  var activityResObj = activityResults[i];
+							  var activityMentionTo	=activityResObj.get('mentionTo');
+							  
+							 //check email present in maintion field 
+							  var index = $.inArray(registerUserEmail, activityMentionTo)
+							  if (index !== -1) {
+								activityMentionTo[index] = userRegisterResponse.get("username");
+								activityResObj.set("mentionTo",activityMentionTo);
+								activityResObj.save();
+							  }
+						} // End for loop
+						$scope.hideLoading();
+						$scope.$apply();
+					},
+					error: function(error){
+						//alert("Error: " + error.code + " " + error.message);
+						 $scope.hideLoading();
+						 $scope.$apply();
+					}
+				}); // End activityQuery find
+			} 
+		};	
+	//function update Activity MentionTo field*************************************End*****************
 	
 	
 	// Perform the login with FB ****************************************start***************************
@@ -466,6 +536,14 @@ angular.module('starter.controllers', [])
 						 $scope.downloadFile(url);
 					     //////////////////////////////FB local store data start////////////////////////////////////
 						 
+						 //call function store Device Info for notification
+						 $scope.storeDeviceInfo(); 
+						 
+						 //call function for update Memory MentionTo field
+						  $scope.updateMemoryMentionTo(userRegisterResponse);
+						 //call function for update Activity MentionTo field
+						  $scope.updateActivityMentionTo(userRegisterResponse);
+				   
 						 $scope.hideLoading();
 		   				 $scope.$apply();
 							
@@ -521,10 +599,6 @@ angular.module('starter.controllers', [])
 		   }
 		}
 	// Perform the login with FB *****************************************END*******************************
-	
-	
-	
-	
 	
 	
 	
@@ -587,61 +661,83 @@ angular.module('starter.controllers', [])
 			userRegister.set("surName", String($scope.registerData['surName']));
 			userRegister.set("dateOfBirth", $scope.registerData['dateOfBirth']);
 			
-			userRegister.signUp(null, {
-			  success: function(userRegisterResponse) {
+			//var userObjectID=userRegisterResponse.id;
+			var fileUploadControl = $("#photoFileUpload")[0];
+			if (fileUploadControl.files.length > 0) 
+			{
+				var file = fileUploadControl.files[0];
+				var name = "photo.png";
+				var parseFile = new Parse.File(name, file);
+				parseFile.save().then(function(parseFile) {
 				  
-				var userObjectID=userRegisterResponse.id;
-				
-				var fileUploadControl = $("#photoFileUpload")[0];
-				if (fileUploadControl.files.length > 0) {
-					var file = fileUploadControl.files[0];
-					var name = "photo.png";
-					var parseFile = new Parse.File(name, file);
-					parseFile.save().then(function(parseFile,userRegisterResponse) {
-					  // The file has been saved to Parse. file's URL is only available 
-					  //after you save the file or after you get the file from a Parse.Object.
-					  //Get the function url() on the Parse.File object.
-					   var ProfilePhoto =Parse.Object.extend("ProfilePhoto");
-					   var photo = new ProfilePhoto();
-						   photo.set("title", "Profile");
-						   photo.set("photoFile", parseFile);
-						   photo.set("author", String($scope.registerData['username']));
-						   photo.set("userObjectId", userObjectID);
-						   photo.save();
-						  
-						//url = parseFile.url();
-						 console.log("success: file upload");
-					}, 
-					  function(error) {
-						// The file either could not be read, or could not be saved to Parse.
+					userRegister.set("photoFile", parseFile);
+					//////////////////////////////////////////////
+					userRegister.signUp(null, {
+					  success: function(userRegisterResponse) {
+						//alert("userRegisterResponse=="+JSON.stringify(userRegisterResponse));
+						
+					   //call function for update Memory MentionTo field
+					   $scope.updateMemoryMentionTo(userRegisterResponse);
+					   //call function for update Activity MentionTo field
+					   $scope.updateActivityMentionTo(userRegisterResponse);
+				   
+						$scope.hideLoading();
+						Parse.User.logOut();
+						$scope.beforeloginLinks	 = true;
+						$scope.afterloginLinks   = false;
+						
+						$scope.registerThanks();
+						$scope.registerMsg = true;
+						$scope.registerMsgValue ="Please verifying your email address before Login.";
+						$scope.$apply();
+					  },
+					  error: function(userRegisterResponse, error) {
+						// Show the error message somewhere and let the user try again.
+						$scope.hideLoading();
+						$scope.registerMsg = true;
+						$scope.registerMsgValue = $scope.firstCharCapital(error.message);
 						console.log("Error: " + error.code + " " + error.message);
-					  });
-				};
-				  
-				  
-				$scope.hideLoading();
-				Parse.User.logOut();
-				$scope.beforeloginLinks	 = true;
-				$scope.afterloginLinks   = false;
-				
-				$scope.registerThanks();
-				$scope.registerMsg = true;
-				$scope.registerMsgValue ="Please verifying your email address before Login.";
-				$scope.$apply();
-				//console.log("Register: " + userRegisterResponse.code + " " + userRegisterResponse.message);
-				
-				///////////////////////////////////////
-				
-			  },
-			  error: function(userRegisterResponse, error) {
-				// Show the error message somewhere and let the user try again.
-				$scope.hideLoading();
-				$scope.registerMsg = true;
-				$scope.registerMsgValue = $scope.firstCharCapital(error.message);
-				console.log("Error: " + error.code + " " + error.message);
-				$scope.$apply();
-			  }
-			});
+						$scope.$apply();
+					  }
+					});
+					//////////////////////////////////////////////
+				}, 
+				  function(error) {
+					// The file either could not be read, or could not be saved to Parse.
+					console.log("Error: " + error.code + " " + error.message);
+				  });
+			}
+			else
+			{
+				userRegister.signUp(null, {
+				  success: function(userRegisterResponse) {
+				  // alert("userRegisterResponse=="+JSON.stringify(userRegisterResponse));
+				   
+				   //call function for update Memory MentionTo field
+				   $scope.updateMemoryMentionTo(userRegisterResponse);
+				   //call function for update Activity MentionTo field
+				   $scope.updateActivityMentionTo(userRegisterResponse);
+				   
+					$scope.hideLoading();
+					Parse.User.logOut();
+					$scope.beforeloginLinks	 = true;
+					$scope.afterloginLinks   = false;
+					
+					$scope.registerThanks();
+					$scope.registerMsg = true;
+					$scope.registerMsgValue ="Please verifying your email address before Login.";
+					$scope.$apply();
+				  },
+				  error: function(userRegisterResponse, error) {
+					// Show the error message somewhere and let the user try again.
+					$scope.hideLoading();
+					$scope.registerMsg = true;
+					$scope.registerMsgValue = $scope.firstCharCapital(error.message);
+					console.log("Error: " + error.code + " " + error.message);
+					$scope.$apply();
+				  }
+				});
+			}
 			
 		};
 		
@@ -717,26 +813,22 @@ angular.module('starter.controllers', [])
 					}
 					else
 					{
-						var query = new Parse.Query("ProfilePhoto");
-						query.equalTo("userObjectId", currentUser.id);
-						query.equalTo("author", currentUser.get("name"));
-						query.find({
-						  success: function(results){
-							  // If the query is successful, store each image URL in an array of image URL's
-								//imageURLs = [];
-								for (var i = 0; i < results.length; i++) { 
-								  var object = results[i];
-								  //imageURLs.push(object.get('photoFile'));
-								  var photoFileObj = object.get("photoFile");
-								  var url 		   = photoFileObj.url();
-								}
-								$scope.photo 	= url;
-								$scope.$apply();
-						  }
-						});
+						var photoFileObj = currentUser.get("photoFile");
+						if(photoFileObj!=undefined)
+						{
+							var url 		 = photoFileObj.url();
+							$scope.photo 	 = url;
+						}
+						else
+						{
+							$scope.photo 	  = '';
+							window.localStorage.removeItem("uPhotolocalPath");
+						}
 					}
-				} else {
-					
+					$scope.$apply();
+				} 
+				else 
+				{
 					$timeout(function() {
 						$scope.showLocalStorageData();
 				   }, 300);
@@ -991,8 +1083,1524 @@ angular.module('starter.controllers', [])
 		 //show user data from local storage  ***********End***********
 		 
 		 
+		 
+		 ///////////////////////////////////////////
+		 //function define for store device info for notification
+		 $scope.storeDeviceInfo=function()
+		 {
+			//ionic init push service
+			$ionicPush.init({
+			  "debug": false,
+			  "onNotification": function(notification) {
+				var payload = notification.payload;
+				//console.log(notification, payload);
+			  },
+			  "onRegister": function(data) {
+				//console.log(data.token);
+				//alert("data=="+JSON.stringify(data));
+				//store device detail for userin Installation class
+				
+				var platform = $cordovaDevice.getPlatform();
+			   if(platform=="Android")
+			   {
+				   var pushType='gcm';
+			   }
+			   else if(platform=="iOS")
+			   {
+					var pushType='APNS';
+			   }
+			   else
+			   {
+					var pushType='';
+			   }
+			   var pushdata = { 
+								  deviceType: platform,
+								  pushType: pushType,
+								  deviceToken: data.token
+								 };
+					// Run our Parse Cloud Code and pass our 'data' object to it
+					Parse.Cloud.run("registerForNotifications", pushdata, {
+					  success: function(object) {
+						//alert("result11=="+JSON.stringify(object));
+					  },
+					  error: function(error) {
+						//alert("error=="+JSON.stringify(error));
+					  }
+					});
+			  }
+			});
+			$ionicPush.register();	
+		 }
 		////////////////////////////////////////////
 	  	
 		console.log('afterloginLinks=='+$scope.afterloginLinks);
 		
 	})
+	
+	
+	
+	
+	
+	
+	
+//CYRme Memory controller******************************Start************************************************
+	.controller('CYRmeMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork, ThumbnailService, $ionicPush, $http, $cordovaDevice, $timeout) {
+		
+		// current user
+		var currentUser = Parse.User.current();
+		
+		//msg false by default
+		$scope.addMemoryMsg = false;
+		$scope.addMemoryValue ="";
+		// Form data for add Memory
+		$scope.addMemoryData = [];
+		
+		//////////////////////////////////////////////////////////////////////////
+	   //Define Send Notification function
+		$scope.sendNotification=function(deviceToken,deviceType,pushType,fromUserName)
+		{	
+			var tokens = [deviceToken];
+			//Ionic CYRme App ID
+			var appId 		= 'c89f83f4';
+			//Ionic CYRme App Key
+			var privateKey  = '86463055733ab9c6afa85c593bf782c748d3e9ba2a1ea7be';
+			
+			// Encode your key
+			var auth = btoa(privateKey + ':');
+			
+			// Build the request object
+			var req = {
+			  method: 'POST',
+			  url: 'https://push.ionic.io/api/v1/push',
+			  headers: {
+				'Content-Type': 'application/json',
+				'X-Ionic-Application-Id': appId,
+				'Authorization': 'basic ' + auth
+			  },
+			  data: {
+				"tokens": tokens,
+				"production": false,
+				"notification": {
+				  "alert":fromUserName+" has invited you!",
+				}
+			  }
+			};
+	
+			//alert("req"+JSON.stringify(req));
+			// Make the API call
+			$http(req).success(function(resp){
+			  // Handle success
+			  //console.log("Ionic Push: Push success!");
+			 // $scope.sendMail("anil@bunkerbound.net",'Ionic Push success',JSON.stringify(resp),'anil@bunkerbound.net','anil');
+			 // alert("Ionic Push: Push success!=="+JSON.stringify(resp));
+			}).error(function(error){
+			  // Handle error 
+			 // console.log("Ionic Push: Push error...");
+			 // alert("error=="+JSON.stringify(error));
+			});
+		}
+		//////////////////////////////////////////////////////////////////////////
+		
+		//////////////////////////////////////////////////////////////////////////
+		 //Define Send Notification to facebook user function
+		$scope.sendNotificationToFacebookUser=function(userFbId,fromName)
+		{	
+			// Build the request object
+			var reqFacebook = {
+			  method: 'POST',
+			  url: 'https://graph.facebook.com/oauth/access_token?client_id=1442568932738358&client_secret=bedac52dfa99af6e2e3ee9a5d1fb4eb3&grant_type=client_credentials',
+			  headers: {
+				'Content-Type': 'application/json'
+			  }
+			};
+			// Make the API call
+			$http(reqFacebook).success(function(respFacebook){
+			  //send notification to facebook
+			  var reqNotificationFacebook = {
+				  method: 'POST',
+				  url: 'https://graph.facebook.com/'+userFbId+'/notifications?'+respFacebook+'&template="'+fromName+' has seen this awesome app and has invited you to join and take a look."',
+					
+				  headers: {
+					'Content-Type': 'application/json'
+				  }
+				};
+				// Make the API call
+				$http(reqNotificationFacebook).success(function(respNotificationFacebook){
+				 // alert("respFacebook success!=="+JSON.stringify(respNotificationFacebook));
+				  
+				}).error(function(error){
+				  //alert("error=="+JSON.stringify(error));
+				});
+			  
+			  
+			  
+			}).error(function(error){
+			 // alert("error=="+JSON.stringify(error));
+			});
+		}
+		/////////////////////////////////////////////////////////////////////////
+		
+		//////////////////////////////////////////////////////////////////////////
+		//Define send mail function
+		$scope.sendMail=function(to,subject,message,from,fromName)
+		{
+			// An object containing name, toEmail, fromEmail, subject and message
+			var data = { 
+			  toEmail: to,
+			  subject: subject,
+			  message: message,
+			  fromEmail: from,
+			  fromName: fromName
+			}
+		
+			// Run our Parse Cloud Code and pass our 'data' object to it
+			Parse.Cloud.run("sendEmail", data, {
+			  success: function(object) {
+				//alert("result=="+JSON.stringify(object));
+			  },
+		
+			  error: function(object, error) {
+				//alert("Error! Email not sent!");
+			  }
+			});
+		}
+		//////////////////////////////////////////////////////////////////////////
+		
+		//////////////////////////////////////////////////////////////////////////
+		//Define check email validation
+		$scope.validateInviteEmail = function(email) 
+		{
+			var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+			//alert(email+"=validateEmail=="+re.test(email));
+			return re.test(email);
+		}
+		//////////////////////////////////////////////////////////////////////////
+		
+		//////////////////////////////////////////////////////////////////////////
+		//Define invite user function start******************************************	
+		$scope.inviteUsers=function(inviteUserListArray,memoryImg,memoryContent)
+		{
+			//alert("inviteUserListArray=="+JSON.stringify(inviteUserListArray));
+			var CYRmeUserNameList=new Array; //CYRme user name array for send notification on mobile
+			var CYRmeUserEmailList=new Array; //CYRme user email array for send notification on mobile
+			var CYRmeUserIdList=new Array; //CYRme user email array for send notification on mobile
+			
+			
+			var otherUserEmailList=new Array; //other user email array for send mail 
+			var otherFacebookUserIdlList=new Array; //other facebook user id array for get email from facebook as per facebook userid
+			
+			if(Array.isArray(inviteUserListArray))
+			{	
+				//var inviteUser = inviteUserListArray[i];
+				
+				//username field query var
+				var usernameQuery = new Parse.Query("User");
+					usernameQuery.notEqualTo("objectId", currentUser.id);
+					usernameQuery.containedIn("username", inviteUserListArray);
+				
+				//email field query var	
+				var emailQuery 	  = new Parse.Query("User");
+					emailQuery.notEqualTo("objectId", currentUser.id);
+					emailQuery.containedIn("email", inviteUserListArray);
+					
+				//Compound both username and email query var
+				var mainQuery = Parse.Query.or(usernameQuery, emailQuery);
+				mainQuery.find({
+				  success: function(results) {
+					// alert("results.length=="+results.length);
+					 
+					 //check CYRme user
+					 for (var i = 0; i < results.length; i++) 
+					 { 
+						  var object = results[i];
+						  CYRmeUserNameList.push(object.get('name'));
+						  CYRmeUserEmailList.push(object.get('email'));
+						  CYRmeUserIdList.push(object.id);
+					 }
+					 
+					//check other user
+					 //user input array loop start
+					 for(var j=0; j<inviteUserListArray.length; j++)
+					 {
+						 //user input value
+						 var inviteUser = inviteUserListArray[j];
+						 
+						if($scope.validateInviteEmail(inviteUser)) //check input value is email
+						{
+							 //check CYRme User Email List loop
+							 if(($.inArray( inviteUser, CYRmeUserEmailList )==-1) && (inviteUser!=currentUser.get('email')))
+							 {
+								//alert("orher user check email");
+								//Email id add in otherUserEmailList array 
+								otherUserEmailList.push(inviteUser);
+							 }
+							 // alert("otherUserEmailList=="+JSON.stringify(otherUserEmailList));
+						}
+						else
+						{
+							 //check CYRme User Name List loop 
+							 if(($.inArray( inviteUser, CYRmeUserNameList )==-1) && (inviteUser!=currentUser.get('name')))
+							 {
+								//alert("facebook check user id");
+								//Email id add in otherFacebookUserIdlList array 
+								otherFacebookUserIdlList.push(inviteUser);
+							 }
+							 //alert("otherFacebookUserIdlList=="+JSON.stringify(otherFacebookUserIdlList));
+						}
+					 }
+					 
+					 var currentUserName  =currentUser.get('name');
+					 var currentUserEmail =currentUser.get('email');
+					 
+					 //call function for send notification to CYRme users
+					// alert("CYRmeUserNameList=="+JSON.stringify(CYRmeUserNameList));
+					 //alert("CYRmeUserEmailList=="+JSON.stringify(CYRmeUserEmailList));
+					if(CYRmeUserNameList.length>0)
+					{ 
+						//function call send notification by ionic
+					    //find device token invited users
+						var InstallationQuery = new Parse.Query("Installation");
+						InstallationQuery.containedIn("userId", CYRmeUserIdList);
+						//InstallationQuery.equalTo("user", {__type: "Pointer",className: "_User",objectId: CYRmeUserIdList[0]});
+						InstallationQuery.find({
+
+						  success: function(results){
+							   //alert("results=="+JSON.stringify(results));
+								for (var i = 0; i < results.length; i++) { 
+								  var InstallationResultObject = results[i];
+								  var deviceToken  = InstallationResultObject.get("deviceToken");
+								  var deviceType   = InstallationResultObject.get("deviceType");
+								  var pushType     = InstallationResultObject.get("pushType");
+								  var fromUserName = currentUserName;
+								  $scope.sendNotification(deviceToken,deviceType,pushType,fromUserName);
+								}
+						  },
+						   error: function(error){
+							 // alert("Error: " + error.code + " " + error.message);
+						  }
+						});
+						
+					}
+					  
+					 //call function for send email to other users
+					 //alert("otherUserEmailList=="+JSON.stringify(otherUserEmailList));
+					 if(otherUserEmailList.length>0)
+					 {
+						var  to			= otherUserEmailList;
+						var  subject	= currentUserName+' have been Invited to CYRMe APP';
+						var  message	= '.';
+						var  from		= currentUserEmail;
+						var  fromName	= currentUserName;
+						// An object containing name, toEmail, fromEmail, subject,image,content and message
+						var data = { 
+						  toEmail: to,
+						  subject: subject,
+						  message: message,
+						  fromEmail: from,
+						  fromName: fromName,
+						  memoryImg: memoryImg,
+						  memoryContent: memoryContent,
+						  template_id: "5e5dd99c-08ca-4126-873f-9a08b8f4c1af"
+						}
+					
+						// Run sendEmail Parse Cloud function and pass 'data' object to it
+						Parse.Cloud.run("sendEmail", data, {
+						  success: function(object) {
+							//alert("result=="+JSON.stringify(object));
+						  },
+						  error: function(error) {
+							//alert("Error! Email not sent!");
+							//alert("error=="+JSON.stringify(error));
+						  }
+						});
+					 }
+					 
+					 //send notification to facebook user
+					 //alert("otherFacebookUserIdlList=="+JSON.stringify(otherFacebookUserIdlList));
+					  if(otherFacebookUserIdlList.length>0)
+					  {
+						  for (var f = 0; f < otherFacebookUserIdlList.length; f++)
+						  {
+							 //call send notification to Facebook User
+							$scope.sendNotificationToFacebookUser(otherFacebookUserIdlList[f],currentUserName);
+						  }
+					  }
+					 
+				  },
+				  error: function(error) {
+					  //alert("Error: " + error.code + " " + error.message);
+				  }
+				}); //main query end
+				
+			} //invite array if end
+		}
+		//invite user function End****************************************	
+		//////////////////////////////////////////////////////////////////////////
+		
+		
+		//////////////////////////////////////////////////////////////////////////	
+		//Define Add CYRme Memory
+		$scope.addMemory = function() 
+		{
+			$scope.showLoading();
+			
+			if(currentUser && $cordovaNetwork.isOnline()) 
+			{
+				var CYRmeMemory = new Parse.Object("CYRme");
+				CYRmeMemory.set("user", Parse.User.current());
+				CYRmeMemory.set("title", String($scope.addMemoryData['title']));
+				CYRmeMemory.set("typeOfMemory", String($scope.addMemoryData['typeOfMemory']))
+				CYRmeMemory.set("dateOfMemory", $scope.addMemoryData['dateOfMemory']);
+				if(String($scope.addMemoryData['mentionTo'])!="undefined")
+				{
+					var mentionToArray=$scope.addMemoryData['mentionTo'].split(",");
+					CYRmeMemory.set("mentionTo", mentionToArray);
+				}
+				CYRmeMemory.set("content", String($scope.addMemoryData['content']));
+				CYRmeMemory.set("privacy", String($scope.addMemoryData['privacy']));
+				
+				//upload file
+				var fileUploadControl = $("#memoryFileUpload")[0];
+				if (fileUploadControl.files.length > 0) {
+					
+					var file = fileUploadControl.files[0];
+					
+					//upload file to parse server
+					var name = "photo.png";
+					var parseFile = new Parse.File(name, file);
+					parseFile.save().then(function(parseFile) {
+						CYRmeMemory.set("image", parseFile);
+					   //save CYRmeMemory object
+					   CYRmeMemory.save(null, {
+						  success: function(memoryRes) {
+							//get activity image
+							var memoryImgObj = memoryRes.get("image");
+							if(memoryImgObj!=undefined)
+							{
+								var memoryImg   = '<img src="'+memoryImgObj.url()+'" >';
+							}
+							else
+							{
+								var memoryImg   = '';
+							}
+							//get memory content
+							 var memoryContent 	 	=memoryRes.get('content');
+							 if(memoryContent!="undefined")
+							 {
+								memoryContent 	 =memoryContent;
+							 }
+							 else
+							 { 
+								 memoryContent 	 ="";
+							 }
+							//call invite users function
+							$scope.inviteUsers(mentionToArray,memoryImg,memoryContent);
+							$scope.$apply();
+						  },
+						  error: function(error) {
+							//alert("Error: " + error.code + " " + error.message);
+							$scope.$apply();
+						  }
+						});
+					}, 
+					  function(error) {
+						// The file either could not be read, or could not be saved to Parse.
+						// alert("Error: " + error.code + " " + error.message);
+					  });
+					
+					
+					////////////////////////////////Thumb nill upload start////////////////////////////////////////////////
+					//Define function for generate thumbnail and save in Parse server
+					$scope.generateThumbnailAndSaveParse = function(fileData,thumbSizeObjData) {
+					  ThumbnailService.generate(fileData,thumbSizeObjData).then(
+						function success(thumbFile) {
+						  $scope.MPhoto=thumbFile;
+						  var name = "photoThumb.png";
+						  var parseFileThumb = new Parse.File(name, { base64: thumbFile});
+						  parseFileThumb.save().then(function(parseFileThumb) {
+						  CYRmeMemory.set("thumbnail", parseFileThumb);
+						  //save CYRmeMemory object
+						  CYRmeMemory.save();
+						  // alert('success: file upload');
+						   
+						}, 
+						  function(error) {
+							// The file either could not be read, or could not be saved to Parse.
+							// alert("Error: " + error.code + " " + error.message);
+						  });
+						},
+						function error(reason) {
+						 // alert('Error: ' + reason);
+						}
+					  );
+					};
+					
+					
+					//Define function for convert image data into base64 string
+					var fileReader = new FileReader();
+					fileReader.onload = function(fileLoadedEvent) {
+						var thumbnillBase64Data = fileLoadedEvent.target.result; // <--- data: base64
+						//alert("thumbnillBase64Data=="+JSON.stringify(thumbnillBase64Data));
+						//call function for generate thumbnail and save in Parse server
+						var fileDataUrl = thumbnillBase64Data;
+						var thumbSizeObj={ width:100, height:100};
+						$scope.generateThumbnailAndSaveParse(fileDataUrl,thumbSizeObj);
+						$scope.$apply();
+						 //return srcData;
+					}
+					//call function for convert image data into base64 string
+					fileReader.readAsDataURL(file);
+					///////////////////////Thumb nill upload End////////////////////////////////
+					////////////////////////////////////////////////////////////////////////////////
+				}
+				else
+				{
+					//save CYRmeMemory object
+					CYRmeMemory.save(null, {
+						  success: function(memoryRes) {
+							 //get memory content
+							  var memoryContent 	=memoryRes.get('content');
+							  if(memoryContent!="undefined")
+							  {
+								 memoryContent 	 =memoryContent;
+							  }
+							  else
+							  { 
+								  memoryContent  ="";
+							  }
+							 //call invite users function
+							 $scope.inviteUsers(mentionToArray,'',memoryContent);
+							 $scope.$apply();
+						  },
+						  error: function(error) {
+							//alert("Error1: " + error.code + " " + error.message);
+							$scope.$apply();
+						  }
+						});
+				}
+				
+				$timeout(function() {
+					$scope.hideLoading();
+					$state.go('app.viewMemory',null,{reload:true});// go to viewMemory page
+					$scope.$apply();
+				}, 10000);
+			}
+			else
+			{
+				// Show the error message somewhere and let the user try again.
+				$scope.addMemoryMsg = true;
+				$scope.addMemoryValue ="Please check your network connection and try again";
+				$scope.hideLoading();
+				$scope.$apply();
+			}
+		};
+		//////////////////////////////////////////////////////////////////////////
+	})
+//CYRme Memory controller******************************End************************************************
+	
+
+
+//View Memory controller******************************Start************************************************
+	.controller('viewMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork, $cordovaFile, $filter, $timeout) {
+		
+		
+		//msg false by default
+		$scope.showViewMemoryMsg 	= false;
+		$scope.showViewMemoryValue  ="";
+		
+		//define function view Memory
+		$scope.viewMemory = function() {
+				$scope.showLoading();
+				var memoryListArray	=new Array(); //store all memory data
+				// check current user are present or not
+				var currentUser = Parse.User.current();
+				if(currentUser && $cordovaNetwork.isOnline())  
+				{
+					var memoryQuery   	= Parse.Object.extend("CYRme");
+					var query 			= new Parse.Query(memoryQuery);
+					query.include("user");
+					query.descending("createdAt");
+					
+					query.find({
+						success: function(memoryResults) {
+							//alert("memoryResults=="+JSON.stringify(memoryResults));
+							
+							for(i in memoryResults){
+								//Set memoryResObj to current Memory
+								  var memoryResObj = memoryResults[i];
+								
+								  var memoryTitle		 	=memoryResObj.get('title');
+								  var memoryContent 	 	=memoryResObj.get('content');
+								  var memoryAddOnDateTime 	=$filter('date')(memoryResObj.get("dateOfMemory"), "dd/MM/yyyy");
+								   
+								  //get memory thumbnill
+								  var memoryThumbnailObj = memoryResObj.get("thumbnail");
+								  if(memoryThumbnailObj!=undefined)
+								  {
+									  var memoryThumbnailurl = memoryThumbnailObj.url();
+									  var memoryImg 	 	 = memoryThumbnailurl;
+								  }
+								  else
+								  {
+									   var memoryImg 	 	 = '';
+								  }
+								  
+								 //get user profile pic 
+								 var memoryUserImgObj 	 = memoryResObj.get("user").get("photoFile");
+								 if(memoryUserImgObj!=undefined)
+								 {
+									 var memoryUserImgUrl 	 = memoryUserImgObj.url();
+									 var memoryUserImg 	 	 = memoryUserImgUrl;
+								 }
+								 else
+								 {
+									  var memoryUserImg 	 	 = 'img/user.png';
+								 }
+								  
+								 /* Get Memory Author's Name */
+								 var memoryUserName   	= memoryResObj.get("user").get("name");
+								 var memoryUserId   	= memoryResObj.get("user").id;
+								//check user memory privacy
+								if(memoryResObj.get('privacy')=="No")
+								{
+									/* Let's Put the memoryListArray Information in an Array as an Object*/
+									memoryListArray.push(
+									{
+										memoryTitle			: memoryTitle,
+										memoryContent		: memoryContent,
+										memoryAddOnDateTime	: memoryAddOnDateTime,
+										memoryImg			: memoryImg,
+										
+										memoryUserName		: memoryUserName,
+										memoryUserImg		: memoryUserImg,
+										memoryId			: memoryResObj.id
+											
+									});
+								}
+								else
+								{
+									// check username or name or email present in user group
+									if((currentUser.id==memoryUserId) || ($.inArray(currentUser.get("name"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("username"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("email"), memoryResObj.get('mentionTo') )>=0))
+									{
+										/* Let's Put the memoryListArray Information in an Array as an Object*/
+										memoryListArray.push(
+										{
+											memoryTitle			: memoryTitle,
+											memoryContent		: memoryContent,
+											memoryAddOnDateTime	: memoryAddOnDateTime,
+											memoryImg			: memoryImg,
+											
+											memoryUserName		: memoryUserName,
+											memoryUserImg		: memoryUserImg,
+											memoryId			: memoryResObj.id
+												
+										});
+									}
+								}
+								
+							} // End for loop
+							
+							$scope.memoryListArr 	= memoryListArray;
+						    $scope.hideLoading();
+							$scope.$apply();
+						},
+						error: function(error){
+							//alert("Error: " + error.code + " " + error.message);
+							 $scope.hideLoading();
+							 $scope.$apply();
+						}
+					}); // End memoryQuery find
+				} 
+				else 
+				{
+				   // Show the error message somewhere and let the user try again.
+					$scope.showViewMemoryMsg = true;
+					$scope.showViewMemoryValue ="Please check your network connection and try again";
+					$scope.hideLoading();
+					$scope.$apply();
+					
+					$timeout(function() {
+						$scope.hideLoading();
+						$state.go("app.home"); // go to home page
+						$scope.$apply();
+				   }, 1000);
+				}
+			};	
+			
+			
+			
+		//call function view memory function
+		$scope.viewMemory();
+		
+	})
+//View Memory controller******************************End************************************************	
+
+
+
+//memory Details controller******************************Start************************************************
+	.controller('memoryDetails', function($scope ,$rootScope, $ionicLoading, $state, $stateParams, $cordovaNetwork, $cordovaFile, $filter, $timeout) {
+		
+		//define function memory Details
+		$scope.memoryDetails = function(mId) {
+				$scope.showLoading();
+				// check current user are present or not
+				var currentUser = Parse.User.current();
+				if(currentUser) 
+				{
+					var memoryQuery   	= Parse.Object.extend("CYRme");
+					var query 			= new Parse.Query(memoryQuery);
+					query.include("user");
+					query.equalTo("objectId", mId);
+					query.limit(1); // limit to at most 1 results
+					query.find({
+						success: function(memoryResults) {
+							//alert("memoryResults=="+JSON.stringify(memoryResults));
+							
+							for(i in memoryResults){
+								//Set memoryResObj to current Memory
+								  var memoryResObj = memoryResults[i];
+								
+								  $scope.memoryDetailsTitle			=memoryResObj.get('title');
+								  $scope.memoryDetailsContent 	 	=memoryResObj.get('content');
+								  $scope.memoryDetailsAddOnDateTime =$filter('date')(memoryResObj.get("dateOfMemory"), "dd/MM/yyyy");
+								   
+								  //get memory thumbnill
+								  var memoryDetailsImgObj = memoryResObj.get("image");
+								  if(memoryDetailsImgObj!=undefined)
+								  {
+									  var memoryDetailsImgurl 	 = memoryDetailsImgObj.url();
+									  $scope.memoryDetailsImg 	 = memoryDetailsImgurl;
+								  }
+								  else
+								  {
+									   $scope.memoryDetailsImg 	 	 = '';
+								  }
+								  
+								 //get user profile pic 
+								 var memoryDetailsUserImgObj 	 = memoryResObj.get("user").get("photoFile");
+								 if(memoryDetailsUserImgObj!=undefined)
+								 {
+									 var memoryDetailsUserImgUrl 	= memoryDetailsUserImgObj.url();
+									 $scope.memoryDetailsUserImg 	= memoryDetailsUserImgUrl;
+								 }
+								 else
+								 {
+									  $scope.memoryDetailsUserImg 	 = 'img/user.png';
+								 }
+								  
+								 /* Get Memory Author's Name */
+								 $scope.memoryDetailsUserName   	= memoryResObj.get("user").get("name");
+								 $scope.memoryDetailsUserId  		= memoryResObj.get("user").id;
+								 $scope.memoryDetailsId  			= memoryResObj.id;
+								 
+								 
+								 //get IREM activity counts
+								 var activityQuery   	= Parse.Object.extend("Activity");
+								 var query 				= new Parse.Query(activityQuery);
+								 query.equalTo("CYRme", {"__type":"Pointer","className":"CYRme","objectId":memoryResObj.id});
+								 query.equalTo("activityType", "IREM");
+								 query.count({
+									 success: function(IREMcount) {
+										 $scope.IREMcount  	= IREMcount;
+										 $scope.$apply();
+									  },
+									  error: function(error) {
+										// The request failed
+									  }
+									});
+									
+								//get LIKE activity counts
+								 var activityQuery   	= Parse.Object.extend("Activity");
+								 var query 				= new Parse.Query(activityQuery);
+								 query.equalTo("CYRme", {"__type":"Pointer","className":"CYRme","objectId":memoryResObj.id});
+								 query.equalTo("activityType", "LIKE");
+								 query.count({
+									 success: function(LIKEcount) {
+										 $scope.LIKEcount  	= LIKEcount;
+										 $scope.$apply();
+									  },
+									  error: function(error) {
+										// The request failed
+									  }
+									});
+									
+									
+								//get FOLLOW activity counts
+								 var activityQuery   	= Parse.Object.extend("Activity");
+								 var query 				= new Parse.Query(activityQuery);
+								 query.equalTo("CYRme", {"__type":"Pointer","className":"CYRme","objectId":memoryResObj.id});
+								 query.equalTo("activityType", "FOLLOW");
+								 query.count({
+									 success: function(FOLLOWcount) {
+										 $scope.FOLLOWcount  	= FOLLOWcount;
+										 $scope.$apply();
+									  },
+									  error: function(error) {
+										// The request failed
+									  }
+									});
+								 
+								 $scope.hideLoading();
+								 $scope.$apply();
+							} // End for loop
+							
+						},
+						error: function(error){
+							//alert("Error: " + error.code + " " + error.message);
+							 $scope.hideLoading();
+							 $scope.$apply();
+						}
+					}); // End memoryQuery find
+				} 
+				else 
+				{
+					$timeout(function() {
+						$scope.hideLoading();
+						$state.go("app.home"); // go to home page
+						$scope.$apply();
+				   }, 300);
+				}
+			};	
+			
+			
+		//call view memory function	
+		var mId = $stateParams.id;
+		if(mId!='')
+		{
+			$scope.memoryDetails(mId);
+		}
+		else
+		{
+			$state.go("app.viewMemory"); // go to view Memory page
+			$scope.$apply();
+		}
+		
+	})
+//memory Details controller******************************End************************************************	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//activity controller******************************Start************************************************
+	.controller('activity', function($scope ,$rootScope, $state, $stateParams, $ionicLoading, $cordovaNetwork, ThumbnailService,$ionicPush, $http, $cordovaDevice, $timeout) {
+		
+		// current user
+		var currentUser = Parse.User.current();
+		//msg false by default
+		$scope.addActivityMsg = false;
+		$scope.addActivityValue ="";
+		// Form data for add Activity
+		$scope.addActivityData = [];
+		
+		
+	   //////////////////////////////////////////////////////////////////////////
+	   //Define Send Notification function
+		$scope.sendNotificationActivity=function(deviceToken,deviceType,pushType,fromUserName)
+		{	
+			var tokens = [deviceToken];
+			//Ionic CYRme App ID
+			var appId 		= 'c89f83f4';
+			//Ionic CYRme App Key
+			var privateKey  = '86463055733ab9c6afa85c593bf782c748d3e9ba2a1ea7be';
+			
+			// Encode your key
+			var auth = btoa(privateKey + ':');
+			
+			// Build the request object
+			var req = {
+			  method: 'POST',
+			  url: 'https://push.ionic.io/api/v1/push',
+			  headers: {
+				'Content-Type': 'application/json',
+				'X-Ionic-Application-Id': appId,
+				'Authorization': 'basic ' + auth
+			  },
+			  data: {
+				"tokens": tokens,
+				"production": false,
+				"notification": {
+				  "alert":fromUserName+" has invited you!",
+				}
+			  }
+			};
+	
+			//alert("req"+JSON.stringify(req));
+			// Make the API call
+			$http(req).success(function(resp){
+			  // Handle success
+			  //console.log("Ionic Push: Push success!");
+			 // $scope.sendMail("anil@bunkerbound.net",'Ionic Push success',JSON.stringify(resp),'anil@bunkerbound.net','anil');
+			 // alert("Ionic Push: Push success!=="+JSON.stringify(resp));
+			}).error(function(error){
+			  // Handle error 
+			 // console.log("Ionic Push: Push error...");
+			 // alert("error=="+JSON.stringify(error));
+			});
+		}
+		//////////////////////////////////////////////////////////////////////////
+		
+		
+		//////////////////////////////////////////////////////////////////////////
+		 //Define Send Notification to facebook user function
+		$scope.sendNotificationToFacebookUserActivity=function(userFbId,fromName)
+		{	
+			// Build the request object
+			var reqFacebook = {
+			  method: 'POST',
+			  url: 'https://graph.facebook.com/oauth/access_token?client_id=1442568932738358&client_secret=bedac52dfa99af6e2e3ee9a5d1fb4eb3&grant_type=client_credentials',
+			  headers: {
+				'Content-Type': 'application/json'
+			  }
+			};
+			// Make the API call
+			$http(reqFacebook).success(function(respFacebook){
+			  //send notification to facebook
+			  var reqNotificationFacebook = {
+				  method: 'POST',
+				  url: 'https://graph.facebook.com/'+userFbId+'/notifications?'+respFacebook+'&template="'+fromName+' has seen this awesome app and has invited you to join and take a look."',
+					
+				  headers: {
+					'Content-Type': 'application/json'
+				  }
+				};
+				// Make the API call
+				$http(reqNotificationFacebook).success(function(respNotificationFacebook){
+				 // alert("respFacebook success!=="+JSON.stringify(respNotificationFacebook));
+				  
+				}).error(function(error){
+				  //alert("error=="+JSON.stringify(error));
+				});
+			  
+			  
+			  
+			}).error(function(error){
+			 // alert("error=="+JSON.stringify(error));
+			});
+		}
+		/////////////////////////////////////////////////////////////////////////
+		
+		
+		//////////////////////////////////////////////////////////////////////////
+		//Define check email validation
+		$scope.validateInviteEmailActivity = function(email) 
+		{
+			var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+			//alert(email+"=validateEmail=="+re.test(email));
+			return re.test(email);
+		}
+		//////////////////////////////////////////////////////////////////////////
+		
+		//////////////////////////////////////////////////////////////////////////
+		//Define invite user function start******************************************	
+		$scope.inviteUsersActivity=function(inviteUserListArray,activityImg,activityContent)
+		{
+			//alert("inviteUserListArray=="+JSON.stringify(inviteUserListArray));
+			var CYRmeUserNameList=new Array; //CYRme user name array for send notification on mobile
+			var CYRmeUserEmailList=new Array; //CYRme user email array for send notification on mobile
+			var CYRmeUserIdList=new Array; //CYRme user email array for send notification on mobile
+			
+			
+			var otherUserEmailList=new Array; //other user email array for send mail 
+			var otherFacebookUserIdlList=new Array; //other facebook user id array for get email from facebook as per facebook userid
+			
+			if(Array.isArray(inviteUserListArray))
+			{	
+				//var inviteUser = inviteUserListArray[i];
+				
+				//username field query var
+				var usernameQuery = new Parse.Query("User");
+					usernameQuery.notEqualTo("objectId", currentUser.id);
+					usernameQuery.containedIn("username", inviteUserListArray);
+				
+				//email field query var	
+				var emailQuery 	  = new Parse.Query("User");
+					emailQuery.notEqualTo("objectId", currentUser.id);
+					emailQuery.containedIn("email", inviteUserListArray);
+					
+				//Compound both username and email query var
+				var mainQuery = Parse.Query.or(usernameQuery, emailQuery);
+				mainQuery.find({
+				  success: function(results) {
+					// alert("results.length=="+results.length);
+					 
+					 //check CYRme user
+					 for (var i = 0; i < results.length; i++) 
+					 { 
+						  var object = results[i];
+						  CYRmeUserNameList.push(object.get('name'));
+						  CYRmeUserEmailList.push(object.get('email'));
+						  CYRmeUserIdList.push(object.id);
+					 }
+					 
+					//check other user
+					 //user input array loop start
+					 for(var j=0; j<inviteUserListArray.length; j++)
+					 {
+						 //user input value
+						 var inviteUser = inviteUserListArray[j];
+						 
+						if($scope.validateInviteEmailActivity(inviteUser)) //check input value is email
+						{
+							 //check CYRme User Email List loop
+							 if(($.inArray( inviteUser, CYRmeUserEmailList )==-1) && (inviteUser!=currentUser.get('email')))
+							 {
+								//alert("orher user check email");
+								//Email id add in otherUserEmailList array 
+								otherUserEmailList.push(inviteUser);
+							 }
+							 // alert("otherUserEmailList=="+JSON.stringify(otherUserEmailList));
+						}
+						else
+						{
+							 //check CYRme User Name List loop 
+							 if(($.inArray( inviteUser, CYRmeUserNameList )==-1) && (inviteUser!=currentUser.get('name')))
+							 {
+								//alert("facebook check user id");
+								//Email id add in otherFacebookUserIdlList array 
+								otherFacebookUserIdlList.push(inviteUser);
+							 }
+							 //alert("otherFacebookUserIdlList=="+JSON.stringify(otherFacebookUserIdlList));
+						}
+					 }
+					 
+					 var currentUserName  =currentUser.get('name');
+					 var currentUserEmail =currentUser.get('email');
+					 
+					 //call function for send notification to CYRme users
+					// alert("CYRmeUserNameList=="+JSON.stringify(CYRmeUserNameList));
+					 //alert("CYRmeUserEmailList=="+JSON.stringify(CYRmeUserEmailList));
+					if(CYRmeUserNameList.length>0)
+					{ 
+						//function call send notification by ionic
+					   //find device token invited users
+						var InstallationQuery = new Parse.Query("Installation");
+						InstallationQuery.containedIn("userId", CYRmeUserIdList);
+						//InstallationQuery.equalTo("user", {__type: "Pointer",className: "_User",objectId: CYRmeUserIdList[0]});
+						InstallationQuery.find({
+
+						  success: function(results){
+							   //alert("results=="+JSON.stringify(results));
+								for (var i = 0; i < results.length; i++) { 
+								  var InstallationResultObject = results[i];
+								  var deviceToken  = InstallationResultObject.get("deviceToken");
+								  var deviceType   = InstallationResultObject.get("deviceType");
+								  var pushType     = InstallationResultObject.get("pushType");
+								  var fromUserName = currentUserName;
+								  $scope.sendNotificationActivity(deviceToken,deviceType,pushType,fromUserName);
+								}
+						  },
+						   error: function(error){
+							 // alert("Error: " + error.code + " " + error.message);
+						  }
+						});
+						
+					}
+					  
+					 //call function for send email to other users
+					// alert("otherUserEmailList=="+JSON.stringify(otherUserEmailList));
+					 if(otherUserEmailList.length>0)
+					 {
+						var  to			= otherUserEmailList;
+						var  subject	= currentUserName+' have been Invited to CYRMe APP';
+						var  message	= '.';
+						var  from		= currentUserEmail;
+						var  fromName	= currentUserName;
+						// An object containing name, toEmail, fromEmail, subject,image,content and message
+						var data = { 
+						  toEmail: to,
+						  subject: subject,
+						  message: message,
+						  fromEmail: from,
+						  fromName: fromName,
+						  memoryImg: activityImg,
+						  memoryContent: activityContent,
+						  template_id: "5e5dd99c-08ca-4126-873f-9a08b8f4c1af"
+						}
+					
+						// Run sendEmail Parse Cloud function and pass 'data' object to it
+						Parse.Cloud.run("sendEmail", data, {
+						  success: function(object) {
+							//alert("result=="+JSON.stringify(object));
+						  },
+						  error: function(error) {
+							//alert("Error! Email not sent!");
+							//alert("error=="+JSON.stringify(error));
+						  }
+						});
+					 }
+					 
+					 //send notification to facebook user
+					 //alert("otherFacebookUserIdlList=="+JSON.stringify(otherFacebookUserIdlList));
+					  if(otherFacebookUserIdlList.length>0)
+					  {
+						  for (var f = 0; f < otherFacebookUserIdlList.length; f++)
+						  {
+							 //call send notification to Facebook User
+							$scope.sendNotificationToFacebookUserActivity(otherFacebookUserIdlList[f],currentUserName);
+						  }
+					  }
+					 
+				  },
+				  error: function(error) {
+					  //alert("Error: " + error.code + " " + error.message);
+				  }
+				}); //main query end
+				
+			} //invite array if end
+		}
+		//invite user function End****************************************	
+		//////////////////////////////////////////////////////////////////////////
+		
+		
+		//////////////////////////////////////////////////////////////////////////
+		//Define Add Activity
+		$scope.addActivity = function() 
+		{
+			$scope.showLoading();
+			
+			//get to memory id
+			var mId = $stateParams.id;
+			if(mId!='')
+			{
+				//get to User id
+				var toUser=$stateParams.toUser;
+			}
+			else
+			{
+				$state.go('app.viewMemory',null,{reload:true});// go to viewMemory page
+				var toUser='';
+				$scope.$apply();
+			}
+			if(currentUser && $cordovaNetwork.isOnline()) 
+			{
+				var Activity = new Parse.Object("Activity");
+				Activity.set("CYRme", {"__type":"Pointer","className":"CYRme","objectId":mId}); //set pointer to current Memory
+				Activity.set("toUser", {"__type":"Pointer","className":"User","objectId":toUser}); //set memory user pointer in toUser
+				Activity.set("fromUser", currentUser); //set current user pointer in fromUser
+				Activity.set("activityType", String($scope.addActivityData['activityType']))
+				Activity.set("dateOfMemory", $scope.addActivityData['dateOfMemory']);
+				Activity.set("content", String($scope.addActivityData['content']));
+				Activity.set("privacy", String($scope.addActivityData['privacy']));
+					
+				if(String($scope.addActivityData['mentionTo'])!="undefined")
+				{
+					var mentionToArray=$scope.addActivityData['mentionTo'].split(",");
+					Activity.set("mentionTo", mentionToArray);
+					//call invite users function
+					//$scope.inviteUsersActivity(mentionToArray);
+				}
+				//upload file
+				var fileUploadControl = $("#memoryFileUpload")[0];
+				if (fileUploadControl.files.length > 0) {
+					
+					var file = fileUploadControl.files[0];
+					
+					//upload file to parse server
+					var name = "photo.png";
+					var parseFile = new Parse.File(name, file);
+					parseFile.save().then(function(parseFile) {
+						Activity.set("image", parseFile);
+					   //save Activity object
+					   Activity.save(null, {
+						  success: function(activityRes) {
+							 //alert("activityRes=="+JSON.stringify(activityRes));
+							//get activity image
+							var activityImgObj = activityRes.get("image");
+							if(activityImgObj!=undefined)
+							{
+								var activityImg   = '<img src="'+activityImgObj.url()+'" >';
+							}
+							else
+							{
+								var activityImg   = '';
+							}
+							//get activity content
+							 var activityContent 	 	=activityRes.get('content');
+							 if(activityContent!="undefined")
+							 {
+								activityContent 	 =activityContent;
+							 }
+							 else
+							 { 
+								 activityContent 	 ="";
+							 }
+							//call invite users function
+							$scope.inviteUsersActivity(mentionToArray,activityImg,activityContent);
+							$scope.$apply();
+						  },
+						  error: function(error) {
+							//alert("Error: " + error.code + " " + error.message);
+							$scope.$apply();
+						  }
+						});
+					}, 
+					  function(error) {
+						// The file either could not be read, or could not be saved to Parse.
+						// alert("Error: " + error.code + " " + error.message);
+					  });
+					
+					
+					////////////////////////////////Thumb nill upload start////////////////////////////////////////////////
+					//Define function for generate thumbnail and save in Parse server
+					$scope.generateThumbnailAndSaveParse = function(fileData,thumbSizeObjData) {
+					  ThumbnailService.generate(fileData,thumbSizeObjData).then(
+						function success(thumbFile) {
+						  $scope.MPhoto=thumbFile;
+						  var name = "photoThumb.png";
+						  var parseFileThumb = new Parse.File(name, { base64: thumbFile});
+						  parseFileThumb.save().then(function(parseFileThumb) {
+						  Activity.set("thumbnail", parseFileThumb);
+						  //save Activity object
+						  Activity.save();
+						  // alert('success: file upload');
+						   
+						}, 
+						  function(error) {
+							// The file either could not be read, or could not be saved to Parse.
+							// alert("Error: " + error.code + " " + error.message);
+						  });
+						},
+						function error(reason) {
+						 // alert('Error: ' + reason);
+						}
+					  );
+					};
+					
+					
+					//Define function for convert image data into base64 string
+					var fileReader = new FileReader();
+					fileReader.onload = function(fileLoadedEvent) {
+						var thumbnillBase64Data = fileLoadedEvent.target.result; // <--- data: base64
+						//alert("thumbnillBase64Data=="+JSON.stringify(thumbnillBase64Data));
+						//call function for generate thumbnail and save in Parse server
+						var fileDataUrl = thumbnillBase64Data;
+						var thumbSizeObj={ width:100, height:100};
+						$scope.generateThumbnailAndSaveParse(fileDataUrl,thumbSizeObj);
+						$scope.$apply();
+						 //return srcData;
+					}
+					//call function for convert image data into base64 string
+					fileReader.readAsDataURL(file);
+					///////////////////////Thumb nill upload End////////////////////////////////
+					////////////////////////////////////////////////////////////////////////////////
+				}
+				else
+				{
+					//save Activity object
+					Activity.save(null, {
+						  success: function(activityRes) {
+							//get activity content
+							 var activityContent 	 	=activityRes.get('content');
+							  if(activityContent!="undefined")
+							  {
+								 activityContent 	 	=activityContent;
+							  }
+							  else
+							  { 
+								  activityContent 	 	="";
+							  }
+							//call invite users function
+							$scope.inviteUsersActivity(mentionToArray,'',activityContent);
+							$scope.$apply();
+						  },
+						  error: function(error) {
+							//alert("Error1: " + error.code + " " + error.message);
+							$scope.$apply();
+						  }
+						});
+				}
+				
+				$timeout(function() {
+					$scope.hideLoading();
+					$state.go('app.viewMemory',null,{reload:true});// go to viewMemory page
+					$scope.$apply();
+				}, 10000);
+			}
+			else
+			{
+				// Show the error message somewhere and let the user try again.
+				$scope.addActivityMsg = true;
+				$scope.addActivityValue ="Please check your network connection and try again";
+				$scope.hideLoading();
+				$scope.$apply();
+			}
+		};
+		//////////////////////////////////////////////////////////////////////////
+		
+	})
+//activity controller******************************End************************************************
+
+
+
+
+//viewAllActivities controller******************************Start************************************************
+	.controller('viewAllActivities', function($scope ,$rootScope, $state, $stateParams, $ionicLoading, $cordovaNetwork, $cordovaFile, $filter, $timeout ) {
+		
+		//define function view viewAllActivities
+		$scope.viewAllActivities = function(mId) {
+				$scope.showActivities=true;
+				$scope.showLoading();
+				var activitiesListArray	=new Array(); //store all activities data
+				// check current user are present or not
+				var currentUser = Parse.User.current();
+				if (currentUser) 
+				{
+					var activitiesQuery   	= Parse.Object.extend("Activity");
+					var query 				= new Parse.Query(activitiesQuery);
+					query.include("fromUser");
+					query.equalTo("CYRme", {"__type":"Pointer","className":"CYRme","objectId":mId});
+					query.descending("createdAt");
+					
+					query.find({
+						success: function(activitiesResults) {
+							//alert("activitiesResults=="+JSON.stringify(activitiesResults));
+							if(activitiesResults.length>0)
+							{   
+								for(i in activitiesResults){
+								//Set activitiesResObj to current activity
+								  var activitiesResObj = activitiesResults[i];
+								
+								  var activitiesType		 	=activitiesResObj.get('activityType');
+								  var activitiesAddOnDateTime 	=$filter('date')(activitiesResObj.get("dateOfMemory"), "dd/MM/yyyy");
+								  
+								  var activitiesContent 	 	=activitiesResObj.get('content');
+								  //get Content
+								  if(activitiesContent!="undefined")
+								  {
+									 activitiesContent 	 	=activitiesContent;
+								  }
+								  else
+								  { 
+									  activitiesContent 	 	="";
+								  }
+								  //get activities thumbnill
+								  var activitiesThumbnailObj = activitiesResObj.get("thumbnail");
+								  if(activitiesThumbnailObj!=undefined)
+								  {
+									  var activitiesThumbnailurl = activitiesThumbnailObj.url();
+									  var activitiesImg 	 	 = activitiesThumbnailurl;
+								  }
+								  else
+								  {
+									   var activitiesImg 	 	 = '';
+								  }
+								  
+								 //get user profile pic 
+								 var activitiesUserImgObj 	 =  activitiesResObj.get("fromUser").get("photoFile");
+								 if(activitiesUserImgObj!=undefined)
+								 {
+									 var activitiesUserImgUrl 	 = activitiesUserImgObj.url();
+									 var activitiesUserImg 	 	 = activitiesUserImgUrl;
+								 }
+								 else
+								 {
+									  var activitiesUserImg 	 	 = 'img/user.png';
+								 }
+								  
+								 /* Get Memory Author's Name */
+								 var activitiesUserName   	=  activitiesResObj.get("fromUser").get("name");
+								 var activitiesUserId   	=  activitiesResObj.get("fromUser").id;
+								//check user activities privacy
+								if(activitiesResObj.get('privacy')=="No")
+								{
+									/* Let's Put the activitiesListArray Information in an Array as an Object*/
+									activitiesListArray.push(
+									{
+										activitiesType			: activitiesType,
+										activitiesContent		: activitiesContent,
+										activitiesAddOnDateTime	: activitiesAddOnDateTime,
+										activitiesImg			: activitiesImg,
+										
+										activitiesUserName		: activitiesUserName,
+										activitiesUserImg		: activitiesUserImg,
+										activitiesId			: activitiesResObj.id
+											
+									});
+								}
+								else
+								{
+									// check username or name or email present in user group
+									if((currentUser.id==activitiesUserId) || ($.inArray(currentUser.get("name"), activitiesResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("username"), activitiesResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("email"), activitiesResObj.get('mentionTo') )>=0))
+									{
+										/* Let's Put the activitiesListArray Information in an Array as an Object*/
+										activitiesListArray.push(
+										{
+											activitiesType			: activitiesType,
+											activitiesContent		: activitiesContent,
+											activitiesAddOnDateTime	: activitiesAddOnDateTime,
+											activitiesImg			: activitiesImg,
+											
+											activitiesUserName		: activitiesUserName,
+											activitiesUserImg		: activitiesUserImg,
+											activitiesId			: activitiesResObj.id
+												
+										});
+									}
+								  }
+								
+								} // End for loop
+							
+								$scope.activitiesListArr 	= activitiesListArray;
+								$scope.showActivities=true;
+								$scope.hideLoading();
+								$scope.$apply();
+							}
+							else
+							{
+								$scope.hideLoading();
+								$scope.showActivities=false;
+								$scope.$apply();
+							}
+						},
+						error: function(error){
+							//alert("Error: " + error.code + " " + error.message);
+							 $scope.hideLoading();
+							 $scope.$apply();
+						}
+					}); // End activitiesQuery find
+				} 
+				else 
+				{
+					$timeout(function() {
+						$scope.hideLoading();
+						$state.go("app.home"); // go to home page
+						$scope.$apply();
+				   }, 300);
+				}
+			};	
+			
+			
+			
+		//call function view activities function	
+		//call view memory function	
+		var mId = $stateParams.id;
+		if(mId!='')
+		{  
+			var mTitle = $stateParams.mTitle;
+		 	$scope.memoryTitle 	= mTitle;
+			$scope.viewAllActivities(mId);
+			$scope.$apply();
+		}
+		else
+		{
+			$state.go('app.viewMemory',null,{reload:true});// go to viewMemory page
+			$scope.$apply();
+		}
+		
+		
+		
+	})
+//viewAllActivities controller******************************End************************************************
+
+
+//activity Details controller******************************Start************************************************
+	.controller('activityDetails', function($scope ,$rootScope, $ionicLoading, $state, $stateParams, $cordovaNetwork, $cordovaFile, $filter, $timeout) {
+		
+		//define function activity Details
+		$scope.activityDetails = function(aId) {
+				$scope.showLoading();
+				// check current user are present or not
+				var currentUser = Parse.User.current();
+				if(currentUser) 
+				{
+					var activityQuery   	= Parse.Object.extend("Activity");
+					var query 			    = new Parse.Query(activityQuery);
+					query.include("fromUser");
+					query.equalTo("objectId", aId);
+					query.limit(1); // limit to at most 1 results
+					query.find({
+						success: function(activityResults) {
+							//alert("activityResults=="+JSON.stringify(activityResults));
+							
+							for(i in activityResults){
+								//Set activityResObj to current Memory
+								  var activityResObj = activityResults[i];
+								
+								  $scope.activityDetailsType			=activityResObj.get('activityType');
+								  $scope.activityDetailsContent 	 	=activityResObj.get('content');
+								  $scope.activityDetailsAddOnDateTime   =$filter('date')(activityResObj.get("dateOfMemory"), "dd/MM/yyyy");
+								   
+								  //get activity thumbnill
+								  var activityDetailsImgObj = activityResObj.get("image");
+								  if(activityDetailsImgObj!=undefined)
+								  {
+									  var activityDetailsImgurl 	 = activityDetailsImgObj.url();
+									  $scope.activityDetailsImg 	 = activityDetailsImgurl;
+								  }
+								  else
+								  {
+									   $scope.activityDetailsImg 	 	 = '';
+								  }
+								  
+								 //get user profile pic 
+								 var activityDetailsUserImgObj 	 = activityResObj.get("fromUser").get("photoFile");
+								 if(activityDetailsUserImgObj!=undefined)
+								 {
+									 var activityDetailsUserImgUrl 	= activityDetailsUserImgObj.url();
+									 $scope.activityDetailsUserImg 	= activityDetailsUserImgUrl;
+								 }
+								 else
+								 {
+									  $scope.activityDetailsUserImg 	 = 'img/user.png';
+								 }
+								  
+								 /* Get Memory Author's Name */
+								 $scope.activityDetailsUserName   	= activityResObj.get("fromUser").get("name");
+								 $scope.activityDetailsUserId  		= activityResObj.get("fromUser").id;
+								 $scope.activityDetailsId  			= activityResObj.id;
+								 
+								 $scope.hideLoading();
+								 $scope.$apply();
+							} // End for loop
+							
+						},
+						error: function(error){
+							//alert("Error: " + error.code + " " + error.message);
+							 $scope.hideLoading();
+							 $scope.$apply();
+						}
+					}); // End activityQuery find
+				} 
+				else 
+				{
+					$timeout(function() {
+						$scope.hideLoading();
+						$state.go("app.home"); // go to home page
+						$scope.$apply();
+				   }, 300);
+				}
+			};	
+			
+			
+		//call view activity function	
+		var aId = $stateParams.id;
+		if(aId!='')
+		{ 
+			var mTitle = $stateParams.mTitle;
+		 	$scope.memoryTitle 	= mTitle;
+			$scope.$apply();
+			$scope.activityDetails(aId);
+		}
+		else
+		{
+			$state.go('app.viewMemory',null,{reload:true});// go to viewMemory page
+			$scope.$apply();
+		}
+		
+	})
+//activity Details controller******************************End************************************************	

@@ -1,0 +1,87 @@
+<ion-view title="Activity">
+  <ion-content>
+    <form ng-submit="addActivity()" name="addActivityForm" novalidate enctype="multipart/form-data">
+      <div class="list">
+      
+        <label class="item item-input item-stacked-label m-star">
+      		Fields marked with '<i class="ion-ios-medical assertive"></i>' are mandatory
+        </label>
+      
+       	<label class="item item-input display-msg" ng-show="addActivityMsg">
+        	{{addActivityValue}}
+        </label>
+        
+        <label class="item item-input item-select">
+            <div class="input-label">
+              Activity Type <i class="ion-ios-medical assertive m-star-field"></i></span>
+            </div>
+            <select name="activityType" ng-model="addActivityData.activityType" required="required">
+              <option value="IREM">IREM</option>
+              <option selected value="LIKE">LIKE</option>
+              <option value="FOLLOW">FOLLOW</option>
+               <option value="MEM">MEM</option>
+            </select>
+            
+            <span style="color:red" ng-show="addActivityForm.activityType.$dirty && addActivityForm.activityType.$invalid">
+            <span ng-show="addActivityForm.activityType.$error.required">Activity Type is required.</span>
+            </span>
+        </label>
+
+        
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Date Of Memory</span>
+          <input type="date" name="dateOfMemory" ng-model="addActivityData.dateOfMemory" placeholder="MM-DD-YYYY" value="">
+        </label>
+        
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Invite Users</span>
+          <textarea name="mentionTo" ng-model="addActivityData.mentionTo" placeholder="Type CYRme users, facebook user ids or emails separated by comma" autocomplete="off"></textarea> 
+        </label>
+        
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Content</span>
+          <textarea name="content" ng-model="addActivityData.content" placeholder="Content" autocomplete="off"></textarea> 
+        </label>
+        
+         <label class="item item-input">
+          <span class="input-label">Upload Photo</span>
+          <input type="file" name="memoryFileUpload" id="memoryFileUpload" ng-model="addActivityData.photoFileUpload">
+        </label>
+        
+        <div class="list">
+        <label class="item item-input">
+            <span class="input-label">Privacy <i class="ion-ios-medical assertive m-star-field"></i></span>
+            <label class="item item-radio">
+            <input type="radio" name="privacy" ng-model="addActivityData.privacy" value="Yes" required="required">
+            <div class="item-content text-center">
+              Yes
+            </div>
+            <i class="radio-icon ion-checkmark"></i>
+            </label>
+            &nbsp;&nbsp;&nbsp;
+            <label class="item item-radio">
+            <input type="radio" name="privacy" ng-model="addActivityData.privacy" checked="checked" value="No" required="required">
+            <div class="item-content text-center">
+              No
+            </div>
+            <i class="radio-icon ion-checkmark"></i>
+            </label>
+            <span style="color:red" ng-show="addActivityForm.privacy.$dirty && addActivityForm.privacy.$invalid">
+            <span ng-show="addActivityForm.privacy.$error.required">Privacy is required.</span>
+            </span>
+          </label>
+		</div>
+        
+        
+        <label class="item">
+          <button class="button button-block button-positive" type="submit" ng-disabled="((addActivityForm.activityType.$dirty || addActivityForm.activityType.$pristine) && addActivityForm.activityType.$invalid) || ((addActivityForm.privacy.$dirty || addActivityForm.privacy.$pristine) && addActivityForm.privacy.$invalid)">
+         
+          <i class="ion-android-checkmark-circle"></i>
+          Submit</button>
+        </label>
+        
+      </div>
+    </form>
+  </div>
+  </ion-content>
+</ion-view>

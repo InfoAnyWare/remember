@@ -6,14 +6,15 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', [
 
-		'ionic',
+		'ionic','ionic.service.core','ionic.service.push',
   		'ngCordova',
 		'ngOpenFB',
+		'ui.thumbnail',
 		'starter.controllers',
 	])
 
 
-.run(function($ionicPlatform,$rootScope) {
+.run(function($ionicPlatform,$rootScope,$cordovaPush,$http) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -29,11 +30,14 @@ angular.module('starter', [
 	
   });
   
-
 })
 
-.config(function ($stateProvider, $urlRouterProvider, $cordovaFacebookProvider, $cordovaAppRateProvider, $cordovaInAppBrowserProvider) 
+
+.config(function ($stateProvider, $urlRouterProvider, $cordovaFacebookProvider, $cordovaAppRateProvider, $cordovaInAppBrowserProvider, ThumbnailServiceProvider) 
  {
+	 //set default thumbnil width and height
+	 ThumbnailServiceProvider.defaults.width = 100;
+     ThumbnailServiceProvider.defaults.height = 100;
 
     var browserOptions = {
       location: "yes",
@@ -56,10 +60,73 @@ angular.module('starter', [
     url: '/search',
     views: {
       'menuContent': {
-        templateUrl: 'templates/search.html'
+        templateUrl: 'templates/search.html',
+		controller: 'AppCtrl'
       }
     }
   })
+  
+  .state('app.Memory', {
+    url: '/Memory',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/addMemory.html',
+		 controller: "CYRmeMemory"
+      }
+    }
+  })
+  
+   .state('app.viewMemory', {
+    url: '/viewMemory',
+	cache: false,
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/viewMemory.html',
+		 controller: "viewMemory"
+      }
+    }
+  })
+  
+  .state('app.memoryDetails', {
+	url: "/memoryDetails/:id",
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/memoryDetails.html',
+		 controller: "memoryDetails"
+      }
+    }
+  })
+  
+  .state('app.activity', {
+	url: "/activity/:id/:toUser",
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/activity.html',
+		 controller: "activity"
+      }
+    }
+  })
+  
+   .state('app.viewAllActivities', {
+	url: "/viewAllActivities/:id/:mTitle",
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/viewAllActivities.html',
+		 controller: "viewAllActivities"
+      }
+    }
+  })
+  
+  .state('app.activityDetails', {
+	url: "/activityDetails/:id/:mTitle",
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/activityDetails.html',
+		 controller: "activityDetails"
+      }
+    }
+  })
+
 
   .state('app.home', {
       url: '/home',

@@ -1,0 +1,24 @@
+<ion-view title="View Memories">
+  <ion-content ng-show="afterloginLinks">
+    <div class="list">
+    
+        <div class="row card" ng-show="showViewMemoryMsg">
+        	<div class="col"><h4 class="display-msg">{{showViewMemoryValue}}</h4></div>
+   		</div>
+         
+        <div class="card" ng-repeat="memoryItem in memoryListArr">
+            <a class="item item-avatar item-divider" href="#/app/memoryDetails/{{memoryItem.memoryId}}">
+                 <img src="{{memoryItem.memoryUserImg}}">
+                  <strong>{{memoryItem.memoryUserName}}</strong>
+                  <p>{{memoryItem.memoryAddOnDateTime}}</p>
+             </a>
+             <a class="item item-thumbnail-right" href="#/app/memoryDetails/{{memoryItem.memoryId}}">
+                <img src="{{memoryItem.memoryImg}}">
+                <strong>{{memoryItem.memoryTitle}}</strong>
+                <p>{{memoryItem.memoryContent}}</p>
+            </a>
+        </div>
+        
+    </div>
+  </ion-content>
+</ion-view>
