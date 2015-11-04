@@ -585,15 +585,17 @@ angular.module('starter.controllers', [])
 				function(error) {
 					//Error found
 					  $scope.loginModal.show();
-					  $scope.vEmailMsg = true;
-					  $scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
+					  //$scope.vEmailMsg = true;
+					  //$scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
+					  $scope.vEmailMsg = false;
+					  $scope.vEmailMsgValue ="";
 					  $scope.hideLoading();
 					  $scope.$apply();
 					  
-					  $timeout(function() {
+					  /*$timeout(function() {
 						 $scope.vEmailMsg = false;
 						 $scope.vEmailMsgValue ="";
-						}, 3000);
+						}, 3000);*/
 				});
 			
 		   }

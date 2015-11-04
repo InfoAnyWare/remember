@@ -11,7 +11,7 @@
       <div class="list">
       
         <label class="item item-input item-stacked-label m-star">
-      		Fields marked with '<i class="ion-ios-medical assertive"></i>' are mandatory
+      		Fields marked with '<i class="ion-ios-medical assertive"></i>' are mandatory &nbsp;&nbsp;
         </label>
       
        	<label class="item item-input display-msg" ng-show="registerMsg">
@@ -73,8 +73,8 @@
         </label>
         
         <label class="item item-input item-stacked-label">
-          <span class="input-label">Confirm password <i class="ion-ios-medical assertive m-star-field"></i></span>
-          <input type="password" name="confirmPassword" ng-model="registerData.confirmPassword" placeholder="Confirm password" required>
+          <span class="input-label">Confirm Password <i class="ion-ios-medical assertive m-star-field"></i></span>
+          <input type="password" name="confirmPassword" ng-model="registerData.confirmPassword" placeholder="Confirm Password" required>
           <span style="color:red" ng-show="registerForm.confirmPassword.$dirty && registerForm.confirmPassword.$invalid">
           	<span ng-show="registerForm.confirmPassword.$error.required">Confirm password is required.</span>
           </span>
