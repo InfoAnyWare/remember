@@ -44,8 +44,14 @@
         </label>
         
          <label class="item item-input">
-          <span class="input-label">Upload Photo</span>
+          <span class="input-label">Upload Photo ({{fileSizeMBMsg}} Max.)</span>
           <input type="file" name="memoryFileUpload" id="memoryFileUpload" ng-model="addActivityData.photoFileUpload">
+        </label>
+        
+        <label class="item item-input item-stacked-label" ng-show="showFileMsg">
+          <span style="color:red; text-align:center;">
+          	{{fileMsg}}
+          </span>
         </label>
         
         <div class="list">

@@ -1,5 +1,5 @@
 angular.module('starter.controllers', [])
-.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $state, $filter, $ionicLoading, $cordovaFacebook, ngFB, $cordovaFile, $cordovaFileTransfer, $cordovaNetwork, $timeout,$ionicPush, $http, $cordovaDevice) {
+.controller('AppCtrl', function($scope, $ionicModal, $ionicPopup, $state, $filter, $ionicLoading, $cordovaFacebook, ngFB, $cordovaFile, $cordovaFileTransfer, $cordovaNetwork, $timeout, $ionicPush, $http, $cordovaDevice, $rootScope) {
 	
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -8,6 +8,10 @@ angular.module('starter.controllers', [])
   //$scope.$on('$ionicView.enter', function(e) {
   //});
   
+  //set by default file size and msg
+  	$rootScope.fileSizeLimit 	= 2097152;//2MB
+	$rootScope.fileSizeMBMsg 	= "2MB";//2MB
+	$rootScope.fileSizeLimitMsg = "Photo size should not be more then 2MB";
   
   	// function for show Loading
 		$scope.showLoading = function() {
@@ -58,7 +62,9 @@ angular.module('starter.controllers', [])
 		$ionicModal.fromTemplateUrl('templates/register.html', {
 		scope: $scope
 		}).then(function(registerModal) {
-		$scope.registerModal = registerModal;
+			$scope.registerModal = registerModal;
+			$scope.fileSizeMBMsg =$rootScope.fileSizeMBMsg;
+			$scope.showFileMsg = false;
 		});
 		
 	// Create the register thanks modal that we will use later
@@ -668,6 +674,23 @@ angular.module('starter.controllers', [])
 			if (fileUploadControl.files.length > 0) 
 			{
 				var file = fileUploadControl.files[0];
+				
+				//check upload size
+				var fileSize		= file.size;
+				if(parseInt(fileSize)>parseInt($rootScope.fileSizeLimit))
+				{
+					$scope.fileMsg=$rootScope.fileSizeLimitMsg;
+					$scope.showFileMsg = true;
+					$scope.hideLoading();
+					$scope.$apply();
+					return false;
+				}
+				else
+				{
+					$scope.showFileMsg = false;
+					//do nothing
+				}
+				
 				var name = "photo.png";
 				var parseFile = new Parse.File(name, file);
 				parseFile.save().then(function(parseFile) {
@@ -1151,6 +1174,9 @@ angular.module('starter.controllers', [])
 		// current user
 		var currentUser = Parse.User.current();
 		
+		$scope.fileSizeMBMsg =$rootScope.fileSizeMBMsg;
+		$scope.showFileMsg = false;
+		
 		//msg false by default
 		$scope.addMemoryMsg = false;
 		$scope.addMemoryValue ="";
@@ -1467,6 +1493,22 @@ angular.module('starter.controllers', [])
 					
 					var file = fileUploadControl.files[0];
 					
+					//check upload size
+					var fileSize		= file.size;
+					if(parseInt(fileSize)>parseInt($rootScope.fileSizeLimit))
+					{
+						$scope.fileMsg=$rootScope.fileSizeLimitMsg;
+						$scope.showFileMsg = true;
+						$scope.hideLoading();
+						$scope.$apply();
+						return false;
+					}
+					else
+					{
+						$scope.showFileMsg = false;
+						//do nothing
+					}
+					
 					//upload file to parse server
 					var name = "photo.png";
 					var parseFile = new Parse.File(name, file);
@@ -1612,6 +1654,7 @@ angular.module('starter.controllers', [])
 		
 		//define function view Memory
 		$scope.viewMemory = function() {
+				$scope.showMemories=true;
 				$scope.showLoading();
 				var memoryListArray	=new Array(); //store all memory data
 				// check current user are present or not
@@ -1627,62 +1670,45 @@ angular.module('starter.controllers', [])
 						success: function(memoryResults) {
 							//alert("memoryResults=="+JSON.stringify(memoryResults));
 							
-							for(i in memoryResults){
-								//Set memoryResObj to current Memory
-								  var memoryResObj = memoryResults[i];
-								
-								  var memoryTitle		 	=memoryResObj.get('title');
-								  var memoryContent 	 	=memoryResObj.get('content');
-								  var memoryAddOnDateTime 	=$filter('date')(memoryResObj.get("dateOfMemory"), "dd/MM/yyyy");
-								   
-								  //get memory thumbnill
-								  var memoryThumbnailObj = memoryResObj.get("thumbnail");
-								  if(memoryThumbnailObj!=undefined)
-								  {
-									  var memoryThumbnailurl = memoryThumbnailObj.url();
-									  var memoryImg 	 	 = memoryThumbnailurl;
-								  }
-								  else
-								  {
-									   var memoryImg 	 	 = '';
-								  }
-								  
-								 //get user profile pic 
-								 var memoryUserImgObj 	 = memoryResObj.get("user").get("photoFile");
-								 if(memoryUserImgObj!=undefined)
-								 {
-									 var memoryUserImgUrl 	 = memoryUserImgObj.url();
-									 var memoryUserImg 	 	 = memoryUserImgUrl;
-								 }
-								 else
-								 {
-									  var memoryUserImg 	 	 = 'img/user.png';
-								 }
-								  
-								 /* Get Memory Author's Name */
-								 var memoryUserName   	= memoryResObj.get("user").get("name");
-								 var memoryUserId   	= memoryResObj.get("user").id;
-								//check user memory privacy
-								if(memoryResObj.get('privacy')=="No")
-								{
-									/* Let's Put the memoryListArray Information in an Array as an Object*/
-									memoryListArray.push(
-									{
-										memoryTitle			: memoryTitle,
-										memoryContent		: memoryContent,
-										memoryAddOnDateTime	: memoryAddOnDateTime,
-										memoryImg			: memoryImg,
-										
-										memoryUserName		: memoryUserName,
-										memoryUserImg		: memoryUserImg,
-										memoryId			: memoryResObj.id
-											
-									});
-								}
-								else
-								{
-									// check username or name or email present in user group
-									if((currentUser.id==memoryUserId) || ($.inArray(currentUser.get("name"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("username"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("email"), memoryResObj.get('mentionTo') )>=0))
+							if(memoryResults.length>0)
+							{ 
+								for(i in memoryResults){
+									//Set memoryResObj to current Memory
+									  var memoryResObj = memoryResults[i];
+									
+									  var memoryTitle		 	=memoryResObj.get('title');
+									  var memoryContent 	 	=memoryResObj.get('content');
+									  var memoryAddOnDateTime 	=$filter('date')(memoryResObj.get("dateOfMemory"), "dd/MM/yyyy");
+									   
+									  //get memory thumbnill
+									  var memoryThumbnailObj = memoryResObj.get("thumbnail");
+									  if(memoryThumbnailObj!=undefined)
+									  {
+										  var memoryThumbnailurl = memoryThumbnailObj.url();
+										  var memoryImg 	 	 = memoryThumbnailurl;
+									  }
+									  else
+									  {
+										   var memoryImg 	 	 = '';
+									  }
+									  
+									 //get user profile pic 
+									 var memoryUserImgObj 	 = memoryResObj.get("user").get("photoFile");
+									 if(memoryUserImgObj!=undefined)
+									 {
+										 var memoryUserImgUrl 	 = memoryUserImgObj.url();
+										 var memoryUserImg 	 	 = memoryUserImgUrl;
+									 }
+									 else
+									 {
+										  var memoryUserImg 	 	 = 'img/user.png';
+									 }
+									  
+									 /* Get Memory Author's Name */
+									 var memoryUserName   	= memoryResObj.get("user").get("name");
+									 var memoryUserId   	= memoryResObj.get("user").id;
+									//check user memory privacy
+									if(memoryResObj.get('privacy')=="No")
 									{
 										/* Let's Put the memoryListArray Information in an Array as an Object*/
 										memoryListArray.push(
@@ -1698,13 +1724,40 @@ angular.module('starter.controllers', [])
 												
 										});
 									}
-								}
+									else
+									{
+										// check username or name or email present in user group
+										if((currentUser.id==memoryUserId) || ($.inArray(currentUser.get("name"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("username"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("email"), memoryResObj.get('mentionTo') )>=0))
+										{
+											/* Let's Put the memoryListArray Information in an Array as an Object*/
+											memoryListArray.push(
+											{
+												memoryTitle			: memoryTitle,
+												memoryContent		: memoryContent,
+												memoryAddOnDateTime	: memoryAddOnDateTime,
+												memoryImg			: memoryImg,
+												
+												memoryUserName		: memoryUserName,
+												memoryUserImg		: memoryUserImg,
+												memoryId			: memoryResObj.id
+													
+											});
+										}
+									}
+									
+								} // End for loop
 								
-							} // End for loop
-							
-							$scope.memoryListArr 	= memoryListArray;
-						    $scope.hideLoading();
-							$scope.$apply();
+								$scope.memoryListArr 	= memoryListArray;
+								$scope.showMemories		=true;
+								$scope.hideLoading();
+								$scope.$apply();
+							}
+							else
+							{
+								$scope.hideLoading();
+								$scope.showMemories=false;
+								$scope.$apply();
+							}
 						},
 						error: function(error){
 							//alert("Error: " + error.code + " " + error.message);
@@ -1725,7 +1778,7 @@ angular.module('starter.controllers', [])
 						$scope.hideLoading();
 						$state.go("app.home"); // go to home page
 						$scope.$apply();
-				   }, 1000);
+				   }, 2000);
 				}
 			};	
 			
@@ -1903,6 +1956,10 @@ angular.module('starter.controllers', [])
 		
 		// current user
 		var currentUser = Parse.User.current();
+		
+		$scope.fileSizeMBMsg =$rootScope.fileSizeMBMsg;
+		$scope.showFileMsg = false;
+		
 		//msg false by default
 		$scope.addActivityMsg = false;
 		$scope.addActivityValue ="";
@@ -2211,6 +2268,22 @@ angular.module('starter.controllers', [])
 				if (fileUploadControl.files.length > 0) {
 					
 					var file = fileUploadControl.files[0];
+					
+					//check upload size
+					var fileSize		= file.size;
+					if(parseInt(fileSize)>parseInt($rootScope.fileSizeLimit))
+					{
+						$scope.fileMsg=$rootScope.fileSizeLimitMsg;
+						$scope.showFileMsg = true;
+						$scope.hideLoading();
+						$scope.$apply();
+						return false;
+					}
+					else
+					{
+						$scope.showFileMsg = false;
+						//do nothing
+					}
 					
 					//upload file to parse server
 					var name = "photo.png";
