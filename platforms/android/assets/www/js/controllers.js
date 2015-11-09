@@ -1169,7 +1169,7 @@ angular.module('starter.controllers', [])
 	
 	
 //CYRme Memory controller******************************Start************************************************
-	.controller('CYRmeMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork, ThumbnailService, $ionicPush, $http, $cordovaDevice, $timeout) {
+	.controller('CYRmeMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork, ThumbnailService, $ionicPush, $http, $cordovaDevice, $timeout, $stateParams, $ionicHistory) {
 		
 		// current user
 		var currentUser = Parse.User.current();
@@ -1182,6 +1182,72 @@ angular.module('starter.controllers', [])
 		$scope.addMemoryValue ="";
 		// Form data for add Memory
 		$scope.addMemoryData = [];
+		
+		$scope.showMPhoto = false;
+		
+		//code for edit memory
+		var mId = $stateParams.id;
+		if(mId!='' && mId!='ADD')
+		{ 
+			$scope.showLoading();
+			$scope.memoryPageHeading = "Edit";
+			
+			var memoryQuery = Parse.Object.extend("CYRme");
+			var query 		= new Parse.Query(memoryQuery);
+			query.equalTo("objectId", mId);
+			query.equalTo("user", {"__type":"Pointer","className":"_User","objectId":currentUser.id});
+			query.limit(1);
+			
+			query.find({
+				success: function(memoryResults) {
+					//alert("memoryResults=="+JSON.stringify(memoryResults));
+					for(i in memoryResults){
+						//Set memoryResObj to current Memory
+						  var memoryResObj = memoryResults[i];
+						
+						  $scope.addMemoryData['title'] 	   =memoryResObj.get('title');
+						  $scope.addMemoryData['typeOfMemory'] =memoryResObj.get('typeOfMemory');
+						  $scope.addMemoryData['dateOfMemory'] =memoryResObj.get('dateOfMemory');
+						  if(memoryResObj.get('mentionTo')!=undefined)
+						  {
+						  	$scope.addMemoryData['mentionTo']    =memoryResObj.get('mentionTo').toString();
+						  }
+						  
+						  $scope.addMemoryData['content'] =memoryResObj.get('content');
+						  $scope.addMemoryData['privacy'] =memoryResObj.get('privacy');
+						   
+						  //get memory thumbnill
+						  var memoryThumbnailObj = memoryResObj.get("thumbnail");
+						  if(memoryThumbnailObj!=undefined)
+						  {
+							  var memoryThumbnailurl = memoryThumbnailObj.url();
+							  $scope.MPhoto		 	 =memoryThumbnailurl;
+							  $scope.showMPhoto 	 = true;
+						  }
+						  else
+						  {
+							   $scope.MPhoto		='';
+							   $scope.showMPhoto 	= false;
+						  }
+						 
+					} // End for loop
+					
+					$scope.hideLoading();
+					$scope.$apply();
+				},
+				error: function(error){
+					 //alert("Error: " + error.code + " " + error.message);
+					 $scope.hideLoading();
+					 $scope.$apply();
+				}
+			}); // End memoryQuery find
+		}
+		else //code for add memory
+		{
+			$scope.memoryPageHeading = "Add";
+		}
+		
+		
 		
 		//////////////////////////////////////////////////////////////////////////
 	   //Define Send Notification function
@@ -1475,6 +1541,13 @@ angular.module('starter.controllers', [])
 			if(currentUser && $cordovaNetwork.isOnline()) 
 			{
 				var CYRmeMemory = new Parse.Object("CYRme");
+				
+				//condition for edit memory
+				if(mId!='' && mId!='ADD')
+				{ 
+				 	CYRmeMemory.id= mId;
+				}
+				
 				CYRmeMemory.set("user", Parse.User.current());
 				CYRmeMemory.set("title", String($scope.addMemoryData['title']));
 				CYRmeMemory.set("typeOfMemory", String($scope.addMemoryData['typeOfMemory']))
@@ -1601,32 +1674,77 @@ angular.module('starter.controllers', [])
 				{
 					//save CYRmeMemory object
 					CYRmeMemory.save(null, {
-						  success: function(memoryRes) {
-							 //get memory content
-							  var memoryContent 	=memoryRes.get('content');
-							  if(memoryContent!="undefined")
-							  {
-								 memoryContent 	 =memoryContent;
-							  }
-							  else
-							  { 
-								  memoryContent  ="";
-							  }
-							 //call invite users function
-							 $scope.inviteUsers(mentionToArray,'',memoryContent);
-							 $scope.$apply();
-						  },
-						  error: function(error) {
-							//alert("Error1: " + error.code + " " + error.message);
-							$scope.$apply();
+					  success: function(memoryRes) {
+						 //get memory content
+						  var memoryContent 	=memoryRes.get('content');
+						  if(memoryContent!="undefined")
+						  {
+							 memoryContent 	 =memoryContent;
 						  }
-						});
+						  else
+						  { 
+							  memoryContent  ="";
+						  }
+						 //call invite users function
+						 
+						 
+						// $scope.inviteUsers(mentionToArray,'',memoryContent);
+						// $scope.$apply();
+						
+						if(mId!='' && mId!='ADD')
+						{ 
+							//get old memory image
+							var memoryQuery = Parse.Object.extend("CYRme");
+							var query 		= new Parse.Query(memoryQuery);
+							query.equalTo("objectId", mId);
+							query.equalTo("user", {"__type":"Pointer","className":"_User","objectId":currentUser.id});
+							query.limit(1);
+							
+							query.find({
+								success: function(memoryResults) {
+									//alert("memoryResults=="+JSON.stringify(memoryResults));
+									for(i in memoryResults){
+										//Set memoryResObj to current Memory
+										  var memoryResObj = memoryResults[i];
+										  //get memory photo
+										  var memoryPhotoObj = memoryResObj.get("image");
+										  if(memoryPhotoObj!=undefined)
+										  {
+											  var memoryOldPhoto   = '<img src="'+memoryPhotoObj.url()+'" >';
+										  }
+										  else
+										  {
+											 var memoryOldPhoto = '';
+										  }
+										   $scope.inviteUsers(mentionToArray,memoryOldPhoto,memoryContent);
+										   $scope.$apply();
+									} // End for loop
+								}
+							})
+						}
+						else
+						{
+							$scope.inviteUsers(mentionToArray,'',memoryContent);
+							$scope.$apply();
+						}
+						
+					  },
+					  error: function(error) {
+						//alert("Error1: " + error.code + " " + error.message);
+						$scope.$apply();
+					  }
+					});
 				}
 				
 				$timeout(function() {
 					$scope.hideLoading();
+					$ionicHistory.clearHistory();
+					$ionicHistory.nextViewOptions({
+					   disableBack: true
+					});
 					$state.go('app.viewMemory',null,{reload:true});// go to viewMemory page
 					$scope.$apply();
+					
 				}, 10000);
 			}
 			else
@@ -1639,6 +1757,9 @@ angular.module('starter.controllers', [])
 			}
 		};
 		//////////////////////////////////////////////////////////////////////////
+		
+		
+		
 	})
 //CYRme Memory controller******************************End************************************************
 	
@@ -1795,6 +1916,9 @@ angular.module('starter.controllers', [])
 //memory Details controller******************************Start************************************************
 	.controller('memoryDetails', function($scope ,$rootScope, $ionicLoading, $state, $stateParams, $cordovaNetwork, $cordovaFile, $filter, $timeout) {
 		
+		//show edit memory icon
+		$scope.showEditMemory = false;
+		
 		//define function memory Details
 		$scope.memoryDetails = function(mId) {
 				$scope.showLoading();
@@ -1848,6 +1972,14 @@ angular.module('starter.controllers', [])
 								 $scope.memoryDetailsUserId  		= memoryResObj.get("user").id;
 								 $scope.memoryDetailsId  			= memoryResObj.id;
 								 
+								 if(memoryResObj.get("user").id==currentUser.id)
+								 {
+									 $scope.showEditMemory = true;
+								 }
+								 else
+								 {
+									 $scope.showEditMemory = false;
+								 }
 								 
 								 //get IREM activity counts
 								 var activityQuery   	= Parse.Object.extend("Activity");

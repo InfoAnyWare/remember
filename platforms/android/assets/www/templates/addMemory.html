@@ -1,4 +1,4 @@
-<ion-view title="Add Memory">
+<ion-view title="{{memoryPageHeading}} Memory">
   <ion-content>
     <form ng-submit="addMemory()" name="addMemoryForm" novalidate enctype="multipart/form-data">
       <div class="list">
@@ -50,6 +50,11 @@
           </span>
         </label>
         
+        <div class="row item item-text-wrap" ng-show="showMPhoto">
+              <div class="col col-33">Photo : </div>
+              <div class="col col-67"><img align="absmiddle" width="80px" height="80px" src="{{MPhoto}}"  /></div>
+        </div>
+        
         <div class="list">
         <label class="item item-input">
             <span class="input-label">Privacy <i class="ion-ios-medical assertive m-star-field"></i></span>
@@ -73,11 +78,6 @@
             </span>
           </label>
 		</div>
-        
-        <!--<div class="row item item-text-wrap">
-              <div class="col col-33">MPhoto : </div>
-              <div class="col col-67"><img  align="absmiddle" width="100px" height="100px" src="{{MPhoto}}"  /></div>
-          </div>-->
         
         <label class="item">
           <button class="button button-block button-positive" type="submit" ng-disabled="((addMemoryForm.title.$dirty || addMemoryForm.title.$pristine) && addMemoryForm.title.$invalid) || ((addMemoryForm.privacy.$dirty || addMemoryForm.privacy.$pristine) && addMemoryForm.privacy.$invalid) ">

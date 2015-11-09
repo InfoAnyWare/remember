@@ -66,8 +66,8 @@ angular.module('starter', [
     }
   })
   
-  .state('app.Memory', {
-    url: '/Memory',
+  .state('app.addMemory', {
+    url: '/addMemory/:id',
     views: {
       'menuContent': {
         templateUrl: 'templates/addMemory.html',
