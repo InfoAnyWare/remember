@@ -98,7 +98,7 @@ angular.module('starter', [
   })
   
   .state('app.activity', {
-	url: "/activity/:id/:toUser",
+	url: "/activity/:mId/:aId/:toUser",
     views: {
       'menuContent': {
         templateUrl: 'templates/activity.html',
