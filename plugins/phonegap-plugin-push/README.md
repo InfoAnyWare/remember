@@ -4,12 +4,12 @@
 
 ## Installation
 
-This requires phonegap/cordova CLI 5.0+ ( current stable v1.3.0 )
+This requires phonegap/cordova CLI 5.0+ ( current stable v1.4.4 )
 
 ```
 phonegap plugin add phonegap-plugin-push
 ```
-or 
+or
 
 ```
 cordova plugin add phonegap-plugin-push
@@ -21,7 +21,7 @@ It is also possible to install via repo url directly ( unstable )
 phonegap plugin add https://github.com/phonegap/phonegap-plugin-push
 ```
 
-or 
+or
 
 ```
 cordova plugin add https://github.com/phonegap/phonegap-plugin-push
@@ -66,15 +66,17 @@ Parameter | Description
 `options` | `JSON Object` platform specific initialization options.
 `options.android` | `JSON Object` Android specific initialization options.
 `options.android.senderID` | `String` Maps to the project number in the Google Developer Console.
-`options.android.icon` | `String` Optional. The name of a drawable resource to use as the small-icon.
+`options.android.icon` | `String` Optional. The name of a drawable resource to use as the small-icon. The name should not include the extension.
 `options.android.iconColor` | `String` Optional. Sets the background color of the small icon on Android 5.0 and greater. [Supported Formats](http://developer.android.com/reference/android/graphics/Color.html#parseColor(java.lang.String))
 `options.android.sound` | `Boolean` Optional. If `true` it plays the sound specified in the push data or the default system sound. Default is `true`.
 `options.android.vibrate` | `Boolean` Optional. If `true` the device vibrates on receipt of notification. Default is `true`.
 `options.android.clearNotifications` | `Boolean` Optional. If `true` the app clears all pending notifications when it is closed. Default is `true`.
+`options.android.forceShow` | `Boolean` Optional. If `true` will always show a notification, even when the app is on the foreground. Default is `false`.
 `options.ios` | `JSON Object` iOS specific initialization options.
-`options.ios.alert` | `Boolean` Optional. If `true` the device shows an alert on receipt of notification. Default is `false`.
-`options.ios.badge` | `Boolean` Optional. If `true` the device sets the badge number on receipt of notification. Default is `false`.
-`options.ios.sound` | `Boolean` Optional. If `true` the device plays a sound on receipt of notification. Default is `false`.
+`options.ios.alert` | `Boolean`\|`String` Optional. If `true`\|`"true"` the device shows an alert on receipt of notification. Default is `false`\|`"false"`. **Note:** the value you set this option to the first time you call the init method will be how the application always acts. Once this is set programmatically in the init method it can only be changed manually by the user in Settings>Notifications>`App Name`. This is normal iOS behaviour.
+`options.ios.badge` | `Boolean`\|`String` Optional. If `true`\|`"true"` the device sets the badge number on receipt of notification. Default is `false`\|`"false"`. **Note:** the value you set this option to the first time you call the init method will be how the application always acts. Once this is set programmatically in the init method it can only be changed manually by the user in Settings>Notifications>`App Name`. This is normal iOS behaviour.
+`options.ios.sound` | `Boolean`\|`String` Optional. If `true`\|`"true"` the device plays a sound on receipt of notification. Default is `false`\|`"false"`. **Note:** the value you set this option to the first time you call the init method will be how the application always acts. Once this is set programmatically in the init method it can only be changed manually by the user in Settings>Notifications>`App Name`. This is normal iOS behaviour.
+`options.ios.clearBadge` | `Boolean`\|`String` Optional. If `true`\|`"true"` the badge will be cleared on app startup. Default is `false`\|`"false"`.
 `options.windows` | `JSON Object` Windows specific initialization options.
 
 #### Returns
@@ -154,6 +156,26 @@ push.on('error', function(e) {
 });
 ```
 
+### push.off(event, handle)
+
+Parameter | Description
+--------- | ------------
+`event` | `String` Name of the event type. The possible event names are the same as for the ```push.on``` function.
+`handle` | `Function` handle to the function to get removed.
+
+#### Example
+```javascript
+var eventHandler = function(data){ /*...*/};
+
+//Adding handler for notification event
+push.on('notification', eventHandler);
+
+//Removing handler for notification event
+push.off('notification', eventHandler);
+```
+
+As stated in the example, you will have to store your event handler if you are planning to remove it.
+
 ### push.unregister(successHandler, errorHandler)
 
 The unregister method is used when the application no longer wants to receive push notifications.
@@ -176,6 +198,30 @@ The `count` is an integer indicating what number should show up in the badge. Pa
 push.setApplicationIconBadgeNumber(successHandler, errorHandler, count);
 ```
 
+### push.getApplicationIconBadgeNumber(successHandler, errorHandler) - iOS only
+
+Get the current badge count visible when the app is not running
+
+successHandler gets called with an integer which is the current badge count
+
+#### Example
+
+```javascript
+push.getApplicationIconBadgeNumber(successHandler, errorHandler);
+```
+
+### push.finish(successHandler, errorHandler) - iOS only
+
+Tells the OS that you are done processing a background push notification.
+
+successHandler gets called when background push processing is successfully completed.
+
+#### Example
+
+```javascript
+push.finish(successHandler, errorHandler);
+```
+
 ## PhoneGap Build Support
 
 Including this plugin in a project that is built by PhoneGap Build is as easy as adding:
@@ -190,9 +236,17 @@ into your apps `config.xml` file. PhoneGap Build will pick up the latest version
 <gap:plugin name="phonegap-plugin-push" source="npm" version="1.2.3" />
 ```
 
-Note: version 1.3.0 of this plugin begins to use Gradle to install the Android Support Framework. Gradle is not yet supported on PhoneGap Build so please use version 1.2.3 when building your app on PhoneGap Build.
+Note: version 1.3.0 of this plugin begins to use Gradle to install the Android Support Framework. Support for Gradle has recently been added to PhoneGap Build. Please read [this blog post](http://phonegap.com/blog/2015/09/28/android-using-gradle/) for more information.
 
 ## Android Behaviour
+
+### Compiling
+
+As of version 1.3.0 the plugin has been switched to using Gradle/Maven for building. You will need to ensure that you have installed the Android Support Library version 23 or greater, Android Support Repository version 20 or greater, Google Play Services version 27 or greater and Google Repository version 22 or greater.
+
+![android support library](https://cloud.githubusercontent.com/assets/353180/10230226/0627931e-684a-11e5-9a6b-72d72997f655.png)
+
+For more detailed instructions on how to install the Android Support Library visit [Google's documentation](https://developer.android.com/tools/support-library/setup.html).
 
 ### Images
 
@@ -212,10 +266,10 @@ This is because Android now uses Material design and the default icon for push w
 In order to get a better user experience you can specify an alternate icon and background color to be shown when receiving a push notification. The code would look like this:
 
 ```javascript
-	var push = PushNotification.init({ 
-		"android": { 
-			"senderID": "123456789", "icon": "phonegap", "iconColor": "blue"}, 
-		"ios": {"alert": "true", "badge": "true", "sound": "true"}, "windows": {} 
+	var push = PushNotification.init({
+		"android": {
+			"senderID": "123456789", "icon": "phonegap", "iconColor": "blue"},
+		"ios": {"alert": "true", "badge": "true", "sound": "true"}, "windows": {}
 	});
 ```
 
@@ -439,6 +493,65 @@ This will produce the following notification in your tray:
 
 ![2015-08-25 16 08 00](https://cloud.githubusercontent.com/assets/353180/9472260/3655fa7a-4b22-11e5-8d87-20528112de16.png)
 
+### Co-existing with FaceBook Plugin
+
+There are a number of Cordova FaceBook Plugins available but the one that we recommend is [Jeduan's fork](https://github.com/jeduan/cordova-plugin-facebook4) of the original Wizcorp plugin. It is setup to use Gradle/Maven properly and the latest FaceBook SDK.
+
+To add to your app:
+
+```
+phonegap plugin add https://github.com/jeduan/cordova-plugin-facebook4 --variable APP_ID="App ID" --variable APP_NAME="App Name"
+```
+or
+
+```
+cordova plugin add https://github.com/jeduan/cordova-plugin-facebook4 --variable APP_ID="App ID" --variable APP_NAME="App Name"
+```
+
+If you have an issue compiling the app and you are getting this error:
+
+```
+* What went wrong:
+Execution failed for task ':processDebugManifest'.
+> Manifest merger failed : uses-sdk:minSdkVersion 14 cannot be smaller than version 15 declared in library /Users/smacdona/code/bookface/platforms/android/build/intermediates/exploded-aar/com.facebook.android/facebook-android-sdk/4.6.0/AndroidManifest.xml
+  	Suggestion: use tools:overrideLibrary="com.facebook" to force usage
+```
+
+Then you can add the following entry into your config.xml file in the android platform tag.
+
+```xml
+<platform name="android">
+    <preference name="android-minSdkVersion" value="15"/>
+ </platform>
+```
+
+
+### Background Notifications
+
+On Android if you want your `on('notification')` event handler to be called when your app is in the background it is relatively simple.
+
+The JSON you send to GCM should not contain a title or message parameter. For instance the following JSON:
+
+```javascript
+{
+  title: "Test Push",
+  message: "Push number 1",
+  info: "super secret info"
+}
+```
+
+will produce a notification in the notification shade and call your `on('notification')` event handler.
+
+However if you want your `on('notification')` event handler called but no notification to be shown in the shader you would omit the `alert` property and send the following JSON to GCM:
+
+```javascript
+{
+  info: "super secret info"
+}
+```
+
+Omitting the message and title properties will keep your push from being added to the notification shade but it will still trigger your `on('notification')` event handler.
+
 ## iOS Behaviour
 
 ### Sound
@@ -456,6 +569,68 @@ Then send the follow JSON from APNS:
 }
 ```
 
+### Background Notifications
+
+On iOS if you want your `on('notification')` event handler to be called when your app is in the background you will need to do a few things.
+
+First the JSON you send from APNS will need to include `content-available: 1` to the `aps` object. The `content-available: 1` property in your push message is a signal to iOS to wake up your app and give it up to 30 seconds of background processing. If do not want this type of behaviour just omit `content-available: 1` from your push data.
+
+
+For instance the following JSON:
+
+```javascript
+{
+    "aps": {
+        "alert": "Test background push",
+        "content-available": "1"
+    }
+}
+```
+
+will produce a notification in the notification shade and call your `on('notification')` event handler.
+
+However if you want your `on('notification')` event handler called but no notification to be shown in the shader you would omit the `alert` property and send the following JSON to APNS:
+
+```javascript
+{
+    "aps": {
+        "data": "Test silent background push",
+        "moredata": "Do more stuff",
+        "content-available": "1"
+    }
+}
+```
+
+That covers what you need to do on the server side to accept background pushes on iOS. However, it is critically important that you continue reading as there will be a change in your `on('notification')`. When you receive a background push on iOS you will be given 30 seconds of time in which to complete a task. If you spend longer than 30 seconds on the task the OS may decide that your app is misbehaving and kill it. In order to signal iOS that your `on('notification')` handler is done you will need to call the new `push.finish()` method.
+
+For example:
+
+```javascript
+var push = PushNotification.init({
+    "ios": {
+      "sound": true,
+      "vibration": true,
+      "badge": true,
+      "clearBadge": true
+    }
+});
+
+push.on('registration', function(data) {
+    // send data.registrationId to push service
+});
+
+
+push.on('notification', function(data) {
+    // do something with the push data
+    // then call finish to let the OS know we are done
+    push.finish(function() {
+        console.log("processing of push data is finished");
+    });
+});
+```
+
+It is absolutely critical that you call `push.finish()` when you have successfully processed your background push data.
+
 ## Windows Behaviour
 
 ###Notifications
@@ -468,11 +643,11 @@ For advanced templates and usage, the notification object is included in [`data.
 
 ### Setting Toast Capable Option for Windows
 
-This plugin automatically sets the toast capable flag to be true for Cordova 5.1.1+. For lower versions, you must declare that it is Toast Capable in your app's manifest file. 
+This plugin automatically sets the toast capable flag to be true for Cordova 5.1.1+. For lower versions, you must declare that it is Toast Capable in your app's manifest file.
 
 ### Disabling the default processing of notifications by Windows
 
-The default handling can be disabled by setting the 'cancel' property in the notification object. 
+The default handling can be disabled by setting the 'cancel' property in the notification object.
 
 ```
 data.additionalData.pushNotificationReceivedEventArgs.cancel = true

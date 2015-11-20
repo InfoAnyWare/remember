@@ -9,19 +9,11 @@
                 "parents": {
                     "/*": [
                         {
-                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
                             "count": 1
                         },
                         {
                             "xml": "<feature name=\"Notification\"><param name=\"android-package\" value=\"org.apache.cordova.dialogs.Notification\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"SplashScreen\"><param name=\"android-package\" value=\"org.apache.cordova.splashscreen.SplashScreen\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"InAppBrowser\"><param name=\"android-package\" value=\"org.apache.cordova.inappbrowser.InAppBrowser\" /></feature>",
                             "count": 1
                         },
                         {
@@ -33,15 +25,23 @@
                             "count": 1
                         },
                         {
+                            "xml": "<feature name=\"InAppBrowser\"><param name=\"android-package\" value=\"org.apache.cordova.inappbrowser.InAppBrowser\" /></feature>",
+                            "count": 1
+                        },
+                        {
                             "xml": "<feature name=\"NetworkStatus\"><param name=\"android-package\" value=\"org.apache.cordova.networkinformation.NetworkManager\" /></feature>",
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"PushNotification\"><param name=\"android-package\" value=\"com.adobe.phonegap.push.PushPlugin\" /></feature>",
+                            "xml": "<feature name=\"SplashScreen\"><param name=\"android-package\" value=\"org.apache.cordova.splashscreen.SplashScreen\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
+                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"PushNotification\"><param name=\"android-package\" value=\"com.adobe.phonegap.push.PushPlugin\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -51,37 +51,7 @@
                 "parents": {
                     "/*": [
                         {
-                            "xml": "<feature name=\"CordovaFacebook\"><param name=\"android-package\" value=\"com.blakeisrael.cordova.CordovaFacebook\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://m.facebook.com\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://graph.facebook.com\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://api.facebook.com\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://*.fbcdn.net\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<access origin=\"https://*.akamaihd.net\" />",
-                            "count": 1
-                        }
-                    ]
-                }
-            },
-            "res/values/strings.xml": {
-                "parents": {
-                    "/*": [
-                        {
-                            "xml": "<string name=\"facebook_app_id\">1442568932738358</string>",
+                            "xml": "<preference name=\"AndroidPersistentFileLocation\" value=\"Internal\" />",
                             "count": 1
                         }
                     ]
@@ -89,20 +59,6 @@
             },
             "AndroidManifest.xml": {
                 "parents": {
-                    "application": [
-                        {
-                            "xml": "<meta-data android:name=\"com.facebook.sdk.ApplicationId\" android:value=\"@string/facebook_app_id\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<activity android:configChanges=\"keyboard|keyboardHidden|screenLayout|screenSize|orientation\" android:label=\"@string/app_name\" android:name=\"com.facebook.FacebookActivity\" android:theme=\"@android:style/Theme.Translucent.NoTitleBar\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<provider android:authorities=\"com.facebook.app.FacebookContentProvider1442568932738358\" android:exported=\"true\" android:name=\"com.facebook.FacebookContentProvider\" />",
-                            "count": 1
-                        }
-                    ],
                     "/*": [
                         {
                             "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
@@ -114,6 +70,10 @@
                         }
                     ],
                     "/manifest": [
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.INTERNET\" />",
+                            "count": 1
+                        },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
                             "count": 1
@@ -145,11 +105,19 @@
                             "count": 1
                         },
                         {
-                            "xml": "<receiver android:name=\"com.adobe.phonegap.push.CordovaGCMBroadcastReceiver\" android:permission=\"com.google.android.c2dm.permission.SEND\"><intent-filter><action android:name=\"com.google.android.c2dm.intent.RECEIVE\" /><action android:name=\"com.google.android.c2dm.intent.REGISTRATION\" /><category android:name=\"com.ionicframework.canyourememberme322971\" /></intent-filter></receiver>",
+                            "xml": "<receiver android:exported=\"true\" android:name=\"com.google.android.gms.gcm.GcmReceiver\" android:permission=\"com.google.android.c2dm.permission.SEND\"><intent-filter><action android:name=\"com.google.android.c2dm.intent.RECEIVE\" /><category android:name=\"com.ionicframework.canyourememberme322971\" /></intent-filter></receiver>",
                             "count": 1
                         },
                         {
-                            "xml": "<service android:name=\"com.adobe.phonegap.push.GCMIntentService\" />",
+                            "xml": "<service android:exported=\"false\" android:name=\"com.adobe.phonegap.push.GCMIntentService\"><intent-filter><action android:name=\"com.google.android.c2dm.intent.RECEIVE\" /></intent-filter></service>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<service android:exported=\"false\" android:name=\"com.adobe.phonegap.push.PushInstanceIDListenerService\"><intent-filter><action android:name=\"com.google.android.gms.iid.InstanceID\" /></intent-filter></service>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<service android:exported=\"false\" android:name=\"com.adobe.phonegap.push.RegistrationIntentService\"></service>",
                             "count": 1
                         }
                     ]
@@ -158,39 +126,33 @@
         }
     },
     "installed_plugins": {
-        "cordova-plugin-whitelist": {
+        "cordova-plugin-device": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
-        "cordova-plugin-facebook": {
-            "FACEBOOK_APP_ID": "1442568932738358",
-            "FACEBOOK_DISPLAY_NAME": "canYouRememberMe",
+        "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
-        "org.apache.cordova.dialogs": {
+        "cordova-plugin-file": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
-        "cordova-plugin-splashscreen": {
+        "cordova-plugin-file-transfer": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
         "cordova-plugin-inappbrowser": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
-        "org.apache.cordova.file-transfer": {
+        "cordova-plugin-network-information": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
-        "org.apache.cordova.network-information": {
+        "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
+        },
+        "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
         "phonegap-plugin-push": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
-        },
-        "org.apache.cordova.device": {
-            "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         }
     },
-    "dependent_plugins": {
-        "org.apache.cordova.file": {
-            "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
-        }
-    }
+    "dependent_plugins": {}
 }

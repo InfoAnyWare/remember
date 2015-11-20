@@ -56,17 +56,7 @@ angular.module('starter', [
     controller: 'AppCtrl'
   })
 
-  .state('app.search', {
-    url: '/search',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/search.html',
-		controller: 'AppCtrl'
-      }
-    }
-  })
-  
-  .state('app.addMemory', {
+ .state('app.addMemory', {
     url: '/addMemory/:id',
 	cache: false,
     views: {
@@ -138,7 +128,7 @@ angular.module('starter', [
       views: {
         'menuContent': {
           templateUrl: 'templates/home.html'
-        }
+         }
       }
   });
   // if none of the above states are matched, use this as the fallback
