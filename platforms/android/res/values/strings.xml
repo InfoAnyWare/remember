@@ -3,5 +3,4 @@
     <string name="app_name">canYouRememberMe</string>
     <string name="launcher_name">@string/app_name</string>
     <string name="activity_name">@string/launcher_name</string>
-    <string name="facebook_app_id">1442568932738358</string>
 </resources>

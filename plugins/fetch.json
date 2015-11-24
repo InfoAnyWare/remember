@@ -1,43 +1,16 @@
 {
-    "cordova-plugin-whitelist": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-whitelist"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "cordova-plugin-facebook": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-facebook"
-        },
-        "is_top_level": true,
-        "variables": {
-            "FACEBOOK_APP_ID": "1442568932738358",
-            "FACEBOOK_DISPLAY_NAME": "canYouRememberMe"
-        }
-    },
-    "org.apache.cordova.dialogs": {
-        "source": {
-            "type": "registry",
-            "id": "org.apache.cordova.dialogs"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "cordova-plugin-splashscreen": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-splashscreen"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "org.apache.cordova.splashscreen": {
         "source": {
             "type": "registry",
             "id": "org.apache.cordova.splashscreen"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-network-information": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-network-information"
         },
         "is_top_level": true,
         "variables": {}
@@ -50,52 +23,66 @@
         "is_top_level": true,
         "variables": {}
     },
-    "org.apache.cordova.file-transfer": {
+    "cordova-plugin-file-transfer": {
         "source": {
             "type": "registry",
-            "id": "org.apache.cordova.file-transfer"
+            "id": "cordova-plugin-file-transfer"
         },
         "is_top_level": true,
         "variables": {}
     },
-    "org.apache.cordova.file": {
+    "cordova-plugin-file": {
         "source": {
             "type": "registry",
-            "id": "org.apache.cordova.file"
+            "id": "cordova-plugin-file"
         },
         "is_top_level": true,
         "variables": {}
     },
-    "org.apache.cordova.network-information": {
+    "cordova-plugin-device": {
         "source": {
             "type": "registry",
-            "id": "org.apache.cordova.network-information"
+            "id": "cordova-plugin-device"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-whitelist": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-whitelist"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-dialogs": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-dialogs"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-facebook": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-facebook"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-splashscreen": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-splashscreen"
         },
         "is_top_level": true,
         "variables": {}
     },
     "phonegap-plugin-push": {
         "source": {
-            "type": "git",
-            "url": "https://github.com/phonegap/phonegap-plugin-push",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "com.phonegap.plugins.PushPlugin": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/phonegap-build/PushPlugin.git",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "org.apache.cordova.device": {
-        "source": {
             "type": "registry",
-            "id": "org.apache.cordova.device"
+            "id": "phonegap-plugin-push"
         },
         "is_top_level": true,
         "variables": {}

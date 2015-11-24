@@ -55,8 +55,8 @@ angular.module('starter', [
     templateUrl: 'templates/menu.html',
     controller: 'AppCtrl'
   })
-
-  .state('app.search', {
+  
+  /*.state('app.search', {
     url: '/search',
     views: {
       'menuContent': {
@@ -64,9 +64,9 @@ angular.module('starter', [
 		controller: 'AppCtrl'
       }
     }
-  })
-  
-  .state('app.addMemory', {
+  })*/
+
+ .state('app.addMemory', {
     url: '/addMemory/:id',
 	cache: false,
     views: {

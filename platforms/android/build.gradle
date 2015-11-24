@@ -96,6 +96,7 @@ ext {
 }
 
 // PLUGIN GRADLE EXTENSIONS START
+apply from: "phonegap-plugin-push/canyourememberme322971-push.gradle"
 // PLUGIN GRADLE EXTENSIONS END
 
 def hasBuildExtras = file('build-extras.gradle').exists()
@@ -118,7 +119,7 @@ if (ext.cdvReleaseSigningPropertiesFile == null && file('release-signing.propert
 }
 
 // Cast to appropriate types.
-ext.cdvBuildMultipleApks = !!cdvBuildMultipleApks;
+ext.cdvBuildMultipleApks = cdvBuildMultipleApks == null ? false : cdvBuildMultipleApks.toBoolean();
 ext.cdvMinSdkVersion = cdvMinSdkVersion == null ? null : Integer.parseInt('' + cdvMinSdkVersion)
 ext.cdvVersionCode = cdvVersionCode == null ? null : Integer.parseInt('' + cdvVersionCode)
 
@@ -152,11 +153,8 @@ task cdvPrintProps << {
     println('cdvDebugSigningPropertiesFile=' + cdvDebugSigningPropertiesFile)
     println('cdvBuildArch=' + cdvBuildArch)
     println('computedVersionCode=' + android.defaultConfig.versionCode)
-    if (android.productFlavors.has('armv7')) {
-        println('computedArmv7VersionCode=' + android.productFlavors.armv7.versionCode)
-    }
-    if (android.productFlavors.has('x86')) {
-        println('computedx86VersionCode=' + android.productFlavors.x86.versionCode)
+    android.productFlavors.each { flavor ->
+        println('computed' + flavor.name.capitalize() + 'VersionCode=' + flavor.versionCode)
     }
 }
 
@@ -246,11 +244,10 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     // SUB-PROJECT DEPENDENCIES START
-    debugCompile project(path: ":CordovaLib", configuration: "debug")
-    releaseCompile project(path: ":CordovaLib", configuration: "release")
-    compile "com.facebook.android:facebook-android-sdk:4.3.+"
-    compile "com.android.support:support-v4:+"
+    debugCompile project(path: "CordovaLib", configuration: "debug")
+    releaseCompile project(path: "CordovaLib", configuration: "release")
     compile "com.android.support:support-v13:23+"
+    compile "com.google.android.gms:play-services-gcm:+"
     // SUB-PROJECT DEPENDENCIES END
 }
 

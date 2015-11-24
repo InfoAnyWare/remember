@@ -56,18 +56,9 @@ angular.module('starter', [
     controller: 'AppCtrl'
   })
 
-  .state('app.search', {
-    url: '/search',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/search.html',
-		controller: 'AppCtrl'
-      }
-    }
-  })
-  
-  .state('app.Memory', {
-    url: '/Memory',
+ .state('app.addMemory', {
+    url: '/addMemory/:id',
+	cache: false,
     views: {
       'menuContent': {
         templateUrl: 'templates/addMemory.html',
@@ -89,6 +80,7 @@ angular.module('starter', [
   
   .state('app.memoryDetails', {
 	url: "/memoryDetails/:id",
+	cache: false,
     views: {
       'menuContent': {
         templateUrl: 'templates/memoryDetails.html',
@@ -98,7 +90,8 @@ angular.module('starter', [
   })
   
   .state('app.activity', {
-	url: "/activity/:id/:toUser",
+	url: "/activity/:mId/:aId/:toUser",
+	cache: false,
     views: {
       'menuContent': {
         templateUrl: 'templates/activity.html',
@@ -109,6 +102,7 @@ angular.module('starter', [
   
    .state('app.viewAllActivities', {
 	url: "/viewAllActivities/:id/:mTitle",
+	cache: false,
     views: {
       'menuContent': {
         templateUrl: 'templates/viewAllActivities.html',
@@ -119,6 +113,7 @@ angular.module('starter', [
   
   .state('app.activityDetails', {
 	url: "/activityDetails/:id/:mTitle",
+	cache: false,
     views: {
       'menuContent': {
         templateUrl: 'templates/activityDetails.html',
@@ -133,7 +128,7 @@ angular.module('starter', [
       views: {
         'menuContent': {
           templateUrl: 'templates/home.html'
-        }
+         }
       }
   });
   // if none of the above states are matched, use this as the fallback

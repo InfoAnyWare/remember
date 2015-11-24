@@ -107,36 +107,31 @@
         }
     },
     "installed_plugins": {
-        "cordova-plugin-facebook": {
-            "FACEBOOK_APP_ID": "1442568932738358",
-            "FACEBOOK_DISPLAY_NAME": "canYouRememberMe",
+        "cordova-plugin-network-information": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
         "cordova-plugin-inappbrowser": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
-        "cordova-plugin-splashscreen": {
+        "cordova-plugin-file-transfer": {
+            "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
+        },
+        "cordova-plugin-device": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
-        "org.apache.cordova.dialogs": {
+        "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
-        "org.apache.cordova.file": {
-            "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
-        },
-        "org.apache.cordova.file-transfer": {
-            "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
-        },
-        "org.apache.cordova.network-information": {
+        "cordova-plugin-splashscreen": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         },
         "phonegap-plugin-push": {
-            "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
-        },
-        "org.apache.cordova.device": {
             "PACKAGE_NAME": "com.ionicframework.canyourememberme322971"
         }
     },

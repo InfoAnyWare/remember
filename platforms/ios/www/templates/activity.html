@@ -4,7 +4,7 @@
       <div class="list">
       
         <label class="item item-input item-stacked-label m-star">
-      		Fields marked with '<i class="ion-ios-medical assertive"></i>' are mandatory
+      		Fields marked with '<i class="ion-ios-medical assertive"></i>' are mandatory &nbsp;&nbsp;
         </label>
       
        	<label class="item item-input display-msg" ng-show="addActivityMsg">
@@ -44,9 +44,20 @@
         </label>
         
          <label class="item item-input">
-          <span class="input-label">Upload Photo</span>
-          <input type="file" name="memoryFileUpload" id="memoryFileUpload" ng-model="addActivityData.photoFileUpload">
+          <span class="input-label">Upload Photo ({{fileSizeMBMsg}} Max.)</span>
+          <input type="file" name="activityFileUpload" id="activityFileUpload" ng-model="addActivityData.activityFileUpload">
         </label>
+        
+        <label class="item item-input item-stacked-label" ng-show="showFileMsg">
+          <span style="color:red; text-align:center;">
+          	{{fileMsg}}
+          </span>
+        </label>
+        
+        <div class="row item item-text-wrap" ng-show="showAPhoto">
+              <div class="col col-33">Photo : </div>
+              <div class="col col-67"><img align="absmiddle" width="80px" height="80px" src="{{APhoto}}"  /></div>
+        </div>
         
         <div class="list">
         <label class="item item-input">

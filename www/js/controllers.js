@@ -9,9 +9,9 @@ angular.module('starter.controllers', [])
   //});
   
   //set by default file size and msg
-  	$rootScope.fileSizeLimit 	= 2097152;//2MB
-	$rootScope.fileSizeMBMsg 	= "2MB";//2MB
-	$rootScope.fileSizeLimitMsg = "Photo size should not be more then 2MB";
+  	$rootScope.fileSizeLimit 	= 5242880;//5MB
+	$rootScope.fileSizeMBMsg 	= "5MB";//5MB
+	$rootScope.fileSizeLimitMsg = "Photo size should not be more then 5MB";
   
   	// function for show Loading
 		$scope.showLoading = function() {
@@ -253,6 +253,11 @@ angular.module('starter.controllers', [])
 				  else
 				  {
 					  user.save(); //save login module time
+					  
+					  //set current user is Loged In when exit app and re open it.
+					  var token = user.get('token');
+					  Parse.User.become(token);
+					  
 					  $scope.closeLogin();
 					  $scope.showHomeMsg = true;
 					  $scope.homeMsgValue ="You have been successfully logged in.";
@@ -443,8 +448,8 @@ angular.module('starter.controllers', [])
 
 		$scope.fbLogin = function() {
 		    console.log('FbLogin');
-			
-			// check network connection present or not
+           
+            // check network connection present or not
 			if ($cordovaNetwork.isOffline()) 
 			{
 				 //alert("No data network present, app use last loged in user loacl data.");
@@ -452,6 +457,7 @@ angular.module('starter.controllers', [])
 		    }
 		    else
 		    {
+				
 			  //alert("Data network ok");
 		    
 			  ngFB.login({scope: 'public_profile,email,user_friends,user_birthday'}).then(
@@ -472,6 +478,10 @@ angular.module('starter.controllers', [])
 						  // alert("response=="+JSON.stringify(response));
 						  
 						  $scope.loginModal.hide();
+						   //set current user is Loged In when exit app and re open it.
+						  var token = userObject.get('token');
+						  Parse.User.become(token);
+					  
 						  $state.go("app.home"); // go to home page
 						  
 						  // first localStorage is now empty
@@ -645,6 +655,7 @@ angular.module('starter.controllers', [])
 						}, 3000);*/
 				});
 			
+		   
 		   }
 		}
 	// Perform the login with FB *****************************************END*******************************
@@ -1422,12 +1433,12 @@ angular.module('starter.controllers', [])
 				//var inviteUser = inviteUserListArray[i];
 				
 				//username field query var
-				var usernameQuery = new Parse.Query("User");
+				var usernameQuery = new Parse.Query("_User");
 					usernameQuery.notEqualTo("objectId", currentUser.id);
 					usernameQuery.containedIn("username", inviteUserListArray);
 				
 				//email field query var	
-				var emailQuery 	  = new Parse.Query("User");
+				var emailQuery 	  = new Parse.Query("_User");
 					emailQuery.notEqualTo("objectId", currentUser.id);
 					emailQuery.containedIn("email", inviteUserListArray);
 					
@@ -1435,7 +1446,7 @@ angular.module('starter.controllers', [])
 				var mainQuery = Parse.Query.or(usernameQuery, emailQuery);
 				mainQuery.find({
 				  success: function(results) {
-					// alert("results.length=="+results.length);
+					 //alert("results.length=="+results.length);
 					 
 					 //check CYRme user
 					 for (var i = 0; i < results.length; i++) 
@@ -1571,7 +1582,6 @@ angular.module('starter.controllers', [])
 		$scope.addMemory = function() 
 		{
 			$scope.showLoading();
-			
 			if(currentUser && $cordovaNetwork.isOnline()) 
 			{
 				var CYRmeMemory = new Parse.Object("CYRme");
@@ -1583,7 +1593,7 @@ angular.module('starter.controllers', [])
 				}
 				else
 				{
-					CYRmeMemory.set("user", Parse.User.current());
+					CYRmeMemory.set("user", {"__type":"Pointer","className":"_User","objectId":currentUser.id});
 				}
 				
 				CYRmeMemory.set("title", String($scope.addMemoryData['title']));
@@ -1711,6 +1721,7 @@ angular.module('starter.controllers', [])
 					//save CYRmeMemory object
 					CYRmeMemory.save(null, {
 					  success: function(memoryRes) {
+						 // alert("memoryRes=="+JSON.stringify(memoryRes));
 						 //get memory content
 						  var memoryContent 	=memoryRes.get('content');
 						  if(memoryContent!="undefined")
@@ -1721,12 +1732,8 @@ angular.module('starter.controllers', [])
 						  { 
 							  memoryContent  ="";
 						  }
-						 //call invite users function
-						 
-						 
-						// $scope.inviteUsers(mentionToArray,'',memoryContent);
-						// $scope.$apply();
-						
+						  
+						//call invite users function
 						if(mId!='' && mId!='ADD')
 						{ 
 							//get old memory image
@@ -1766,7 +1773,7 @@ angular.module('starter.controllers', [])
 						
 					  },
 					  error: function(error) {
-						//alert("Error1: " + error.code + " " + error.message);
+						//alert("error=="+JSON.stringify(error));
 						$scope.$apply();
 					  }
 					});
@@ -2342,12 +2349,12 @@ angular.module('starter.controllers', [])
 				//var inviteUser = inviteUserListArray[i];
 				
 				//username field query var
-				var usernameQuery = new Parse.Query("User");
+				var usernameQuery = new Parse.Query("_User");
 					usernameQuery.notEqualTo("objectId", currentUser.id);
 					usernameQuery.containedIn("username", inviteUserListArray);
 				
 				//email field query var	
-				var emailQuery 	  = new Parse.Query("User");
+				var emailQuery 	  = new Parse.Query("_User");
 					emailQuery.notEqualTo("objectId", currentUser.id);
 					emailQuery.containedIn("email", inviteUserListArray);
 					
@@ -2494,6 +2501,7 @@ angular.module('starter.controllers', [])
 			
 			if(currentUser && $cordovaNetwork.isOnline()) 
 			{
+				
 				var Activity = new Parse.Object("Activity");
 				//condition for edit Activity
 				if(aId!='' && aId!='ADD')
@@ -2503,8 +2511,8 @@ angular.module('starter.controllers', [])
 				else //add case
 				{
 					Activity.set("CYRme", {"__type":"Pointer","className":"CYRme","objectId":mId}); //set pointer to current Memory
-					Activity.set("toUser", {"__type":"Pointer","className":"User","objectId":toUser}); //set memory user pointer in toUser
-					Activity.set("fromUser", currentUser); //set current user pointer in fromUser
+					Activity.set("toUser", {"__type":"Pointer","className":"_User","objectId":toUser}); //set memory user pointer in toUser
+					Activity.set("fromUser", {"__type":"Pointer","className":"_User","objectId":currentUser.id}); //set current user pointer in fromUser
 				}
 				
 				Activity.set("activityType", String($scope.addActivityData['activityType']))
@@ -2583,7 +2591,7 @@ angular.module('starter.controllers', [])
 						
 						////////////////////////////////Thumb nill upload start////////////////////////////////////////////////
 						//Define function for generate thumbnail and save in Parse server
-						$scope.generateThumbnailAndSaveParse = function(fileData,thumbSizeObjData) {
+						$scope.generateThumbnailAndSaveParseActivity = function(fileData,thumbSizeObjData) {
 						  ThumbnailService.generate(fileData,thumbSizeObjData).then(
 							function success(thumbFile) {
 							  $scope.APhoto=thumbFile;
@@ -2616,7 +2624,7 @@ angular.module('starter.controllers', [])
 							//call function for generate thumbnail and save in Parse server
 							var fileDataUrl = thumbnillBase64Data;
 							var thumbSizeObj={ width:100, height:100};
-							$scope.generateThumbnailAndSaveParse(fileDataUrl,thumbSizeObj);
+							$scope.generateThumbnailAndSaveParseActivity(fileDataUrl,thumbSizeObj);
 							$scope.$apply();
 							 //return srcData;
 						}
@@ -2629,8 +2637,10 @@ angular.module('starter.controllers', [])
 				else
 				{
 					//save Activity object
-					Activity.save(null, {
+                
+                    Activity.save(null, {
 						  success: function(activityRes) {
+							 //alert("activityRes=="+JSON.stringify(activityRes));
 							//get activity content
 							 var activityContent 	 	=activityRes.get('content');
 							 if(activityContent!="undefined")
@@ -2682,6 +2692,7 @@ angular.module('starter.controllers', [])
 						
 						  },
 						  error: function(error) {
+							//alert("error=="+JSON.stringify(error));
 							//alert("Error1: " + error.code + " " + error.message);
 							$scope.$apply();
 						  }
