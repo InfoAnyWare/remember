@@ -55,7 +55,7 @@ angular.module('starter', [
     templateUrl: 'templates/menu.html',
     controller: 'AppCtrl'
   })
-  
+
   /*.state('app.search', {
     url: '/search',
     views: {
@@ -138,7 +138,7 @@ angular.module('starter', [
       views: {
         'menuContent': {
           templateUrl: 'templates/home.html'
-        }
+         }
       }
   });
   // if none of the above states are matched, use this as the fallback
