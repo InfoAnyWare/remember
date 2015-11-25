@@ -159,7 +159,7 @@ angular.module('starter.controllers', [])
 			$scope.afterloginLinks   = true;
 			
 			$scope.showHomeUserName 	= true;
-		    $scope.name = currentUser.get("name");
+		    $scope.name = currentUser.get("username");
 			$scope.showUserDetail  = true;
 			currentUser.save(); //save app run log time
 			$timeout(function() {
@@ -266,7 +266,7 @@ angular.module('starter.controllers', [])
 					  $scope.showHomeUserName 	 = true;
 					  $scope.cyrLoginLinks  	 = true;
 					  
-		    		  $scope.name 				 = user.get("name");
+		    		  $scope.name 			 	 = user.get("username");
 					  $scope.email 			 	 = user.get("email");
 					  $scope.firstName 			 = user.get("firstName");
 					  $scope.middleName 		 = user.get("middleName");
@@ -278,7 +278,7 @@ angular.module('starter.controllers', [])
 					 // first localStorage is now empty
 				 	 window.localStorage.clear();
 				 	 
-					 window.localStorage.setItem("uName", user.get("name"));
+					 window.localStorage.setItem("uName", user.get("username"));
 					 window.localStorage.setItem("uEmail",user.get("email"));
 					 window.localStorage.setItem("uFirstName", user.get("firstName"));
 					 window.localStorage.setItem("uMiddleName", user.get("middleName"));
@@ -298,7 +298,7 @@ angular.module('starter.controllers', [])
 					}
 					else
 					{
-						$scope.photo 	  = '';
+						$scope.photo 	  = 'img/user.png';
 						window.localStorage.removeItem("uPhotolocalPath");
 					}
 					//call function store Device Info for notification
@@ -478,10 +478,6 @@ angular.module('starter.controllers', [])
 						  // alert("response=="+JSON.stringify(response));
 						  
 						  $scope.loginModal.hide();
-						   //set current user is Loged In when exit app and re open it.
-						  var token = userObject.get('token');
-						  Parse.User.become(token);
-					  
 						  $state.go("app.home"); // go to home page
 						  
 						  // first localStorage is now empty
@@ -564,6 +560,7 @@ angular.module('starter.controllers', [])
 						  window.localStorage.setItem("uLoginThroughMsg", "Facebook");
 						  $scope.loginThroughMsg     = "Facebook";
 						  userObject.save();
+						  
 						  $scope.showHomeMsg = true;
 						  $scope.homeMsgValue ="User logged in through Facebook!";
 						  
@@ -583,7 +580,7 @@ angular.module('starter.controllers', [])
 						 }
 						 else
 						 {
-							 $scope.photo 	= '';
+							 $scope.photo 	= 'img/user.png';
 							 window.localStorage.setItem("uPhotolocalPath", '');
 							 window.localStorage.setItem("filename", '');
 						 }
@@ -857,7 +854,7 @@ angular.module('starter.controllers', [])
 					/*$scope.userDetailsModal.show();
 					$scope.showUserDetail = true;*/
 					
-					$scope.name 			= currentUser.get("name");
+					$scope.name 			= currentUser.get("username");
 					$scope.email 			= currentUser.get("email");
 					$scope.firstName 		= currentUser.get("firstName");
 					$scope.middleName 		= currentUser.get("middleName");
@@ -891,7 +888,7 @@ angular.module('starter.controllers', [])
 						}
 						else
 						{
-							$scope.photo 	  = '';
+							$scope.photo 	  = 'img/user.png';
 							window.localStorage.removeItem("uPhotolocalPath");
 						}
 					}
@@ -1870,7 +1867,7 @@ angular.module('starter.controllers', [])
 									 }
 									  
 									 /* Get Memory Author's Name */
-									 var memoryUserName   	= memoryResObj.get("user").get("name");
+									 var memoryUserName   	= memoryResObj.get("user").get("username");
 									 var memoryUserId   	= memoryResObj.get("user").id;
 									//check user memory privacy
 									if(memoryResObj.get('privacy')=="No")
@@ -2025,7 +2022,7 @@ angular.module('starter.controllers', [])
 								 }
 								  
 								 /* Get Memory Author's Name */
-								 $scope.memoryDetailsUserName   	= memoryResObj.get("user").get("name");
+								 $scope.memoryDetailsUserName   	= memoryResObj.get("user").get("username");
 								 $scope.memoryDetailsUserId  		= memoryResObj.get("user").id;
 								 $scope.memoryDetailsId  			= memoryResObj.id;
 								 
@@ -2792,7 +2789,7 @@ angular.module('starter.controllers', [])
 								 }
 								  
 								 /* Get Memory Author's Name */
-								 var activitiesUserName   	=  activitiesResObj.get("fromUser").get("name");
+								 var activitiesUserName   	=  activitiesResObj.get("fromUser").get("username");
 								 var activitiesUserId   	=  activitiesResObj.get("fromUser").id;
 								//check user activities privacy
 								if(activitiesResObj.get('privacy')=="No")
@@ -2951,7 +2948,7 @@ angular.module('starter.controllers', [])
 								 }
 								  
 								 /* Get Memory Author's Name */
-								 $scope.activityDetailsUserName   	= activityResObj.get("fromUser").get("name");
+								 $scope.activityDetailsUserName   	= activityResObj.get("fromUser").get("username");
 								 $scope.activityDetailsUserId  		= activityResObj.get("fromUser").id;
 								 $scope.activityDetailsId  			= activityResObj.id;
 								 

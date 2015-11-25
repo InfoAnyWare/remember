@@ -159,7 +159,7 @@ angular.module('starter.controllers', [])
 			$scope.afterloginLinks   = true;
 			
 			$scope.showHomeUserName 	= true;
-		    $scope.name = currentUser.get("name");
+		    $scope.name = currentUser.get("username");
 			$scope.showUserDetail  = true;
 			currentUser.save(); //save app run log time
 			$timeout(function() {
@@ -253,6 +253,11 @@ angular.module('starter.controllers', [])
 				  else
 				  {
 					  user.save(); //save login module time
+					  
+					  //set current user is Loged In when exit app and re open it.
+					  var token = user.get('token');
+					  Parse.User.become(token);
+					  
 					  $scope.closeLogin();
 					  $scope.showHomeMsg = true;
 					  $scope.homeMsgValue ="You have been successfully logged in.";
@@ -261,7 +266,7 @@ angular.module('starter.controllers', [])
 					  $scope.showHomeUserName 	 = true;
 					  $scope.cyrLoginLinks  	 = true;
 					  
-		    		  $scope.name 				 = user.get("name");
+		    		  $scope.name 			 	 = user.get("username");
 					  $scope.email 			 	 = user.get("email");
 					  $scope.firstName 			 = user.get("firstName");
 					  $scope.middleName 		 = user.get("middleName");
@@ -273,7 +278,7 @@ angular.module('starter.controllers', [])
 					 // first localStorage is now empty
 				 	 window.localStorage.clear();
 				 	 
-					 window.localStorage.setItem("uName", user.get("name"));
+					 window.localStorage.setItem("uName", user.get("username"));
 					 window.localStorage.setItem("uEmail",user.get("email"));
 					 window.localStorage.setItem("uFirstName", user.get("firstName"));
 					 window.localStorage.setItem("uMiddleName", user.get("middleName"));
@@ -293,7 +298,7 @@ angular.module('starter.controllers', [])
 					}
 					else
 					{
-						$scope.photo 	  = '';
+						$scope.photo 	  = 'img/user.png';
 						window.localStorage.removeItem("uPhotolocalPath");
 					}
 					//call function store Device Info for notification
@@ -555,6 +560,7 @@ angular.module('starter.controllers', [])
 						  window.localStorage.setItem("uLoginThroughMsg", "Facebook");
 						  $scope.loginThroughMsg     = "Facebook";
 						  userObject.save();
+						  
 						  $scope.showHomeMsg = true;
 						  $scope.homeMsgValue ="User logged in through Facebook!";
 						  
@@ -574,7 +580,7 @@ angular.module('starter.controllers', [])
 						 }
 						 else
 						 {
-							 $scope.photo 	= '';
+							 $scope.photo 	= 'img/user.png';
 							 window.localStorage.setItem("uPhotolocalPath", '');
 							 window.localStorage.setItem("filename", '');
 						 }
@@ -848,7 +854,7 @@ angular.module('starter.controllers', [])
 					/*$scope.userDetailsModal.show();
 					$scope.showUserDetail = true;*/
 					
-					$scope.name 			= currentUser.get("name");
+					$scope.name 			= currentUser.get("username");
 					$scope.email 			= currentUser.get("email");
 					$scope.firstName 		= currentUser.get("firstName");
 					$scope.middleName 		= currentUser.get("middleName");
@@ -882,7 +888,7 @@ angular.module('starter.controllers', [])
 						}
 						else
 						{
-							$scope.photo 	  = '';
+							$scope.photo 	  = 'img/user.png';
 							window.localStorage.removeItem("uPhotolocalPath");
 						}
 					}
@@ -1424,12 +1430,12 @@ angular.module('starter.controllers', [])
 				//var inviteUser = inviteUserListArray[i];
 				
 				//username field query var
-				var usernameQuery = new Parse.Query("User");
+				var usernameQuery = new Parse.Query("_User");
 					usernameQuery.notEqualTo("objectId", currentUser.id);
 					usernameQuery.containedIn("username", inviteUserListArray);
 				
 				//email field query var	
-				var emailQuery 	  = new Parse.Query("User");
+				var emailQuery 	  = new Parse.Query("_User");
 					emailQuery.notEqualTo("objectId", currentUser.id);
 					emailQuery.containedIn("email", inviteUserListArray);
 					
@@ -1437,7 +1443,7 @@ angular.module('starter.controllers', [])
 				var mainQuery = Parse.Query.or(usernameQuery, emailQuery);
 				mainQuery.find({
 				  success: function(results) {
-					// alert("results.length=="+results.length);
+					 //alert("results.length=="+results.length);
 					 
 					 //check CYRme user
 					 for (var i = 0; i < results.length; i++) 
@@ -1573,7 +1579,6 @@ angular.module('starter.controllers', [])
 		$scope.addMemory = function() 
 		{
 			$scope.showLoading();
-			
 			if(currentUser && $cordovaNetwork.isOnline()) 
 			{
 				var CYRmeMemory = new Parse.Object("CYRme");
@@ -1585,7 +1590,7 @@ angular.module('starter.controllers', [])
 				}
 				else
 				{
-					CYRmeMemory.set("user", Parse.User.current());
+					CYRmeMemory.set("user", {"__type":"Pointer","className":"_User","objectId":currentUser.id});
 				}
 				
 				CYRmeMemory.set("title", String($scope.addMemoryData['title']));
@@ -1713,6 +1718,7 @@ angular.module('starter.controllers', [])
 					//save CYRmeMemory object
 					CYRmeMemory.save(null, {
 					  success: function(memoryRes) {
+						 // alert("memoryRes=="+JSON.stringify(memoryRes));
 						 //get memory content
 						  var memoryContent 	=memoryRes.get('content');
 						  if(memoryContent!="undefined")
@@ -1723,12 +1729,8 @@ angular.module('starter.controllers', [])
 						  { 
 							  memoryContent  ="";
 						  }
-						 //call invite users function
-						 
-						 
-						// $scope.inviteUsers(mentionToArray,'',memoryContent);
-						// $scope.$apply();
-						
+						  
+						//call invite users function
 						if(mId!='' && mId!='ADD')
 						{ 
 							//get old memory image
@@ -1768,7 +1770,7 @@ angular.module('starter.controllers', [])
 						
 					  },
 					  error: function(error) {
-						//alert("Error1: " + error.code + " " + error.message);
+						//alert("error=="+JSON.stringify(error));
 						$scope.$apply();
 					  }
 					});
@@ -1865,7 +1867,7 @@ angular.module('starter.controllers', [])
 									 }
 									  
 									 /* Get Memory Author's Name */
-									 var memoryUserName   	= memoryResObj.get("user").get("name");
+									 var memoryUserName   	= memoryResObj.get("user").get("username");
 									 var memoryUserId   	= memoryResObj.get("user").id;
 									//check user memory privacy
 									if(memoryResObj.get('privacy')=="No")
@@ -2020,7 +2022,7 @@ angular.module('starter.controllers', [])
 								 }
 								  
 								 /* Get Memory Author's Name */
-								 $scope.memoryDetailsUserName   	= memoryResObj.get("user").get("name");
+								 $scope.memoryDetailsUserName   	= memoryResObj.get("user").get("username");
 								 $scope.memoryDetailsUserId  		= memoryResObj.get("user").id;
 								 $scope.memoryDetailsId  			= memoryResObj.id;
 								 
@@ -2344,12 +2346,12 @@ angular.module('starter.controllers', [])
 				//var inviteUser = inviteUserListArray[i];
 				
 				//username field query var
-				var usernameQuery = new Parse.Query("User");
+				var usernameQuery = new Parse.Query("_User");
 					usernameQuery.notEqualTo("objectId", currentUser.id);
 					usernameQuery.containedIn("username", inviteUserListArray);
 				
 				//email field query var	
-				var emailQuery 	  = new Parse.Query("User");
+				var emailQuery 	  = new Parse.Query("_User");
 					emailQuery.notEqualTo("objectId", currentUser.id);
 					emailQuery.containedIn("email", inviteUserListArray);
 					
@@ -2507,7 +2509,7 @@ angular.module('starter.controllers', [])
 				{
 					Activity.set("CYRme", {"__type":"Pointer","className":"CYRme","objectId":mId}); //set pointer to current Memory
 					Activity.set("toUser", {"__type":"Pointer","className":"_User","objectId":toUser}); //set memory user pointer in toUser
-					Activity.set("fromUser", currentUser); //set current user pointer in fromUser
+					Activity.set("fromUser", {"__type":"Pointer","className":"_User","objectId":currentUser.id}); //set current user pointer in fromUser
 				}
 				
 				Activity.set("activityType", String($scope.addActivityData['activityType']))
@@ -2787,7 +2789,7 @@ angular.module('starter.controllers', [])
 								 }
 								  
 								 /* Get Memory Author's Name */
-								 var activitiesUserName   	=  activitiesResObj.get("fromUser").get("name");
+								 var activitiesUserName   	=  activitiesResObj.get("fromUser").get("username");
 								 var activitiesUserId   	=  activitiesResObj.get("fromUser").id;
 								//check user activities privacy
 								if(activitiesResObj.get('privacy')=="No")
@@ -2946,7 +2948,7 @@ angular.module('starter.controllers', [])
 								 }
 								  
 								 /* Get Memory Author's Name */
-								 $scope.activityDetailsUserName   	= activityResObj.get("fromUser").get("name");
+								 $scope.activityDetailsUserName   	= activityResObj.get("fromUser").get("username");
 								 $scope.activityDetailsUserId  		= activityResObj.get("fromUser").id;
 								 $scope.activityDetailsId  			= activityResObj.id;
 								 

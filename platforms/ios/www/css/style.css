@@ -68,3 +68,10 @@
     padding-right: 5px;
     text-align: right;
 }
+.bar.bar-stable {
+    background-color: #EAF2F8;
+}
+.bar.bar-stable .title {
+    background-color: #EAF2F8;
+}
+
