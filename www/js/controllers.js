@@ -133,6 +133,7 @@ angular.module('starter.controllers', [])
 	 var keyName = window.localStorage.key(0);
 	 
 	//check user local data are store or not
+	var username 			= window.localStorage.getItem("username");
 	var uName 				= window.localStorage.getItem("uName");
     var uEmail 				= window.localStorage.getItem("uEmail");
 	var uFirstName 			= window.localStorage.getItem("uFirstName");
@@ -159,7 +160,7 @@ angular.module('starter.controllers', [])
 			$scope.afterloginLinks   = true;
 			
 			$scope.showHomeUserName 	= true;
-		    $scope.name = currentUser.get("username");
+		    $scope.name = currentUser.get("name");
 			$scope.showUserDetail  = true;
 			currentUser.save(); //save app run log time
 			$timeout(function() {
@@ -266,7 +267,8 @@ angular.module('starter.controllers', [])
 					  $scope.showHomeUserName 	 = true;
 					  $scope.cyrLoginLinks  	 = true;
 					  
-		    		  $scope.name 			 	 = user.get("username");
+					  $scope.username 			 = user.get("username");
+		    		  $scope.name 			 	 = user.get("name");
 					  $scope.email 			 	 = user.get("email");
 					  $scope.firstName 			 = user.get("firstName");
 					  $scope.middleName 		 = user.get("middleName");
@@ -278,7 +280,8 @@ angular.module('starter.controllers', [])
 					 // first localStorage is now empty
 				 	 window.localStorage.clear();
 				 	 
-					 window.localStorage.setItem("uName", user.get("username"));
+					 window.localStorage.setItem("username", user.get("username"));
+					 window.localStorage.setItem("uName", user.get("name"));
 					 window.localStorage.setItem("uEmail",user.get("email"));
 					 window.localStorage.setItem("uFirstName", user.get("firstName"));
 					 window.localStorage.setItem("uMiddleName", user.get("middleName"));
@@ -340,70 +343,78 @@ angular.module('starter.controllers', [])
 		$scope.updateMentionTo = function(userRegisterResponse,fbUser) {
 			
 			var userRegisterResponse	= userRegisterResponse;
-			if(fbUser==true)
+			var userRefrenceIdArray		=new Array;
+			
+			if(fbUser==true) //check facebook login or not
 			{
-				var userRefrenceId			= userRegisterResponse.id;
-				var userRefrenceName		= userRegisterResponse.id;
+				//userRefrenceIdArray.push(userRegisterResponse.id);
+				userRefrenceIdArray.push(userRegisterResponse.email);
+				var userRefrenceName	= userRegisterResponse.id;
 			}
 			else
 			{
-				var userRefrenceId			= userRegisterResponse.get("email");
+				userRefrenceIdArray.push(userRegisterResponse.get("email"));
 				var userRefrenceName		= userRegisterResponse.get("username");
 			}
-			
-			if(userRefrenceId !="") 
+			//alert("userRefrenceIdArray=="+JSON.stringify(userRefrenceIdArray));
+			for(var i=0; i<userRefrenceIdArray.length; i++)
 			{
-				//update Memory MentionTo field
-				var memoryQuery   	= Parse.Object.extend("CYRme");
-				var query 			= new Parse.Query(memoryQuery);
-				query.equalTo("mentionTo", userRefrenceId);
-				query.find({
-					success: function(memoryResults) {
-						for(i in memoryResults){
-							//Set memoryResObj to current Memory
-							  var memoryResObj = memoryResults[i];
-							  var memoryMentionTo	=memoryResObj.get('mentionTo');
-							  
-							 //check userRefrenceId present in maintion field 
-							  var index = $.inArray(userRefrenceId, memoryMentionTo)
-							  if (index !== -1) {
-								memoryMentionTo[index] = userRefrenceName;
-								memoryResObj.set("mentionTo",memoryMentionTo);
-								memoryResObj.save();
-							  }
-						} // End for loop
-						
-					},
-					error: function(error){
-						//alert("Error: " + error.code + " " + error.message);
-					}
-				}); // End memoryQuery find
-				
-				//update Activity MentionTo field
-				var activityQuery   = Parse.Object.extend("Activity");
-				var query 			= new Parse.Query(activityQuery);
-				query.equalTo("mentionTo", userRefrenceId);
-				query.find({
-					success: function(activityResults) {
-						for(i in activityResults){
-							//Set activityResObj to current Activity
-							  var activityResObj = activityResults[i];
-							  var activityMentionTo	=activityResObj.get('mentionTo');
-							  
-							 //check userRefrenceId present in maintion field 
-							  var index = $.inArray(userRefrenceId, activityMentionTo)
-							  if (index !== -1) {
-								activityMentionTo[index] = userRefrenceName;
-								activityResObj.set("mentionTo",activityMentionTo);
-								activityResObj.save();
-							  }
-						} // End for loop
-					},
-					error: function(error){
-						//alert("Error: " + error.code + " " + error.message);
-					}
-				}); // End activityQuery find
-			}
+				var userRefrenceId = userRefrenceIdArray[i];
+				if(userRefrenceId !="") 
+				{
+					//alert("userRefrenceId=="+userRefrenceId);
+					//update Memory MentionTo field
+					var memoryQuery   	= Parse.Object.extend("CYRme");
+					var query 			= new Parse.Query(memoryQuery);
+					query.equalTo("mentionTo", userRefrenceId);
+					query.find({
+						success: function(memoryResults) {
+							for(i in memoryResults){
+								//Set memoryResObj to current Memory
+								  var memoryResObj = memoryResults[i];
+								  var memoryMentionTo	=memoryResObj.get('mentionTo');
+								  
+								 //check userRefrenceId present in maintion field 
+								  var index = $.inArray(userRefrenceId, memoryMentionTo)
+								  if (index !== -1) {
+									memoryMentionTo[index] = userRefrenceName;
+									memoryResObj.set("mentionTo",memoryMentionTo);
+									memoryResObj.save();
+								  }
+							} // End for loop
+							
+						},
+						error: function(error){
+							//alert("Error: " + error.code + " " + error.message);
+						}
+					}); // End memoryQuery find
+					
+					//update Activity MentionTo field
+					var activityQuery   = Parse.Object.extend("Activity");
+					var query 			= new Parse.Query(activityQuery);
+					query.equalTo("mentionTo", userRefrenceId);
+					query.find({
+						success: function(activityResults) {
+							for(i in activityResults){
+								//Set activityResObj to current Activity
+								  var activityResObj = activityResults[i];
+								  var activityMentionTo	=activityResObj.get('mentionTo');
+								  
+								 //check userRefrenceId present in maintion field 
+								  var index = $.inArray(userRefrenceId, activityMentionTo)
+								  if (index !== -1) {
+									activityMentionTo[index] = userRefrenceName;
+									activityResObj.set("mentionTo",activityMentionTo);
+									activityResObj.save();
+								  }
+							} // End for loop
+						},
+						error: function(error){
+							//alert("Error: " + error.code + " " + error.message);
+						}
+					}); // End activityQuery find
+				} //end if
+			} //end for loop
 			
 			$scope.hideLoading();
 			$scope.$apply();
@@ -447,8 +458,7 @@ angular.module('starter.controllers', [])
 		openFB.init({appId: '1442568932738358', tokenStore: window.localStorage});
 
 		$scope.fbLogin = function() {
-		    console.log('FbLogin');
-           
+		    //console.log('FbLogin');
             // check network connection present or not
 			if ($cordovaNetwork.isOffline()) 
 			{
@@ -457,202 +467,228 @@ angular.module('starter.controllers', [])
 		    }
 		    else
 		    {
-				
 			  //alert("Data network ok");
-		    
 			  ngFB.login({scope: 'public_profile,email,user_friends,user_birthday'}).then(
-				function(response) {
-					//alert('Facebook login succeeded, auth data: ' +JSON.stringify(response));
+				function(fbLoginResponse) {
+					//alert('Facebook login succeeded, auth data: ' +JSON.stringify(fbLoginResponse));
 					$scope.showLoading();
-					fbLoginSuccess(response);
-					fbLogged.then( function(authData) {
-						return Parse.FacebookUtils.logIn(authData);
-					})
-					.then( function(userObject) {
-					  ngFB.api({
+					
+					// get fb user data
+					ngFB.api({
 						path: '/me',
 						params: {fields: "id,email,name,first_name,middle_name,last_name,birthday,gender,picture"}
-               		 }).then(function(response) {
-						  
-						  // alert("userObject=="+JSON.stringify(userObject));
-						  // alert("response=="+JSON.stringify(response));
-						  
-						  $scope.loginModal.hide();
-						  $state.go("app.home"); // go to home page
-						  
-						  // first localStorage is now empty
-				 	 	  window.localStorage.clear();
-						  
-					   	  if(response.name!=undefined)
-					      {
-							  userObject.set("username", String(response.name));
-							  userObject.set("name", String(response.name));
-							  $scope.name 					= response.name;
-							  window.localStorage.setItem("uName", response.name);
-					      }
-						  else
-						  {
-							  $scope.name 					= '';
-							  window.localStorage.setItem("uName", '');
-						  }
-						  
-						  if(response.email!=undefined)
-					      {
-							  userObject.set("email", String(response.email));
-							  $scope.email 				= response.email;
-							  window.localStorage.setItem("uEmail", response.email); 
-					      }
-						  else
-						  {
-							  $scope.email 				= '';
-							  window.localStorage.setItem("uEmail", '');
-						  }
-						  
-						  if(response.first_name!=undefined)
-					      {
-							  userObject.set("firstName", String(response.first_name));
-							  $scope.firstName 			 = response.first_name;
-							  window.localStorage.setItem("uFirstName", response.first_name);
-					      }
-						  else
-						  {
-							   $scope.firstName 			 = '';
-							   window.localStorage.setItem("uFirstName", '');
-						  }
-						  
-						  if(response.middle_name!=undefined)
-					      {
-							  userObject.set("middleName", String(response.middle_name));
-							  $scope.middleName 		 = response.middle_name;
-							  window.localStorage.setItem("uMiddleName", response.middle_name);
-					      }
-						  else
-						  {
-							  $scope.middleName 		 = '';
-							  window.localStorage.setItem("uMiddleName", '');
-						  }
-						  
-						  if(response.last_name!=undefined)
-					      {
-							  userObject.set("surName", String(response.last_name));
-							  $scope.surName 		     = response.last_name;
-							  window.localStorage.setItem("uSurName", response.last_name);
-					      }
-						  else
-						  {
-							  $scope.surName 		     = '';
-							  window.localStorage.setItem("uSurName", '');
-						  }
-						  
-						  if(response.birthday!=undefined)
-						  {
-							  var dob = new Date(response.birthday);
-							  userObject.set("dateOfBirth", dob);
-							  $scope.dateOfBirth 		 = $filter('date')(response.birthday, "dd/MM/yyyy");
-							  window.localStorage.setItem("uDateOfBirth", $filter('date')(response.birthday, "dd/MM/yyyy"));
-						  }
-						  else
-						  {
-							   $scope.dateOfBirth 		 = '';
-							   window.localStorage.setItem("uDateOfBirth", '');
-						  }
-						  
-						  window.localStorage.setItem("uLoginThroughMsg", "Facebook");
-						  $scope.loginThroughMsg     = "Facebook";
-						  userObject.save();
-						  
-						  $scope.showHomeMsg = true;
-						  $scope.homeMsgValue ="User logged in through Facebook!";
-						  
-						  $scope.beforeloginLinks	 = false;
-						  $scope.afterloginLinks  	 = true;
-						  $scope.showHomeUserName 	 = true;
-						  $scope.cyrLoginLinks  	 = false;
-						  
-						 //profile picture
-						 if(response.picture.data!=undefined)
-						 {
-							 var pictureObject=response.picture.data;
-						  	 var url=pictureObject.url;
-							 $scope.photo 	= url;
-							 //call function downloadFile picture file
-							 $scope.downloadFile(url);
-						 }
-						 else
-						 {
-							 $scope.photo 	= 'img/user.png';
-							 window.localStorage.setItem("uPhotolocalPath", '');
-							 window.localStorage.setItem("filename", '');
-						 }
-						 
-						 if(response.id!=undefined)
-						 {
-							 window.localStorage.setItem("fbUserId", response.id);
-						 }
-						 else
-						 {
-							  window.localStorage.setItem("fbUserId", '');
-						 }
-						 
-						 $scope.hideLoading();
-		   				 $scope.$apply();
-						 $timeout(function() {
-							 $scope.showHomeMsg = false;
-							 $scope.homeMsgValue ="";
-							}, 3000);
-						 
-						 //call function store Device Info for notification
-						 $scope.storeDeviceInfo(); 
-						 //call function for update MentionTo field
-						 $scope.updateMentionTo(response,true);
-						 
+					 }).then(function(fbDataResponse) {
+						   //check fb user already logedIn in CYR User
+							var existUserQuery  = Parse.Object.extend("_User");
+							var query 			= new Parse.Query(existUserQuery);
+							query.equalTo("email", fbDataResponse.email);
+							query.notEqualTo("loginThrough", "Facebook");
+							query.notEqualTo("fbUserId", fbDataResponse.id);
+							
+							query.find({
+								success: function(userExistResults) {
+									//alert("uResults=="+JSON.stringify(userExistResults));
+									if(userExistResults.length>0) // check CYR user exist
+									{
+										 $scope.loginModal.show();
+										 $scope.vEmailMsg = true;
+										 $scope.vEmailMsgValue ="A CYR user for email '"+fbDataResponse.email+"' is already existed.";
+										 $scope.hideLoading();
+										 $scope.$apply();
+										 $timeout(function() {
+											 $scope.vEmailMsg = false;
+											 $scope.vEmailMsgValue ="";
+										}, 10000);
+									}
+									else //only fb user login section add and update data
+									{
+										//alert("User not exists.");
+										fbLoginSuccess(fbLoginResponse); //check parse fbLoginResponse
+										fbLogged.then( function(authData) {
+											return Parse.FacebookUtils.logIn(authData);
+										}).then( function(userObject) {
+											  //alert("userObject=="+JSON.stringify(userObject));
+											  //set current user is Loged In when exit app and re open it.
+											  var token = userObject.get('token');
+											  Parse.User.become(token);
+											  // first localStorage is now empty
+											  window.localStorage.clear();
+											  if(fbDataResponse.name!=undefined)
+											  {
+												  userObject.set("name", String(fbDataResponse.name));
+												  $scope.name 					= fbDataResponse.name;
+												  window.localStorage.setItem("uName", fbDataResponse.name);
+											  }
+											  else
+											  {
+												  $scope.name 					= '';
+												  window.localStorage.setItem("uName", '');
+											  }
+											  
+											  if(fbDataResponse.email!=undefined)
+											  {
+												  userObject.set("email", String(fbDataResponse.email));
+												  $scope.email 				= fbDataResponse.email;
+												  window.localStorage.setItem("uEmail", fbDataResponse.email); 
+											  }
+											  else
+											  {
+												  $scope.email 				= '';
+												  window.localStorage.setItem("uEmail", '');
+											  }
+											  
+											  if(fbDataResponse.first_name!=undefined)
+											  {
+												  userObject.set("firstName", String(fbDataResponse.first_name));
+												  $scope.firstName 			 = fbDataResponse.first_name;
+												  window.localStorage.setItem("uFirstName", fbDataResponse.first_name);
+											  }
+											  else
+											  {
+												   $scope.firstName 			 = '';
+												   window.localStorage.setItem("uFirstName", '');
+											  }
+											  
+											  if(fbDataResponse.middle_name!=undefined)
+											  {
+												  userObject.set("middleName", String(fbDataResponse.middle_name));
+												  $scope.middleName 		 = fbDataResponse.middle_name;
+												  window.localStorage.setItem("uMiddleName", fbDataResponse.middle_name);
+											  }
+											  else
+											  {
+												  $scope.middleName 		 = '';
+												  window.localStorage.setItem("uMiddleName", '');
+											  }
+											  
+											  if(fbDataResponse.last_name!=undefined)
+											  {
+												  userObject.set("surName", String(fbDataResponse.last_name));
+												  $scope.surName 		     = fbDataResponse.last_name;
+												  window.localStorage.setItem("uSurName", fbDataResponse.last_name);
+											  }
+											  else
+											  {
+												  $scope.surName 		     = '';
+												  window.localStorage.setItem("uSurName", '');
+											  }
+											  
+											  if(fbDataResponse.birthday!=undefined)
+											  {
+												  var dob = new Date(fbDataResponse.birthday);
+												  userObject.set("dateOfBirth", dob);
+												  $scope.dateOfBirth 		 = $filter('date')(fbDataResponse.birthday, "dd/MM/yyyy");
+												  window.localStorage.setItem("uDateOfBirth", $filter('date')(fbDataResponse.birthday, "dd/MM/yyyy"));
+											  }
+											  else
+											  {
+												   $scope.dateOfBirth 		 = '';
+												   window.localStorage.setItem("uDateOfBirth", '');
+											  }
+											  
+											 if(fbDataResponse.id!=undefined)
+											 {
+												 $scope.username 	= fbDataResponse.id;
+												 userObject.set("username", fbDataResponse.id);
+												 userObject.set("fbUserId", fbDataResponse.id);
+												 window.localStorage.setItem("fbUserId", fbDataResponse.id);
+												 window.localStorage.setItem("username", fbDataResponse.id);
+											 }
+											 else
+											 {
+												  window.localStorage.setItem("fbUserId", '');
+												  window.localStorage.setItem("username", '');
+											 }
+											  
+											  window.localStorage.setItem("uLoginThroughMsg", "Facebook");
+											  $scope.loginThroughMsg     = "Facebook";
+											  userObject.set("loginThrough", "Facebook");
+											  userObject.save(); //saved facebook user data from parse server 
+											  
+											  $scope.showHomeMsg = true;
+											  $scope.homeMsgValue ="User logged in through Facebook!";
+											  
+											  $scope.beforeloginLinks	 = false;
+											  $scope.afterloginLinks  	 = true;
+											  $scope.showHomeUserName 	 = true;
+											  $scope.cyrLoginLinks  	 = false;
+											  
+											 //profile picture
+											 if(fbDataResponse.picture.data!=undefined)
+											 {
+												 var pictureObject=fbDataResponse.picture.data;
+												 var url=pictureObject.url;
+												 $scope.photo 	= url;
+												 //call function downloadFile picture file
+												 $scope.downloadFile(url);
+											 }
+											 else
+											 {
+												 $scope.photo 	= 'img/user.png';
+												 window.localStorage.setItem("uPhotolocalPath", '');
+												 window.localStorage.setItem("filename", '');
+											 }
+											 
+											 $scope.loginModal.hide();
+											 $state.go("app.home"); // go to home page
+											 
+											 $scope.hideLoading();
+											 $scope.$apply();
+											 $timeout(function() {
+												 $scope.showHomeMsg = false;
+												 $scope.homeMsgValue ="";
+												}, 3000);
+											 
+											 //call function store Device Info for notification
+											 $scope.storeDeviceInfo(); 
+											 //call function for update MentionTo field
+											 $scope.updateMentionTo(fbDataResponse,true);
+										}, 
+										function(error) {
+											  //Error found
+											  $scope.loginModal.show();
+											  $scope.vEmailMsg = true;
+											  $scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
+											  $scope.hideLoading();
+											  $scope.$apply();
+											  
+											  $timeout(function() {
+												 $scope.vEmailMsg = false;
+												 $scope.vEmailMsgValue ="";
+												}, 3000);
+										});
+									} // fb user else end
+								} //mainQuery find success end
+							}) //mainQuery find end
 						},
 						function(error) {
-						   //Error found
+						  //Error found
 						  $scope.loginModal.show();
 						  $scope.vEmailMsg = true;
 						  $scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
 						  $scope.hideLoading();
-		   				  $scope.$apply();
+						  $scope.$apply();
+						  
 						  $timeout(function() {
 							 $scope.vEmailMsg = false;
 							 $scope.vEmailMsgValue ="";
 							}, 3000);
 						}
-					  );
-					 
-					}, function(error) {
-					  	  //Error found
-						  $scope.loginModal.show();
-						  $scope.vEmailMsg = true;
-						  $scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
-						  $scope.hideLoading();
-		   				  $scope.$apply();
-						  
-						  $timeout(function() {
-							 $scope.vEmailMsg = false;
-							 $scope.vEmailMsgValue ="";
-							}, 3000);
-					});
-					
+					 ); //fb login end
 				},
 				function(error) {
 					//Error found
 					  $scope.loginModal.show();
-					  //$scope.vEmailMsg = true;
-					  //$scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
-					  $scope.vEmailMsg = false;
-					  $scope.vEmailMsgValue ="";
+					  $scope.vEmailMsg = true;
+					  $scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
 					  $scope.hideLoading();
 					  $scope.$apply();
 					  
-					  /*$timeout(function() {
+					  $timeout(function() {
 						 $scope.vEmailMsg = false;
 						 $scope.vEmailMsgValue ="";
-						}, 3000);*/
+						}, 3000);
 				});
-			
-		   
 		   }
 		}
 	// Perform the login with FB *****************************************END*******************************
@@ -717,7 +753,7 @@ angular.module('starter.controllers', [])
 			userRegister.set("middleName", String($scope.registerData['middleName']));
 			userRegister.set("surName", String($scope.registerData['surName']));
 			userRegister.set("dateOfBirth", $scope.registerData['dateOfBirth']);
-			
+			userRegister.set("loginThrough", "CYR");
 			//var userObjectID=userRegisterResponse.id;
 			var fileUploadControl = $("#photoFileUpload")[0];
 			if (fileUploadControl.files.length > 0) 
@@ -854,7 +890,8 @@ angular.module('starter.controllers', [])
 					/*$scope.userDetailsModal.show();
 					$scope.showUserDetail = true;*/
 					
-					$scope.name 			= currentUser.get("username");
+					$scope.username 		= currentUser.get("username");
+					$scope.name 			= currentUser.get("name");
 					$scope.email 			= currentUser.get("email");
 					$scope.firstName 		= currentUser.get("firstName");
 					$scope.middleName 		= currentUser.get("middleName");
@@ -1110,6 +1147,7 @@ angular.module('starter.controllers', [])
 					$scope.afterloginLinks   = true;
 					$scope.showHomeUserName  = true;
 					
+					$scope.username 		= username;
 					$scope.name 			= uName;
 					$scope.email 			= uEmail;
 					$scope.firstName 		= uFirstName;
@@ -1867,7 +1905,7 @@ angular.module('starter.controllers', [])
 									 }
 									  
 									 /* Get Memory Author's Name */
-									 var memoryUserName   	= memoryResObj.get("user").get("username");
+									 var memoryUserName   	= memoryResObj.get("user").get("name");
 									 var memoryUserId   	= memoryResObj.get("user").id;
 									//check user memory privacy
 									if(memoryResObj.get('privacy')=="No")
@@ -2022,7 +2060,7 @@ angular.module('starter.controllers', [])
 								 }
 								  
 								 /* Get Memory Author's Name */
-								 $scope.memoryDetailsUserName   	= memoryResObj.get("user").get("username");
+								 $scope.memoryDetailsUserName   	= memoryResObj.get("user").get("name");
 								 $scope.memoryDetailsUserId  		= memoryResObj.get("user").id;
 								 $scope.memoryDetailsId  			= memoryResObj.id;
 								 
@@ -2789,7 +2827,7 @@ angular.module('starter.controllers', [])
 								 }
 								  
 								 /* Get Memory Author's Name */
-								 var activitiesUserName   	=  activitiesResObj.get("fromUser").get("username");
+								 var activitiesUserName   	=  activitiesResObj.get("fromUser").get("name");
 								 var activitiesUserId   	=  activitiesResObj.get("fromUser").id;
 								//check user activities privacy
 								if(activitiesResObj.get('privacy')=="No")
@@ -2948,7 +2986,7 @@ angular.module('starter.controllers', [])
 								 }
 								  
 								 /* Get Memory Author's Name */
-								 $scope.activityDetailsUserName   	= activityResObj.get("fromUser").get("username");
+								 $scope.activityDetailsUserName   	= activityResObj.get("fromUser").get("name");
 								 $scope.activityDetailsUserId  		= activityResObj.get("fromUser").id;
 								 $scope.activityDetailsId  			= activityResObj.id;
 								 
