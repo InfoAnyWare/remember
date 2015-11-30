@@ -8,6 +8,7 @@ angular.module('starter.controllers', [])
   //$scope.$on('$ionicView.enter', function(e) {
   //});
   
+  
   //set by default file size and msg
   	$rootScope.fileSizeLimit 	= 5242880;//5MB
 	$rootScope.fileSizeMBMsg 	= "5MB";//5MB
@@ -95,6 +96,15 @@ angular.module('starter.controllers', [])
 			$scope.resetPasswordModal = resetPasswordModal;
 		});
 		
+   // Create the edit User modal that we will use later
+		$ionicModal.fromTemplateUrl('templates/editUser.html', {
+		scope: $scope
+		}).then(function(editUserModal) {
+			$scope.editUserModal = editUserModal;
+			$scope.fileSizeMBMsg =$rootScope.fileSizeMBMsg;
+			$scope.showFileMsg = false;
+		});
+		
 		
 	////////////////////////////////////////////////////////////////////////////////////	
 	
@@ -121,13 +131,11 @@ angular.module('starter.controllers', [])
 		
 	// Open the register modal
 		$scope.register = function() {
-		//hide registe modal and register thanks modal when open login modal
+		//hide login modal, register thanks modal when open register modal
 		$scope.loginModal.hide();
 		$scope.registerThanksModal.hide();
 		$scope.registerModal.show();
 		};
-		
-	
 	
 	//local storage key set
 	 var keyName = window.localStorage.key(0);
@@ -164,8 +172,8 @@ angular.module('starter.controllers', [])
 			$scope.showUserDetail  = true;
 			currentUser.save(); //save app run log time
 			$timeout(function() {
-			$scope.userDetails(); //auto close the popup after 1\2 seconds
-			$scope.userDetailsModal.hide(); //hide detail popup after 1\2 seconds
+				$scope.userDetails(); //auto close the popup after 1\2 seconds
+				$scope.userDetailsModal.hide(); //hide detail popup after 1\2 seconds
 		  }, 300);
 		  
 		} else {
@@ -275,6 +283,7 @@ angular.module('starter.controllers', [])
 					  $scope.surName 		     = user.get("surName");
 					  $scope.dateOfBirth 		 = $filter('date')(user.get("dateOfBirth"), "dd/MM/yyyy");
 					  $scope.loginThroughMsg   	 = "CYR";
+					  $scope.UId 			 	 = user.id;
 					 
 					 //////////////////////////////CYR local store data start//////////////////////////////////// 
 					 // first localStorage is now empty
@@ -511,6 +520,7 @@ angular.module('starter.controllers', [])
 											  //set current user is Loged In when exit app and re open it.
 											  var token = userObject.get('token');
 											  Parse.User.become(token);
+											  $scope.UId 	 = userObject.id;
 											  // first localStorage is now empty
 											  window.localStorage.clear();
 											  if(fbDataResponse.name!=undefined)
@@ -679,8 +689,8 @@ angular.module('starter.controllers', [])
 				function(error) {
 					//Error found
 					  $scope.loginModal.show();
-					  $scope.vEmailMsg = true;
-					  $scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
+					  $scope.vEmailMsg = false;
+					  $scope.vEmailMsgValue ="";
 					  $scope.hideLoading();
 					  $scope.$apply();
 					  
@@ -844,7 +854,7 @@ angular.module('starter.controllers', [])
 			
 		};
 		
-		// Triggered in the rregister thanks modal to close it
+		// Triggered in the register thanks modal to close it
 		$scope.closeRegisterThanks = function() {
 			$scope.registerThanksModal.hide();
 		};
@@ -877,19 +887,22 @@ angular.module('starter.controllers', [])
 			$scope.userDetails = function() {
 				$scope.userDetailsModal.show();
 				$scope.showUserDetail = true;
+				$scope.showEditUserLink = true;
 				
 				uLoginThroughMsg 	= window.localStorage.getItem("uLoginThroughMsg");
 				//set cyr Login Links false when user login with facebook
 				if(uLoginThroughMsg=="Facebook")
 				{
-					$scope.cyrLoginLinks  = false;
+					$scope.cyrLoginLinks    = false;
+					$scope.showEditUserLink = false;
 				}
+				
 				// check current user are present or not
 				var currentUser = Parse.User.current();
 				if (currentUser) {
+					
 					/*$scope.userDetailsModal.show();
 					$scope.showUserDetail = true;*/
-					
 					$scope.username 		= currentUser.get("username");
 					$scope.name 			= currentUser.get("name");
 					$scope.email 			= currentUser.get("email");
@@ -933,9 +946,11 @@ angular.module('starter.controllers', [])
 				} 
 				else 
 				{
+					$scope.showEditUserLink = false;
 					$timeout(function() {
 						$scope.showLocalStorageData();
 				   }, 300);
+				   $scope.$apply();
 				   
 					/*$scope.userDetailsModal.hide();
 					$scope.showUserDetail 		 = false;*/
@@ -1237,6 +1252,239 @@ angular.module('starter.controllers', [])
 			$ionicPush.register();	
 		 }
 		////////////////////////////////////////////
+		
+		
+	// Perform the editUser action***********Start***********
+	
+		// Form data for the editUser modal
+			$scope.editUserData = [];
+			$scope.editUserMsg 			= false;
+			$scope.editUserMsgValue 	= '';
+			
+		// Triggered in the editUser modal to close it
+			$scope.closeEditUser = function() {
+				$scope.editUserModal.hide();
+			};	
+		
+		// Open the editUser modal
+			$scope.editUser = function() {
+				
+				//check network
+				if($cordovaNetwork.isOffline()) 
+				{
+					$scope.editUserModal.hide();
+					alert("Please check your network connection and try again");
+					$scope.$apply();
+				}
+				else
+				{
+					$scope.editUserModal.show();
+					//code for edit current user
+					var currentUser = Parse.User.current();
+					if(currentUser)
+					{ 
+						$scope.showLoading();
+						$scope.editUserData['firstName'] 	=currentUser.get('firstName');
+						$scope.editUserData['middleName'] 	=currentUser.get('middleName');
+						$scope.editUserData['surName'] 		=currentUser.get('surName');
+						$scope.editUserData['dateOfBirth'] 	=currentUser.get('dateOfBirth');
+						
+						//get user photo
+						var uPhotolocalPath 	= window.localStorage.getItem("uPhotolocalPath");
+						if(uPhotolocalPath != null && uPhotolocalPath != '')
+						{
+							$scope.UPhoto 	= uPhotolocalPath;
+						}
+						else
+						{
+							var photoFileObj = currentUser.get("photoFile");
+							if(photoFileObj!=undefined)
+							{
+								$scope.UPhoto  		 = photoFileObj.url();
+							}
+							else
+							{
+								$scope.UPhoto 	  = 'img/user.png';
+							}
+						}
+						$scope.hideLoading();
+						$scope.$apply();
+					}
+					else
+					{
+						$scope.editUserModal.hide();
+						$scope.hideLoading();
+						$scope.$apply();
+					}
+				}
+			};
+		
+		//doEditUser
+			$scope.doEditUser = function() {
+				$scope.showLoading();
+				// code if using a editUser system
+				$scope.editUserMsgValue = "";
+				
+				//condition for edit user
+				var currentUser = Parse.User.current();
+				if(currentUser)
+				{ 
+					if($cordovaNetwork.isOffline()) 
+					{
+						$scope.editUserMsg = true;
+						$scope.editUserMsgValue ="Please check your network connection and try again";
+						$scope.hideLoading();
+						 $timeout(function() {
+							 $scope.editUserrMsg = false;
+							 $scope.editUserMsgValue ="";
+							 $scope.editUserModal.hide();
+						}, 5000);
+						$scope.$apply();
+					}
+					else
+					{
+						var editUser = Parse.User.current();
+						editUser.set("firstName", String($scope.editUserData['firstName']));
+						editUser.set("middleName", String($scope.editUserData['middleName']));
+						editUser.set("surName", String($scope.editUserData['surName']));
+						editUser.set("dateOfBirth", $scope.editUserData['dateOfBirth']);
+						
+						var fileUploadControl = $("#editUserPhotoFileUpload")[0];
+						if (fileUploadControl.files.length > 0) 
+						{
+							var file = fileUploadControl.files[0];
+							
+							//check upload size
+							var fileSize		= file.size;
+							if(parseInt(fileSize)>parseInt($rootScope.fileSizeLimit))
+							{
+								$scope.fileMsg=$rootScope.fileSizeLimitMsg;
+								$scope.showFileMsg = true;
+								$scope.hideLoading();
+								$scope.$apply();
+								return false;
+							}
+							else
+							{
+								$scope.showFileMsg = false;
+								var name = "photo.png";
+								var parseFile = new Parse.File(name, file);
+								parseFile.save().then(function(parseFile) {
+								  
+									editUser.set("photoFile", parseFile);
+									//////////////////////////////////////////////
+									editUser.save(null, {
+									  success: function(editUserResponse) {
+										// alert("editUserResponse=="+JSON.stringify(editUserResponse));
+										 
+										 //set current user is Loged In when exit app and re open it.
+										 var token = editUserResponse.get('token');
+										 Parse.User.become(token);
+										 
+										 $scope.firstName 		 = editUserResponse.get("firstName");
+										 $scope.middleName 		 = editUserResponse.get("middleName");
+										 $scope.surName 		 = editUserResponse.get("surName");
+										 $scope.dateOfBirth 	 = $filter('date')(editUserResponse.get("dateOfBirth"), "dd/MM/yyyy");
+										 
+										 window.localStorage.setItem("uFirstName", editUserResponse.get("firstName"));
+										 window.localStorage.setItem("uMiddleName", editUserResponse.get("middleName"));
+										 window.localStorage.setItem("uSurName", editUserResponse.get("surName"));
+										 window.localStorage.setItem("uDateOfBirth", $filter('date')(editUserResponse.get("dateOfBirth"), "dd/MM/yyyy"));
+										 //get user image
+										 var photoFileObj = editUserResponse.get("photoFile");
+										 if(photoFileObj!=undefined)
+										 {
+											var url 		  = photoFileObj.url();
+											$scope.photo 	  = url;
+											//call function for download ing
+											$scope.downloadFile(url);
+										 }
+										 else
+										 {
+											$scope.photo 	  = 'img/user.png';
+											window.localStorage.removeItem("uPhotolocalPath");
+										 }
+										 
+										 $scope.editUserModal.hide();
+										 $scope.hideLoading();
+										 $scope.$apply();
+									  },
+									  error: function(editUserResponse, error) {
+										// Show the error message somewhere and let the user try again.
+										$scope.hideLoading(); 
+										$scope.editUserMsg = true;
+										$scope.editUserMsgValue = $scope.firstCharCapital(error.message);
+										$timeout(function() {
+										 $scope.editUserMsg = false;
+										 $scope.editUserMsgValue = "";
+										}, 4000);
+										$scope.$apply();
+									  }
+									});
+									//////////////////////////////////////////////
+								}, 
+								  function(error) {
+									  $scope.hideLoading();
+									  $scope.editUserMsg = true;
+									  $scope.editUserMsgValue = $scope.firstCharCapital(error.message);
+									  $timeout(function() {
+										 $scope.editUserMsg = false;
+										 $scope.editUserMsgValue = "";
+									  }, 4000);
+									  $scope.$apply();
+								  });
+							}
+						}
+						else
+						{
+							editUser.save(null, {
+							  success: function(editUserResponse) {
+								 //alert("editUserResponse no photo=="+JSON.stringify(editUserResponse));
+								 //set current user is Loged In when exit app and re open it.
+								 var token = editUserResponse.get('token');
+								 Parse.User.become(token);
+										 
+								 $scope.firstName 		 = editUserResponse.get("firstName");
+								 $scope.middleName 		 = editUserResponse.get("middleName");
+								 $scope.surName 		 = editUserResponse.get("surName");
+								 $scope.dateOfBirth 	 = $filter('date')(editUserResponse.get("dateOfBirth"), "dd/MM/yyyy");
+								 
+								 window.localStorage.setItem("uFirstName", editUserResponse.get("firstName"));
+								 window.localStorage.setItem("uMiddleName", editUserResponse.get("middleName"));
+								 window.localStorage.setItem("uSurName", editUserResponse.get("surName"));
+								 window.localStorage.setItem("uDateOfBirth", $filter('date')(editUserResponse.get("dateOfBirth"), "dd/MM/yyyy"));
+							   
+								 $scope.editUserModal.hide();
+								 $scope.hideLoading();
+								 $scope.$apply();
+							  },
+							  error: function(editUserResponse, error) {
+								// Show the error message somewhere and let the user try again.
+								$scope.hideLoading();
+								$scope.editUserMsg = true;
+								$scope.editUserMsgValue = $scope.firstCharCapital(error.message);
+								$timeout(function() {
+								 $scope.editUserMsg = false;
+								 $scope.editUserMsgValue = "";
+								}, 4000);
+								$scope.$apply();
+							  }
+							});
+						}
+					}
+				}
+				else
+				{
+					$scope.editUserModal.hide();
+					$scope.hideLoading();
+					$scope.$apply();
+				}
+			};
+		
+	// Perform the editUser action  ***********End***********
+		
+	    /////////////////////////////////////////////////
+		
 	  	
 		//console.log('afterloginLinks=='+$scope.afterloginLinks);
 		
