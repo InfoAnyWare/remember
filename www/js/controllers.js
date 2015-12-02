@@ -1603,7 +1603,7 @@ angular.module('starter.controllers', [])
 				"tokens": tokens,
 				"production": false,
 				"notification": {
-				  "alert":fromUserName+" has invited you!",
+				  "alert":fromUserName+" shared a memory with you!",
 				}
 			  }
 			};
@@ -2543,7 +2543,8 @@ angular.module('starter.controllers', [])
 				"tokens": tokens,
 				"production": false,
 				"notification": {
-				  "alert":fromUserName+" has invited you!",
+				  "alert":fromUserName+" did some activity on memory!",
+				  "icon":"www/img/logo.png",
 				}
 			  }
 			};
