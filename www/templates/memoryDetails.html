@@ -1,8 +1,11 @@
-<ion-view title="{{memoryDetailsTitle}}">
-  <ion-content ng-show="afterloginLinks">
- 
+<ion-view title="Memory Detail">
+  
+  <div class="bar bar-subheader">
+ 	<h2 class="title">{{memoryDetailsTitle}}</h2>
+  </div>
+  <ion-content class="has-subheader" ng-show="afterloginLinks">
     <div class="list card">
-
+    
       <div class="item item-avatar">
         <img src="{{memoryDetailsUserImg}}">
         <h2>{{memoryDetailsUserName}}</h2>

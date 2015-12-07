@@ -1591,6 +1591,7 @@ angular.module('starter.controllers', [])
 			var auth = btoa(privateKey + ':');
 			
 			// Build the request object
+			var payload = {"$state":"memoryDetails", "$stateParams": "{\"id\": \""+ mId +"\"}"};
 			var req = {
 			  method: 'POST',
 			  url: 'https://push.ionic.io/api/v1/push',
@@ -1604,6 +1605,13 @@ angular.module('starter.controllers', [])
 				"production": false,
 				"notification": {
 				  "alert":fromUserName+" shared a memory with you!",
+				  "android": {
+						  "payload": payload
+						},
+				  "ios": {
+					  "badge":1,
+					  "payload": payload
+					},
 				}
 			  }
 			};
@@ -1884,7 +1892,10 @@ angular.module('starter.controllers', [])
 				CYRmeMemory.set("dateOfMemory", $scope.addMemoryData['dateOfMemory']);
 				if(String($scope.addMemoryData['mentionTo'])!="undefined")
 				{
-					var mentionToArray=$scope.addMemoryData['mentionTo'].split(",");
+					var mentionToArray = [];
+					$.each($scope.addMemoryData['mentionTo'].split(","), function(){
+						mentionToArray.push($.trim(this));
+					});
 					CYRmeMemory.set("mentionTo", mentionToArray);
 				}
 				CYRmeMemory.set("content", String($scope.addMemoryData['content']));
@@ -2544,7 +2555,6 @@ angular.module('starter.controllers', [])
 				"production": false,
 				"notification": {
 				  "alert":fromUserName+" did some activity on memory!",
-				  "icon":"www/img/logo.png",
 				}
 			  }
 			};
@@ -2806,7 +2816,10 @@ angular.module('starter.controllers', [])
 					
 				if(String($scope.addActivityData['mentionTo'])!="undefined")
 				{
-					var mentionToArray=$scope.addActivityData['mentionTo'].split(",");
+					var mentionToArray = [];
+					$.each($scope.addActivityData['mentionTo'].split(","), function(){
+						mentionToArray.push($.trim(this));
+					});
 					Activity.set("mentionTo", mentionToArray);
 				}
 				//upload file
