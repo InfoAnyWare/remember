@@ -1591,7 +1591,6 @@ angular.module('starter.controllers', [])
 			var auth = btoa(privateKey + ':');
 			
 			// Build the request object
-			var payload = {"$state":"memoryDetails", "$stateParams": "{\"id\": \""+ mId +"\"}"};
 			var req = {
 			  method: 'POST',
 			  url: 'https://push.ionic.io/api/v1/push',
@@ -1605,13 +1604,6 @@ angular.module('starter.controllers', [])
 				"production": false,
 				"notification": {
 				  "alert":fromUserName+" shared a memory with you!",
-				  "android": {
-						  "payload": payload
-						},
-				  "ios": {
-					  "badge":1,
-					  "payload": payload
-					},
 				}
 			  }
 			};
