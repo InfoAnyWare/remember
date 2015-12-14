@@ -135,9 +135,11 @@ angular.module('starter', [
 
   .state('app.home', {
       url: '/home',
+	  cache: false,
       views: {
         'menuContent': {
-          templateUrl: 'templates/home.html'
+          templateUrl: 'templates/home.html',
+		  controller:  "homePage"
          }
       }
   });

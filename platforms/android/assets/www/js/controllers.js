@@ -8,6 +8,8 @@ angular.module('starter.controllers', [])
   //$scope.$on('$ionicView.enter', function(e) {
   //});
   
+  //add memory icon not show this Ctrl
+  $rootScope.showAddMemoryLink	=false;
   
   //set by default file size and msg
   	$rootScope.fileSizeLimit 	= 5242880;//5MB
@@ -230,7 +232,7 @@ angular.module('starter.controllers', [])
 	// Perform the login action when the user submits the CYR login form ***********Start***********
 		$scope.doLogin = function() {
 		$scope.showLoading();
-		console.log('Doing login', $scope.loginData);
+		//console.log('Doing login', $scope.loginData);
 		
 		// Simulate a login delay. Remove this and replace with your login
 		// code if using a login system
@@ -239,8 +241,9 @@ angular.module('starter.controllers', [])
 		 // check network connection present or not
 		 if ($cordovaNetwork.isOffline()) 
 		 {
-				 //alert("No data network present, app use last loged in user loacl data CYR login.");
-				 $scope.showLocalStorageData();
+			 //alert("No data network present, app use last loged in user loacl data CYR login.");
+			 //$scope.showLocalStorageData();
+			 $scope.memoryFeed();
 		 }
 		 else
 		 {
@@ -268,22 +271,9 @@ angular.module('starter.controllers', [])
 					  Parse.User.become(token);
 					  
 					  $scope.closeLogin();
-					  $scope.showHomeMsg = true;
-					  $scope.homeMsgValue ="You have been successfully logged in.";
 					  $scope.beforeloginLinks	 = false;
 					  $scope.afterloginLinks  	 = true;
-					  $scope.showHomeUserName 	 = true;
 					  $scope.cyrLoginLinks  	 = true;
-					  
-					  $scope.username 			 = user.get("username");
-		    		  $scope.name 			 	 = user.get("name");
-					  $scope.email 			 	 = user.get("email");
-					  $scope.firstName 			 = user.get("firstName");
-					  $scope.middleName 		 = user.get("middleName");
-					  $scope.surName 		     = user.get("surName");
-					  $scope.dateOfBirth 		 = $filter('date')(user.get("dateOfBirth"), "dd/MM/yyyy");
-					  $scope.loginThroughMsg   	 = "CYR";
-					  $scope.UId 			 	 = user.id;
 					 
 					 //////////////////////////////CYR local store data start//////////////////////////////////// 
 					 // first localStorage is now empty
@@ -304,7 +294,6 @@ angular.module('starter.controllers', [])
 					if(photoFileObj!=undefined)
 					{
 						var url 		  = photoFileObj.url();
-						$scope.photo 	  = url;
 						//call function for download ing
 						$scope.downloadFile(url);
 					}
@@ -315,15 +304,9 @@ angular.module('starter.controllers', [])
 					}
 					//call function store Device Info for notification
 					$scope.storeDeviceInfo();
+					$state.go('app.home',null,{reload:true});// go to Home Memory feed page
 					$scope.hideLoading();
 					$scope.$apply();
-					
-					$state.go("app.home"); // go to home page
-					$timeout(function() {
-						 $scope.hideLoading();
-						 $scope.showHomeMsg = false;
-						 $scope.$apply();
-						}, 4000);
 				  }
 			  },
 			  error: function(user, error) {
@@ -886,8 +869,9 @@ angular.module('starter.controllers', [])
 			//show user details
 			$scope.userDetails = function() {
 				$scope.userDetailsModal.show();
-				$scope.showUserDetail = true;
+				$scope.showUserDetail   = true;
 				$scope.showEditUserLink = true;
+				$scope.showUserSomeData = true;
 				
 				uLoginThroughMsg 	= window.localStorage.getItem("uLoginThroughMsg");
 				//set cyr Login Links false when user login with facebook
@@ -895,6 +879,7 @@ angular.module('starter.controllers', [])
 				{
 					$scope.cyrLoginLinks    = false;
 					$scope.showEditUserLink = false;
+					$scope.showUserSomeData = false;
 				}
 				
 				// check current user are present or not
@@ -1482,7 +1467,8 @@ angular.module('starter.controllers', [])
 			};
 		
 	// Perform the editUser action  ***********End***********
-		
+	
+				
 	    /////////////////////////////////////////////////
 		
 	  	
@@ -1491,7 +1477,149 @@ angular.module('starter.controllers', [])
 	})
 	
 	
-	
+
+//View homePage controller******************************Start************************************************
+	.controller('homePage', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork, $cordovaFile, $filter, $timeout) {
+		
+		//add memory icon show this Ctrl
+		$rootScope.showAddMemoryLink	=true;
+		//msg false by default
+		$scope.showHomeMsg 		 = false;
+		$scope.showHomeMsgValue  = "";
+		
+		//define function view Memory
+		$scope.homePage = function() {
+				$scope.showMemories=true;
+				$scope.showLoading();
+				var memoryListArray	=new Array(); //store all memory data
+				// check current user are present or not
+				var currentUser = Parse.User.current();
+				//alert("currentUser="+currentUser)
+				
+				var memoryQuery   	= Parse.Object.extend("CYRme");
+				var query 			= new Parse.Query(memoryQuery);
+				query.include("user");
+				query.descending("createdAt");
+				query.find({
+					success: function(memoryResults) {
+						//alert("memoryResults=="+JSON.stringify(memoryResults));
+						//alert("memoryResults.length=="+memoryResults.length);
+						var mCount=0;
+						if(memoryResults.length>0)
+						{ 
+							for(i in memoryResults){
+								//Set memoryResObj to current Memory
+								  var memoryResObj = memoryResults[i];
+								
+								  var memoryTitle		 	=memoryResObj.get('title');
+								  var memoryContent 	 	=memoryResObj.get('content');
+								  var memoryAddOnDateTime 	=$filter('date')(memoryResObj.get("dateOfMemory"), "dd/MM/yyyy");
+								   
+								  //get memory thumbnill
+								  var memoryThumbnailObj = memoryResObj.get("thumbnail");
+								  if(memoryThumbnailObj!=undefined)
+								  {
+									  var memoryThumbnailurl = memoryThumbnailObj.url();
+									  var memoryImg 	 	 = memoryThumbnailurl;
+								  }
+								  else
+								  {
+									   var memoryImg 	 	 = '';
+								  }
+								  
+								 //get user profile pic 
+								 var memoryUserImgObj 	 = memoryResObj.get("user").get("photoFile");
+								 if(memoryUserImgObj!=undefined)
+								 {
+									 var memoryUserImgUrl 	 = memoryUserImgObj.url();
+									 var memoryUserImg 	 	 = memoryUserImgUrl;
+								 }
+								 else
+								 {
+									  var memoryUserImg 	 	 = 'img/user.png';
+								 }
+								  
+								 /* Get Memory Author's Name */
+								 var memoryUserName   	= memoryResObj.get("user").get("name");
+								 var memoryUserId   	= memoryResObj.get("user").id;
+								//check user memory privacy
+								if(memoryResObj.get('privacy')=="No")
+								{
+									/* Let's Put the memoryListArray Information in an Array as an Object*/
+									memoryListArray.push(
+									{
+										memoryTitle			: memoryTitle,
+										memoryContent		: memoryContent,
+										memoryAddOnDateTime	: memoryAddOnDateTime,
+										memoryImg			: memoryImg,
+										
+										memoryUserName		: memoryUserName,
+										memoryUserImg		: memoryUserImg,
+										memoryId			: memoryResObj.id
+											
+									});
+								  mCount++;
+								}
+								else
+								{
+									
+									var fbUserId 	= window.localStorage.getItem("fbUserId");
+									// check username or name or email present in user group
+									if((currentUser.id==memoryUserId) || ($.inArray(currentUser.get("name"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("username"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("email"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(fbUserId, memoryResObj.get('mentionTo') )>=0))
+									{
+										/* Let's Put the memoryListArray Information in an Array as an Object*/
+										memoryListArray.push(
+										{
+											memoryTitle			: memoryTitle,
+											memoryContent		: memoryContent,
+											memoryAddOnDateTime	: memoryAddOnDateTime,
+											memoryImg			: memoryImg,
+											
+											memoryUserName		: memoryUserName,
+											memoryUserImg		: memoryUserImg,
+											memoryId			: memoryResObj.id
+												
+										});
+										mCount++;
+									}
+								}
+								
+							} // End for loop
+							
+							if(mCount>0) //condition for num of records present
+							{
+								$scope.memoryListArr 	= memoryListArray;
+								$scope.showMemories		=true;
+							}
+							else
+							{
+								$scope.showMemories		=false;
+							}
+							//$scope.memoryListArr 	= memoryListArray;
+							//$scope.showMemories		=true;
+							$scope.hideLoading();
+							$scope.$apply();
+						}
+						else
+						{
+							$scope.hideLoading();
+							$scope.showMemories=false;
+							$scope.$apply();
+						}
+					},
+					error: function(error){
+						//alert("Error: " + error.code + " " + error.message);
+						 $scope.showHomeMsg = true;
+						 $scope.showHomeMsgValue ="Please check your network connection and try again";
+						 $scope.hideLoading();
+						 $scope.$apply();
+					}
+				}); // End memoryQuery find
+		 };
+		//call function view memory function
+		$scope.homePage();
+	})
+//View homePage controller******************************End************************************************		
 	
 	
 	
@@ -1499,6 +1627,8 @@ angular.module('starter.controllers', [])
 //CYRme Memory controller******************************Start************************************************
 	.controller('CYRmeMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork, ThumbnailService, $ionicPush, $http, $cordovaDevice, $timeout, $stateParams, $ionicHistory) {
 		
+		//add memory icon not show this Ctrl
+		$rootScope.showAddMemoryLink	=false;
 		// current user
 		var currentUser = Parse.User.current();
 		
@@ -2097,7 +2227,8 @@ angular.module('starter.controllers', [])
 //View Memory controller******************************Start************************************************
 	.controller('viewMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork, $cordovaFile, $filter, $timeout) {
 		
-		
+		//add memory icon show this Ctrl
+		$rootScope.showAddMemoryLink =true;
 		//msg false by default
 		$scope.showViewMemoryMsg 	= false;
 		$scope.showViewMemoryValue  ="";
@@ -2259,6 +2390,8 @@ angular.module('starter.controllers', [])
 //memory Details controller******************************Start************************************************
 	.controller('memoryDetails', function($scope ,$rootScope, $ionicLoading, $state, $stateParams, $cordovaNetwork, $cordovaFile, $filter, $timeout) {
 		
+		//add memory icon not show this Ctrl
+		$rootScope.showAddMemoryLink	=false;
 		//show edit memory icon
 		$scope.showEditMemory = false;
 		
@@ -2429,6 +2562,8 @@ angular.module('starter.controllers', [])
 //activity controller******************************Start************************************************
 	.controller('activity', function($scope ,$rootScope, $state, $stateParams, $ionicLoading, $cordovaNetwork, ThumbnailService,$ionicPush, $http, $cordovaDevice, $timeout, $ionicHistory) {
 		
+		//add memory icon not show this Ctrl
+		$rootScope.showAddMemoryLink	=false;
 		// current user
 		var currentUser = Parse.User.current();
 		
@@ -3018,6 +3153,8 @@ angular.module('starter.controllers', [])
 //viewAllActivities controller******************************Start************************************************
 	.controller('viewAllActivities', function($scope ,$rootScope, $state, $stateParams, $ionicLoading, $cordovaNetwork, $cordovaFile, $filter, $timeout ) {
 		
+		//add memory icon not show this Ctrl
+		$rootScope.showAddMemoryLink	=false;
 		//define function view viewAllActivities
 		$scope.viewAllActivities = function(mId) {
 				$scope.showActivities=true;
@@ -3188,6 +3325,9 @@ angular.module('starter.controllers', [])
 
 //activity Details controller******************************Start************************************************
 	.controller('activityDetails', function($scope ,$rootScope, $ionicLoading, $state, $stateParams, $cordovaNetwork, $cordovaFile, $filter, $timeout) {
+		
+		//add memory icon not show this Ctrl
+		$rootScope.showAddMemoryLink	=false;
 		
 		$scope.showEditActivity = false;
 		//define function activity Details
