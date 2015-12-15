@@ -49,8 +49,8 @@ angular.module('starter.controllers', [])
 	// var for show links when user Login in CYR
 		$scope.cyrLoginLinks  = true;
 		
-	// var for show logou tMsg
-		$scope.logoutMsg  = false;
+	// var for show loginMsg
+		$scope.loginMsg  = false;
 	
 	// Form data for the login modal
 		$scope.loginData = [];
@@ -118,7 +118,7 @@ angular.module('starter.controllers', [])
 	// Open the login modal
 		$scope.login = function() {
 			//hide registe modal and register thanks modal when open login modal
-			$scope.vEmailMsg = false;
+			$scope.loginMsg = false;
 			$scope.registerModal.hide();
 			$scope.registerThanksModal.hide();
 			$scope.forgotPasswordModal.hide();
@@ -163,15 +163,12 @@ angular.module('starter.controllers', [])
 	// check current user are present or not
 		var currentUser = Parse.User.current();
 		//alert("currentUser=="+currentUser);
-		if (currentUser) 
+		if(currentUser) 
 		{
 			//alert('currentUser= yes');
 			$scope.beforeloginLinks	 = false;
 			$scope.afterloginLinks   = true;
-			
-			$scope.showHomeUserName 	= true;
-		    $scope.name = currentUser.get("name");
-			$scope.showUserDetail  = true;
+			$scope.showUserDetail    = true;
 			currentUser.save(); //save app run log time
 			$timeout(function() {
 				$scope.userDetails(); //auto close the popup after 1\2 seconds
@@ -181,7 +178,7 @@ angular.module('starter.controllers', [])
 		} else {
 			// alert('currentUser= no');
 			 $timeout(function() {
-				$scope.showLocalStorageData();
+				$scope.showLoginPage();
 		  }, 300);
 		}
 	
@@ -198,17 +195,16 @@ angular.module('starter.controllers', [])
 			var currentUser = Parse.User.current();  // this will now be null
 			$scope.beforeloginLinks	 = true;
 			$scope.afterloginLinks   = false;
-			$scope.showHomeUserName  = false;
 			
 			$timeout(function() {
 			 $scope.login(); //auto close the popup after 1\2 seconds
 		  }, 500);
 		  
-		  	$scope.logoutMsg  		= true;
-			$scope.logoutMsgValue	= 'You have been successfully logout.';
+		  	$scope.loginMsg  		= true;
+			$scope.loginMsgValue	= 'You have been successfully logout.';
 			$timeout(function() {
-			 $scope.logoutMsg  		= false;
-			 $scope.logoutMsgValue	= '';
+			 $scope.loginMsg  		= false;
+			 $scope.loginMsgValue	= '';
 		  }, 10000);
 		};
 		
@@ -236,14 +232,17 @@ angular.module('starter.controllers', [])
 		
 		// Simulate a login delay. Remove this and replace with your login
 		// code if using a login system
-		 $scope.vEmailMsg = false;
+		 $scope.loginMsg = false;
 		 
 		 // check network connection present or not
 		 if ($cordovaNetwork.isOffline()) 
 		 {
-			 //alert("No data network present, app use last loged in user loacl data CYR login.");
-			 //$scope.showLocalStorageData();
-			 $scope.memoryFeed();
+			 $scope.hideLoading();
+			 $scope.beforeloginLinks	 = true;
+			 $scope.afterloginLinks   	 = false;
+			 $scope.loginMsg 			 = true;
+			 $scope.loginMsgValue 		 = "Please check your network connection and try again.";
+			 $scope.$apply();
 		 }
 		 else
 		 {
@@ -251,19 +250,22 @@ angular.module('starter.controllers', [])
 		   Parse.User.logIn(String($scope.loginData['username']), String($scope.loginData['password']), {
 			  success: function(user) {
 				 var emailVerified = user.get("emailVerified");
-				  if (!emailVerified) 
+				  if (!emailVerified) // check emiil
 				  {
 					  $scope.hideLoading();
 					 // $scope.logOut();
 					  Parse.User.logOut();
-					  $scope.vEmailMsg = true;
-					  $scope.vEmailMsgValue ="Please verifying your email address before Login.";
 					  $scope.beforeloginLinks	 = true;
 					  $scope.afterloginLinks     = false;
+					  $scope.loginMsg 			 = true;
+					  $scope.loginMsgValue 		 = "Please verifying your email address before Login.";
 					  $scope.$apply();
 				  } 
 				  else
 				  {
+					  $scope.loginMsg 		= false;
+				 	  $scope.loginMsgValue 	= "";
+					  
 					  user.save(); //save login module time
 					  
 					  //set current user is Loged In when exit app and re open it.
@@ -286,7 +288,7 @@ angular.module('starter.controllers', [])
 					 window.localStorage.setItem("uMiddleName", user.get("middleName"));
 					 window.localStorage.setItem("uSurName", user.get("surName"));
 					 window.localStorage.setItem("uDateOfBirth", $filter('date')(user.get("dateOfBirth"), "dd/MM/yyyy"));
-					 window.localStorage.setItem("uLoginThroughMsg", $scope.loginThroughMsg);
+					 window.localStorage.setItem("uLoginThroughMsg", user.get("loginThrough"));
 					 //////////////////////////////CYR local store data start////////////////////////////////////
 					  
 					//get user image
@@ -294,12 +296,11 @@ angular.module('starter.controllers', [])
 					if(photoFileObj!=undefined)
 					{
 						var url 		  = photoFileObj.url();
-						//call function for download ing
+						//call function for download img
 						$scope.downloadFile(url);
 					}
 					else
 					{
-						$scope.photo 	  = 'img/user.png';
 						window.localStorage.removeItem("uPhotolocalPath");
 					}
 					//call function store Device Info for notification
@@ -312,19 +313,14 @@ angular.module('starter.controllers', [])
 			  error: function(user, error) {
 				// The login failed. Check error to see.
 				 $scope.hideLoading();
-				 $scope.vEmailMsg = true;
-				 $scope.vEmailMsgValue 	=$scope.firstCharCapital(error.message);
 				 $scope.beforeloginLinks	 = true;
 				 $scope.afterloginLinks   	 = false;
-				 $scope.showHomeUserName 	 = false;
-				 
-				 $timeout(function() {
-					 $scope.vEmailMsg = false;
-					}, 3000);
+				 $scope.loginMsg 			 = true;
+				 $scope.loginMsgValue 		 = $scope.firstCharCapital(error.message);
 				 $scope.$apply();
 			  }
 			});
-		 }
+		  }
 		};
 	// Perform the login action when the user submits the CYR login form ***********END***********
 	
@@ -420,27 +416,27 @@ angular.module('starter.controllers', [])
 		var fbLogged = new Parse.Promise();
 		
 		var fbLoginSuccess = function(response) {
-		if (!response.authResponse.accessToken){
-		  fbLoginError("Cannot find the authResponse");
-		  return;
-		}
-		var expDate = new Date(
-		  new Date().getTime() + response.authResponse.expiresIn * 1000
-		).toISOString();
-		
-		var authData = {
-		id: String(response.authResponse.userID),
-		access_token: response.authResponse.accessToken,
-		expiration_date: expDate
-		} 
-		  
-		fbLogged.resolve(authData);
-		//console.log(response);
+			if (!response.authResponse.accessToken){
+			  fbLoginError("Cannot find the authResponse");
+			  return;
+			}
+			var expDate = new Date(
+			  new Date().getTime() + response.authResponse.expiresIn * 1000
+			).toISOString();
+			
+			var authData = {
+				id: String(response.authResponse.userID),
+				access_token: response.authResponse.accessToken,
+				expiration_date: expDate
+			} 
+			  
+			fbLogged.resolve(authData);
+			//console.log(response);
 		};
 		
 		var fbLoginError = function(error){
-		$scope.hideLoading();
-		fbLogged.reject(error);
+			$scope.hideLoading();
+			fbLogged.reject(error);
 		};
 		
 		// Defaults to sessionStorage for storing the Facebook token
@@ -454,8 +450,12 @@ angular.module('starter.controllers', [])
             // check network connection present or not
 			if ($cordovaNetwork.isOffline()) 
 			{
-				 //alert("No data network present, app use last loged in user loacl data.");
-				 $scope.showLocalStorageData();
+				 $scope.hideLoading();
+				 $scope.beforeloginLinks	 = true;
+				 $scope.afterloginLinks   	 = false;
+				 $scope.loginMsg 			 = true;
+				 $scope.loginMsgValue 		 = "Please check your network connection and try again.";
+				 $scope.$apply();
 		    }
 		    else
 		    {
@@ -483,13 +483,13 @@ angular.module('starter.controllers', [])
 									if(userExistResults.length>0) // check CYR user exist
 									{
 										 $scope.loginModal.show();
-										 $scope.vEmailMsg = true;
-										 $scope.vEmailMsgValue ="A CYR user for email '"+fbDataResponse.email+"' is already existed.";
+										 $scope.loginMsg = true;
+										 $scope.loginMsgValue ="A CYR user for email '"+fbDataResponse.email+"' is already existed.";
 										 $scope.hideLoading();
 										 $scope.$apply();
 										 $timeout(function() {
-											 $scope.vEmailMsg = false;
-											 $scope.vEmailMsgValue ="";
+											 $scope.loginMsg 		= false;
+											 $scope.loginMsgValue 	= "";
 										}, 10000);
 									}
 									else //only fb user login section add and update data
@@ -503,66 +503,56 @@ angular.module('starter.controllers', [])
 											  //set current user is Loged In when exit app and re open it.
 											  var token = userObject.get('token');
 											  Parse.User.become(token);
-											  $scope.UId 	 = userObject.id;
+											  
 											  // first localStorage is now empty
 											  window.localStorage.clear();
 											  if(fbDataResponse.name!=undefined)
 											  {
 												  userObject.set("name", String(fbDataResponse.name));
-												  $scope.name 					= fbDataResponse.name;
 												  window.localStorage.setItem("uName", fbDataResponse.name);
 											  }
 											  else
 											  {
-												  $scope.name 					= '';
 												  window.localStorage.setItem("uName", '');
 											  }
 											  
 											  if(fbDataResponse.email!=undefined)
 											  {
 												  userObject.set("email", String(fbDataResponse.email));
-												  $scope.email 				= fbDataResponse.email;
 												  window.localStorage.setItem("uEmail", fbDataResponse.email); 
 											  }
 											  else
 											  {
-												  $scope.email 				= '';
 												  window.localStorage.setItem("uEmail", '');
 											  }
 											  
 											  if(fbDataResponse.first_name!=undefined)
 											  {
 												  userObject.set("firstName", String(fbDataResponse.first_name));
-												  $scope.firstName 			 = fbDataResponse.first_name;
 												  window.localStorage.setItem("uFirstName", fbDataResponse.first_name);
 											  }
 											  else
 											  {
-												   $scope.firstName 			 = '';
 												   window.localStorage.setItem("uFirstName", '');
 											  }
 											  
 											  if(fbDataResponse.middle_name!=undefined)
 											  {
 												  userObject.set("middleName", String(fbDataResponse.middle_name));
-												  $scope.middleName 		 = fbDataResponse.middle_name;
 												  window.localStorage.setItem("uMiddleName", fbDataResponse.middle_name);
 											  }
 											  else
 											  {
-												  $scope.middleName 		 = '';
 												  window.localStorage.setItem("uMiddleName", '');
 											  }
 											  
 											  if(fbDataResponse.last_name!=undefined)
 											  {
 												  userObject.set("surName", String(fbDataResponse.last_name));
-												  $scope.surName 		     = fbDataResponse.last_name;
 												  window.localStorage.setItem("uSurName", fbDataResponse.last_name);
 											  }
 											  else
 											  {
-												  $scope.surName 		     = '';
 												  window.localStorage.setItem("uSurName", '');
 											  }
 											  
@@ -570,18 +560,15 @@ angular.module('starter.controllers', [])
 											  {
 												  var dob = new Date(fbDataResponse.birthday);
 												  userObject.set("dateOfBirth", dob);
-												  $scope.dateOfBirth 		 = $filter('date')(fbDataResponse.birthday, "dd/MM/yyyy");
 												  window.localStorage.setItem("uDateOfBirth", $filter('date')(fbDataResponse.birthday, "dd/MM/yyyy"));
 											  }
 											  else
 											  {
-												   $scope.dateOfBirth 		 = '';
 												   window.localStorage.setItem("uDateOfBirth", '');
 											  }
 											  
 											 if(fbDataResponse.id!=undefined)
 											 {
-												 $scope.username 	= fbDataResponse.id;
 												 userObject.set("username", fbDataResponse.id);
 												 userObject.set("fbUserId", fbDataResponse.id);
 												 window.localStorage.setItem("fbUserId", fbDataResponse.id);
@@ -594,16 +581,11 @@ angular.module('starter.controllers', [])
 											 }
 											  
 											  window.localStorage.setItem("uLoginThroughMsg", "Facebook");
-											  $scope.loginThroughMsg     = "Facebook";
 											  userObject.set("loginThrough", "Facebook");
 											  userObject.save(); //saved facebook user data from parse server 
 											  
-											  $scope.showHomeMsg = true;
-											  $scope.homeMsgValue ="User logged in through Facebook!";
-											  
 											  $scope.beforeloginLinks	 = false;
 											  $scope.afterloginLinks  	 = true;
-											  $scope.showHomeUserName 	 = true;
 											  $scope.cyrLoginLinks  	 = false;
 											  
 											 //profile picture
@@ -611,26 +593,19 @@ angular.module('starter.controllers', [])
 											 {
 												 var pictureObject=fbDataResponse.picture.data;
 												 var url=pictureObject.url;
-												 $scope.photo 	= url;
 												 //call function downloadFile picture file
 												 $scope.downloadFile(url);
 											 }
 											 else
 											 {
-												 $scope.photo 	= 'img/user.png';
 												 window.localStorage.setItem("uPhotolocalPath", '');
 												 window.localStorage.setItem("filename", '');
 											 }
 											 
 											 $scope.loginModal.hide();
 											 $state.go("app.home"); // go to home page
-											 
 											 $scope.hideLoading();
 											 $scope.$apply();
-											 $timeout(function() {
-												 $scope.showHomeMsg = false;
-												 $scope.homeMsgValue ="";
-												}, 3000);
 											 
 											 //call function store Device Info for notification
 											 $scope.storeDeviceInfo(); 
@@ -640,14 +615,14 @@ angular.module('starter.controllers', [])
 										function(error) {
 											  //Error found
 											  $scope.loginModal.show();
-											  $scope.vEmailMsg = true;
-											  $scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
+											  $scope.loginMsg 	   = true;
+											  $scope.loginMsgValue = "User cancelled the Facebook login or did not fully authorize.";
 											  $scope.hideLoading();
 											  $scope.$apply();
 											  
 											  $timeout(function() {
-												 $scope.vEmailMsg = false;
-												 $scope.vEmailMsgValue ="";
+												 $scope.loginMsg      = false;
+												 $scope.loginMsgValue ="";
 												}, 3000);
 										});
 									} // fb user else end
@@ -657,14 +632,14 @@ angular.module('starter.controllers', [])
 						function(error) {
 						  //Error found
 						  $scope.loginModal.show();
-						  $scope.vEmailMsg = true;
-						  $scope.vEmailMsgValue ="User cancelled the Facebook login or did not fully authorize.";
+						  $scope.loginMsg 		= true;
+						  $scope.loginMsgValue  = "User cancelled the Facebook login or did not fully authorize.";
 						  $scope.hideLoading();
 						  $scope.$apply();
 						  
 						  $timeout(function() {
-							 $scope.vEmailMsg = false;
-							 $scope.vEmailMsgValue ="";
+							 $scope.loginMsg = false;
+							 $scope.loginMsgValue ="";
 							}, 3000);
 						}
 					 ); //fb login end
@@ -672,15 +647,10 @@ angular.module('starter.controllers', [])
 				function(error) {
 					//Error found
 					  $scope.loginModal.show();
-					  $scope.vEmailMsg = false;
-					  $scope.vEmailMsgValue ="";
+					  $scope.loginMsg      = false;
+					  $scope.loginMsgValue = "";
 					  $scope.hideLoading();
 					  $scope.$apply();
-					  
-					  $timeout(function() {
-						 $scope.vEmailMsg = false;
-						 $scope.vEmailMsgValue ="";
-						}, 3000);
 				});
 		   }
 		}
@@ -933,12 +903,9 @@ angular.module('starter.controllers', [])
 				{
 					$scope.showEditUserLink = false;
 					$timeout(function() {
-						$scope.showLocalStorageData();
+						$scope.showLoginPage();
 				   }, 300);
 				   $scope.$apply();
-				   
-					/*$scope.userDetailsModal.hide();
-					$scope.showUserDetail 		 = false;*/
 				}
 			};
 	// Perform user details   ***********End***********
@@ -950,12 +917,9 @@ angular.module('starter.controllers', [])
 	// Perform the Forgot Password action when the user submits the Forgot Password form  ***********Start***********
 	
 		// Form data for the register modal
-		$scope.forgotPasswordData = [];
-		$scope.forgotPasswordMsg = false;
-		$scope.successForgotPasswordMsg = false;
-		
-		$scope.forgotPasswordMsgValue = "";
-		$scope.successForgotPasswordMsgValue = "";
+		$scope.forgotPasswordData		= [];
+		$scope.forgotPasswordMsg 		= false;
+		$scope.forgotPasswordMsgValue 	= "";
 		
 		$scope.doForgotPassword = function() {
 			$scope.showLoading();
@@ -966,8 +930,8 @@ angular.module('starter.controllers', [])
 			  success: function() {
 				$scope.hideLoading();
 				$scope.login();
-			    $scope.successForgotPasswordMsg = true;
-				$scope.successForgotPasswordMsgValue ="Forgot password request was sent successfully, Please check your email.";
+			    $scope.loginMsg = true;
+				$scope.loginMsgValue ="Forgot password request was sent successfully, Please check your email.";
 				$scope.$apply();
 			  },
 			  error: function(error) {
@@ -1073,7 +1037,7 @@ angular.module('starter.controllers', [])
 					$scope.showHomeMsg 	 	= true;
 					$scope.homeMsgValue 	= "Password has been reset successfully.";
 					$timeout(function() {
-					 $scope.showHomeMsg = false;
+					 $scope.showHomeMsg  = false;
 					 $scope.homeMsgValue = "";
 					}, 4000);
 					$scope.$apply();
@@ -1135,35 +1099,9 @@ angular.module('starter.controllers', [])
 	//Download File  ***********end***********
 	
 	
-	//show user data from local storage  ***********start***********
-		$scope.showLocalStorageData = function() {
+	//show showLoginPage  ***********start***********
+		$scope.showLoginPage = function() {
 			$timeout(function() {
-				//alert("uName=="+uName);
-				if(uName!=null && uName!="" && $cordovaNetwork.isOffline())
-				{
-					$scope.closeLogin();
-					//alert("hide login");
-					$scope.beforeloginLinks	 = false;
-					$scope.afterloginLinks   = true;
-					$scope.showHomeUserName  = true;
-					
-					$scope.username 		= username;
-					$scope.name 			= uName;
-					$scope.email 			= uEmail;
-					$scope.firstName 		= uFirstName;
-					$scope.middleName 		= uMiddleName;
-					$scope.surName 		    = uSurName;
-					$scope.dateOfBirth 		= uDateOfBirth;
-					$scope.loginThroughMsg  = uLoginThroughMsg;
-                    $scope.photo 			= uPhotolocalPath;
-					$state.go("app.home"); // go to home page
-					$scope.hideLoading();
-					$scope.$apply();
-					
-				}
-				else
-				{
-					//alert("show login");
 					
 					$scope.beforeloginLinks	 = true;
 					$scope.afterloginLinks   = false;
@@ -1175,17 +1113,15 @@ angular.module('starter.controllers', [])
 					$scope.login();
 					if($cordovaNetwork.isOffline())
 					{
-						$scope.vEmailMsg = true;
-						$scope.vEmailMsgValue ="Please check your network connection and try again";
+						$scope.loginMsg = true;
+						$scope.loginMsgValue ="Please check your network connection and try again";
 					}
-
 					$scope.hideLoading();
 					$scope.$apply();
-						
-					}
+					
 			  }, 400);
 	     }
-		 //show user data from local storage  ***********End***********
+		 //show showLoginPage  ***********End***********
 		 
 		 
 		 
@@ -1507,7 +1443,9 @@ angular.module('starter.controllers', [])
 						var mCount=0;
 						if(memoryResults.length>0)
 						{ 
-							for(i in memoryResults){
+							//for(i in memoryResults )
+							for (var i = 0; i < memoryResults.length; i++) 
+							{
 								//Set memoryResObj to current Memory
 								  var memoryResObj = memoryResults[i];
 								
@@ -1539,13 +1477,63 @@ angular.module('starter.controllers', [])
 									  var memoryUserImg 	 	 = 'img/user.png';
 								 }
 								  
-								 /* Get Memory Author's Name */
+								 //Get Memory Author's Name 
 								 var memoryUserName   	= memoryResObj.get("user").get("name");
 								 var memoryUserId   	= memoryResObj.get("user").id;
+								 
+								 
+								 /////////////////////////get count start///////////////////////////////////////
+								//get IREM activity counts
+								 var IREMcount=0;
+								 var activityQuery   	= Parse.Object.extend("Activity");
+								 var query 				= new Parse.Query(activityQuery);
+								 query.equalTo("CYRme", {"__type":"Pointer","className":"CYRme","objectId":memoryResObj.id});
+								 query.equalTo("activityType", "IREM");
+								 query.count({
+									 success: function(IREMcount) {
+										IREMcount  	= IREMcount;
+									  },
+									  error: function(error) {
+										// The request failed
+									  }
+									});
+									
+								//get LIKE activity counts
+								 var LIKEcount=0;
+								 var activityQuery   	= Parse.Object.extend("Activity");
+								 var query 				= new Parse.Query(activityQuery);
+								 query.equalTo("CYRme", {"__type":"Pointer","className":"CYRme","objectId":memoryResObj.id});
+								 query.equalTo("activityType", "LIKE");
+								 query.count({
+									 success: function(LIKEcount) {
+										 LIKEcount  	= LIKEcount;
+									  },
+									  error: function(error) {
+										// The request failed
+									  }
+									});
+									
+									
+								//get FOLLOW activity counts
+								 var FOLLOWcount=0;
+								 var activityQuery   	= Parse.Object.extend("Activity");
+								 var query 				= new Parse.Query(activityQuery);
+								 query.equalTo("CYRme", {"__type":"Pointer","className":"CYRme","objectId":memoryResObj.id});
+								 query.equalTo("activityType", "FOLLOW");
+								 query.count({
+									 success: function(FOLLOWcount) {
+										 FOLLOWcount  	= FOLLOWcount;
+									  },
+									  error: function(error) {
+										// The request failed
+									  }
+									});
+								//////////////////////////get count end////////////////////////////////////
+								 
 								//check user memory privacy
 								if(memoryResObj.get('privacy')=="No")
 								{
-									/* Let's Put the memoryListArray Information in an Array as an Object*/
+									 //Let's Put the memoryListArray Information in an Array as an Object
 									memoryListArray.push(
 									{
 										memoryTitle			: memoryTitle,
@@ -1555,7 +1543,11 @@ angular.module('starter.controllers', [])
 										
 										memoryUserName		: memoryUserName,
 										memoryUserImg		: memoryUserImg,
-										memoryId			: memoryResObj.id
+										memoryId			: memoryResObj.id,
+										
+										IREMcount			: IREMcount,
+										LIKEcount			: LIKEcount,
+										FOLLOWcount			: FOLLOWcount
 											
 									});
 								  mCount++;
@@ -1567,7 +1559,7 @@ angular.module('starter.controllers', [])
 									// check username or name or email present in user group
 									if((currentUser.id==memoryUserId) || ($.inArray(currentUser.get("name"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("username"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("email"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(fbUserId, memoryResObj.get('mentionTo') )>=0))
 									{
-										/* Let's Put the memoryListArray Information in an Array as an Object*/
+										// Let's Put the memoryListArray Information in an Array as an Object
 										memoryListArray.push(
 										{
 											memoryTitle			: memoryTitle,
@@ -1577,7 +1569,11 @@ angular.module('starter.controllers', [])
 											
 											memoryUserName		: memoryUserName,
 											memoryUserImg		: memoryUserImg,
-											memoryId			: memoryResObj.id
+											memoryId			: memoryResObj.id,
+											
+											IREMcount			: IREMcount,
+											LIKEcount			: LIKEcount,
+											FOLLOWcount			: FOLLOWcount
 												
 										});
 										mCount++;
@@ -1618,6 +1614,7 @@ angular.module('starter.controllers', [])
 		 };
 		//call function view memory function
 		$scope.homePage();
+				
 	})
 //View homePage controller******************************End************************************************		
 	

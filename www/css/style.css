@@ -85,4 +85,39 @@
 	color:#fff;
 }
 
+/*.home-share-btton
+{
+	float:right;
+}
+.home-share-btton .tab-item
+{
+	float:left;
+	width:100px;
+	display:block;
+}
+.home-share-btton .tab-item .icon
+{
+	line-height:20px;
+	line-height:20px;
+	font-size:20px;
+}
+*/
+
+.home-share-btton
+{
+	float:right;
+	text-align:right;
+}
+.home-share-btton span
+{
+	color:#fff;
+}
+.home-share-btton .icon
+{
+	line-height:18px;
+	line-height:18px;
+	font-size:18px;
+	color:#fff;
+}
+
 
