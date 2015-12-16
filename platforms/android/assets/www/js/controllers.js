@@ -1419,123 +1419,223 @@ angular.module('starter.controllers', [])
 		
 		//add memory icon show this Ctrl
 		$rootScope.showAddMemoryLink	=true;
+		
 		//msg false by default
 		$scope.showHomeMsg 		 = false;
 		$scope.showHomeMsgValue  = "";
 		
 		//define function view Memory
-		$scope.homePage = function() {
-				$scope.showMemories=true;
+		$scope.homePageData = function() {
+			
 				$scope.showLoading();
+				$scope.showMemories		= true;
 				var memoryListArray	=new Array(); //store all memory data
-				// check current user are present or not
 				var currentUser = Parse.User.current();
-				//alert("currentUser="+currentUser)
+				var mCount=0;
 				
-				var memoryQuery   	= Parse.Object.extend("CYRme");
-				var query 			= new Parse.Query(memoryQuery);
+				var query = new Parse.Query("CYRme");
 				query.include("user");
 				query.descending("createdAt");
-				query.find({
-					success: function(memoryResults) {
-						//alert("memoryResults=="+JSON.stringify(memoryResults));
-						//alert("memoryResults.length=="+memoryResults.length);
-						var mCount=0;
-						if(memoryResults.length>0)
-						{ 
-							//for(i in memoryResults )
-							for (var i = 0; i < memoryResults.length; i++) 
+				query.find().then(function(CYRmeAllResult) {
+					
+					var promise = Parse.Promise.as(); // define a promise
+					//alert("CYRmeAllResult=="+JSON.stringify(CYRmeAllResult));
+					
+					//run each loop fetch each record
+					$.each(CYRmeAllResult, function(CYRmeResult) {
+						
+						var memoryResObj = CYRmeAllResult[CYRmeResult];
+						//alert("memoryResObj=="+JSON.stringify(memoryResObj));
+						
+						var memoryTitle		 	=memoryResObj.get('title');
+						var memoryContent 	 	=memoryResObj.get('content');
+						var memoryAddOnDateTime =$filter('date')(memoryResObj.get("dateOfMemory"), "dd/MM/yyyy");
+						
+						//get memory thumbnill
+						var memoryThumbnailObj = memoryResObj.get("thumbnail");
+						if(memoryThumbnailObj!=undefined)
+						{
+						  var memoryThumbnailurl = memoryThumbnailObj.url();
+						  var memoryImg 	 	 = memoryThumbnailurl;
+						}
+						else
+						{
+						   var memoryImg 	 	 = '';
+						}
+						  
+						//get user profile pic 
+						var memoryUserImgObj 	 = memoryResObj.get("user").get("photoFile");
+						if(memoryUserImgObj!=undefined)
+						{
+						 var memoryUserImgUrl 	 = memoryUserImgObj.url();
+						 var memoryUserImg 	 	 = memoryUserImgUrl;
+						}
+						else
+						{
+						  var memoryUserImg 	 	 = 'img/user.png';
+						}
+					
+						//Get Memory Author's Name 
+						var memoryUserName   	= memoryResObj.get("user").get("name");
+						var memoryUserId   	= memoryResObj.get("user").id;
+					 
+					  promise = promise.then(function() { // each time this loops the promise gets reassigned to the function below
+				      
+					    //get Activity as per memory*************Start
+						var query 	= new Parse.Query('Activity');
+						query.include("fromUser");
+						query.equalTo("CYRme", {"__type":"Pointer","className":"CYRme","objectId":memoryResObj.id});
+						query.descending("createdAt");
+						return query.find().then(function(activityAllReault) {
+						
+						   	//alert("activityAllReault=="+JSON.stringify(activityAllReault));
+							var activityListArray	=new Array(); //store all activities data
+							
+							var IREMcount	=0;
+							var LIKEcount	=0;
+							var FOLLOWcount	=0;
+							
+							if(activityAllReault.length>0)
 							{
-								//Set memoryResObj to current Memory
-								  var memoryResObj = memoryResults[i];
-								
-								  var memoryTitle		 	=memoryResObj.get('title');
-								  var memoryContent 	 	=memoryResObj.get('content');
-								  var memoryAddOnDateTime 	=$filter('date')(memoryResObj.get("dateOfMemory"), "dd/MM/yyyy");
-								   
-								  //get memory thumbnill
-								  var memoryThumbnailObj = memoryResObj.get("thumbnail");
-								  if(memoryThumbnailObj!=undefined)
-								  {
-									  var memoryThumbnailurl = memoryThumbnailObj.url();
-									  var memoryImg 	 	 = memoryThumbnailurl;
-								  }
-								  else
-								  {
-									   var memoryImg 	 	 = '';
-								  }
-								  
-								 //get user profile pic 
-								 var memoryUserImgObj 	 = memoryResObj.get("user").get("photoFile");
-								 if(memoryUserImgObj!=undefined)
-								 {
-									 var memoryUserImgUrl 	 = memoryUserImgObj.url();
-									 var memoryUserImg 	 	 = memoryUserImgUrl;
-								 }
-								 else
-								 {
-									  var memoryUserImg 	 	 = 'img/user.png';
-								 }
-								  
-								 //Get Memory Author's Name 
-								 var memoryUserName   	= memoryResObj.get("user").get("name");
-								 var memoryUserId   	= memoryResObj.get("user").id;
-								 
-								 
-								 /////////////////////////get count start///////////////////////////////////////
-								//get IREM activity counts
-								 var IREMcount=0;
-								 var activityQuery   	= Parse.Object.extend("Activity");
-								 var query 				= new Parse.Query(activityQuery);
-								 query.equalTo("CYRme", {"__type":"Pointer","className":"CYRme","objectId":memoryResObj.id});
-								 query.equalTo("activityType", "IREM");
-								 query.count({
-									 success: function(IREMcount) {
-										IREMcount  	= IREMcount;
-									  },
-									  error: function(error) {
-										// The request failed
-									  }
-									});
-									
-								//get LIKE activity counts
-								 var LIKEcount=0;
-								 var activityQuery   	= Parse.Object.extend("Activity");
-								 var query 				= new Parse.Query(activityQuery);
-								 query.equalTo("CYRme", {"__type":"Pointer","className":"CYRme","objectId":memoryResObj.id});
-								 query.equalTo("activityType", "LIKE");
-								 query.count({
-									 success: function(LIKEcount) {
-										 LIKEcount  	= LIKEcount;
-									  },
-									  error: function(error) {
-										// The request failed
-									  }
-									});
-									
-									
-								//get FOLLOW activity counts
-								 var FOLLOWcount=0;
-								 var activityQuery   	= Parse.Object.extend("Activity");
-								 var query 				= new Parse.Query(activityQuery);
-								 query.equalTo("CYRme", {"__type":"Pointer","className":"CYRme","objectId":memoryResObj.id});
-								 query.equalTo("activityType", "FOLLOW");
-								 query.count({
-									 success: function(FOLLOWcount) {
-										 FOLLOWcount  	= FOLLOWcount;
-									  },
-									  error: function(error) {
-										// The request failed
-									  }
-									});
-								//////////////////////////get count end////////////////////////////////////
-								 
-								//check user memory privacy
-								if(memoryResObj.get('privacy')=="No")
+								for (var i = 0; i < activityAllReault.length; i++) 
 								{
-									 //Let's Put the memoryListArray Information in an Array as an Object
+									var activityResObj = activityAllReault[i];
+									
+									if(activityResObj.get('activityType')=="IREM")
+									{
+									 	IREMcount++;
+									}
+									if(activityResObj.get('activityType')=="LIKE")
+									{
+									 	LIKEcount++;
+									}
+									if(activityResObj.get('activityType')=="FOLLOW")
+									{
+									 	FOLLOWcount++;
+									}
+									
+									var activityType		  =activityResObj.get('activityType');
+									var activityAddOnDateTime =$filter('date')(activityResObj.get("dateOfMemory"), "dd/MM/yyyy");
+									var activityContent 	  =activityResObj.get('content');
+									//get Content
+									if(activityContent!="undefined")
+									{
+									 	activityContent 	 	=activityContent;
+									}
+									else
+									{ 
+									  	activityContent 	 	="";
+									}
+									//get activity thumbnill
+									var activityThumbnailObj = activityResObj.get("thumbnail");
+									if(activityThumbnailObj!=undefined)
+									{
+									  	var activityThumbnailurl = activityThumbnailObj.url();
+									  	var activityImg 	 	 = activityThumbnailurl;
+										var activityImgTrue		 = true;
+									}
+									else
+									{
+									   	var activityImg 	 	 = '';
+										var activityImgTrue		 = false;
+									}
+									  
+									//get user profile pic 
+									var activityUserImgObj 	 =  activityResObj.get("fromUser").get("photoFile");
+									if(activityUserImgObj!=undefined)
+									{
+										var activityUserImgUrl 	 = activityUserImgObj.url();
+									 	var activityUserImg 	 = activityUserImgUrl;
+									}
+									else
+									{
+										 var activityUserImg 	 	 = 'img/user.png';
+									}
+									  
+									/* Get Memory Author's Name */
+									var activityUserName   	=  activityResObj.get("fromUser").get("name");
+									var activityUserId   	=  activityResObj.get("fromUser").id;
+									//check user activity privacy
+									if(activityResObj.get('privacy')=="No")
+									{
+										/* Let's Put the activityListArray Information in an Array as an Object*/
+										activityListArray.push(
+										{
+											activityType			: activityType,
+											activityContent			: activityContent,
+											activityAddOnDateTime	: activityAddOnDateTime,
+											activityImg				: activityImg,
+											activityImgTrue			: activityImgTrue,
+											
+											activityUserName		: activityUserName,
+											activityUserImg			: activityUserImg,
+											activityId				: activityResObj.id
+												
+										});
+									}
+									else
+									{
+										var fbUserId 	= window.localStorage.getItem("fbUserId");
+										// check username or name or email present in user group
+										if((currentUser.id==activityUserId) || ($.inArray(currentUser.get("name"), activityResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("username"), activityResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("email"), activityResObj.get('mentionTo') )>=0) || ($.inArray(fbUserId, activityResObj.get('mentionTo') )>=0))
+										{
+											/* Let's Put the activityListArray Information in an Array as an Object*/
+											activityListArray.push(
+											{
+												activityType			: activityType,
+												activityContent			: activityContent,
+												activityAddOnDateTime	: activityAddOnDateTime,
+												activityImg				: activityImg,
+												activityImgTrue			: activityImgTrue,
+												
+												activityUserName		: activityUserName,
+												activityUserImg			: activityUserImg,
+												activityId				: activityResObj.id
+													
+											});
+										}
+									  }
+								} //end for loop
+							}// end activities count if
+							
+						    //get Activity as per memory*************End
+							
+							//check user memory privacy
+							if(memoryResObj.get('privacy')=="No")
+							{
+								 //Let's Put the memoryListArray Information in an Array as an Object
+								memoryListArray.push(
+								{
+									memoryId			: memoryResObj.id,
+									memoryTitle			: memoryTitle,
+									memoryContent		: memoryContent,
+									memoryAddOnDateTime	: memoryAddOnDateTime,
+									memoryImg			: memoryImg,
+									
+									memoryUserName		: memoryUserName,
+									memoryUserImg		: memoryUserImg,
+									memoryUserId		: memoryUserId,
+									
+									
+									IREMcount			: IREMcount,
+									LIKEcount			: LIKEcount,
+									FOLLOWcount			: FOLLOWcount,
+									activityListArray 	: activityListArray
+										
+								});
+							  mCount++;
+							}
+							else
+							{
+								
+								var fbUserId 	= window.localStorage.getItem("fbUserId");
+								// check username or name or email present in user group
+								if((currentUser.id==memoryUserId) || ($.inArray(currentUser.get("name"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("username"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("email"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(fbUserId, memoryResObj.get('mentionTo') )>=0))
+								{
+									// Let's Put the memoryListArray Information in an Array as an Object
 									memoryListArray.push(
 									{
+										memoryId			: memoryResObj.id,
 										memoryTitle			: memoryTitle,
 										memoryContent		: memoryContent,
 										memoryAddOnDateTime	: memoryAddOnDateTime,
@@ -1543,77 +1643,59 @@ angular.module('starter.controllers', [])
 										
 										memoryUserName		: memoryUserName,
 										memoryUserImg		: memoryUserImg,
-										memoryId			: memoryResObj.id,
+										memoryUserId		: memoryUserId,
 										
 										IREMcount			: IREMcount,
 										LIKEcount			: LIKEcount,
-										FOLLOWcount			: FOLLOWcount
+										FOLLOWcount			: FOLLOWcount,
+										activityListArray 	: activityListArray
 											
 									});
-								  mCount++;
+									mCount++;
 								}
-								else
-								{
-									
-									var fbUserId 	= window.localStorage.getItem("fbUserId");
-									// check username or name or email present in user group
-									if((currentUser.id==memoryUserId) || ($.inArray(currentUser.get("name"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("username"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(currentUser.get("email"), memoryResObj.get('mentionTo') )>=0) || ($.inArray(fbUserId, memoryResObj.get('mentionTo') )>=0))
-									{
-										// Let's Put the memoryListArray Information in an Array as an Object
-										memoryListArray.push(
-										{
-											memoryTitle			: memoryTitle,
-											memoryContent		: memoryContent,
-											memoryAddOnDateTime	: memoryAddOnDateTime,
-											memoryImg			: memoryImg,
-											
-											memoryUserName		: memoryUserName,
-											memoryUserImg		: memoryUserImg,
-											memoryId			: memoryResObj.id,
-											
-											IREMcount			: IREMcount,
-											LIKEcount			: LIKEcount,
-											FOLLOWcount			: FOLLOWcount
-												
-										});
-										mCount++;
-									}
-								}
-								
-							} // End for loop
+							}
 							
-							if(mCount>0) //condition for num of records present
-							{
-								$scope.memoryListArr 	= memoryListArray;
-								$scope.showMemories		=true;
-							}
-							else
-							{
-								$scope.showMemories		=false;
-							}
-							//$scope.memoryListArr 	= memoryListArray;
-							//$scope.showMemories		=true;
-							$scope.hideLoading();
-							$scope.$apply();
-						}
-						else
-						{
-							$scope.hideLoading();
-							$scope.showMemories=false;
-							$scope.$apply();
-						}
-					},
-					error: function(error){
-						//alert("Error: " + error.code + " " + error.message);
-						 $scope.showHomeMsg = true;
-						 $scope.showHomeMsgValue ="Please check your network connection and try again";
-						 $scope.hideLoading();
-						 $scope.$apply();
+						    // the code will wait again for the above to complete because there is another promise returning here
+						  	return Parse.Promise.as(); 
+				
+						}, function (error) {
+						 // alert("score lookup failed with error.code: " + error.code + " error.message: " + error.message);
+						});
+						
+					  }); // end promise
+					  
+					  
+					}); //end each loop
+					return promise; // this will not be triggered until the whole loop above runs and all promises above are resolved
+					
+				}).then(function() {
+					
+					//alert('mCount='+mCount);
+					//alert("memoryListArray=="+JSON.stringify(memoryListArray));
+					if(mCount>0) //condition for num of records present
+					{
+						$scope.memoryListArr 	= memoryListArray;
+						$scope.showMemories		= true;
 					}
-				}); // End memoryQuery find
-		 };
+					else
+					{
+						$scope.showMemories		=false;
+					}
+					$scope.$apply();
+					$timeout(function() {
+						$scope.hideLoading();
+					 }, 400);
+					
+				  }, function (error) {
+					//alert("Error.code: " + error.code + " error.message: " + error.message);
+					$scope.hideLoading();
+					$scope.showMemories=false;
+					$scope.$apply();
+			});
+		}// end function
+		
 		//call function view memory function
-		$scope.homePage();
+		$scope.homePageData();
 				
 	})
 //View homePage controller******************************End************************************************		

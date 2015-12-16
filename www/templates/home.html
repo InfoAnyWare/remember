@@ -1,6 +1,6 @@
 <ion-view view-title='Home - Memory Feed'>
   <ion-content>
-      <div ng-show="beforeloginLinks">
+        <div ng-show="beforeloginLinks">
              <div class="row">
                  <div class="col item text-center">Please login OR register before use the app?</div>
              </div>
@@ -22,56 +22,71 @@
                   <h4 class="display-msg">{{showHomeMsgValue}}</h4>
             </div>
         
-        	<div class="list" ng-show="showMemories">
+            <div class="list" ng-show="showMemories">
                 <div class="card" ng-repeat="memoryItem in memoryListArr">
                     <a class="item item-avatar item-divider" href="#/app/memoryDetails/{{memoryItem.memoryId}}">
                          <img src="{{memoryItem.memoryUserImg}}">
                          <strong>{{memoryItem.memoryUserName}}</strong>
-                         <p>{{memoryItem.memoryAddOnDateTime}}
-                         &nbsp;&nbsp;&nbsp;&nbsp;
-                          <span class="home-share-btton"> 
-                             <span class="subdued">{{memoryItem.IREMcount}} <i class="icon ion-information"></i> IREM</span>
-                             &nbsp;&nbsp;
-                             <span class="subdued">{{memoryItem.LIKEcount}} <i class="icon ion-thumbsup"></i> Like</span>
-                             &nbsp;&nbsp;
-                             <span class="subdued">{{memoryItem.FOLLOWcount}} <i class="icon ion-ios-people"></i> Follower</span>
-                         </span>
-                          
-                          	<!-- <span class="home-share-btton">
-                                <span class="tab-item" title="I remember this">
-                                  <strong>{{memoryItem.IREMcount}}</strong>&nbsp;&nbsp;
-                                  <i class="icon ion-information"></i>
-                                  IREM
-                                </span>
-                                <span class="tab-item" title="Like">
-                                 <strong> {{memoryItem.LIKEcount}}</strong>&nbsp;&nbsp;
-                                  <i class="icon ion-thumbsup"></i>
-                                  Like
-                                </span>
-                                <span class="tab-item" title="Follower">
-                                  <strong>{{memoryItem.FOLLOWcount}}</strong>&nbsp;&nbsp;
-                                  <i class="icon ion-ios-people"></i>
-                                  Follower
-                                </span>
-                            </span>-->
-                          </p>
+                         <p>{{memoryItem.memoryAddOnDateTime}}</p>
                      </a>
                      <a class="item item-thumbnail-right" href="#/app/memoryDetails/{{memoryItem.memoryId}}">
                         <img src="{{memoryItem.memoryImg}}">
                         <strong>{{memoryItem.memoryTitle}}</strong>
                         <p>{{memoryItem.memoryContent}}</p>
                     </a>
-                    
                    
+                    <div class="item tabs tabs-secondary tabs-icon-left">
+                    <a class="tab-item" href="#" title="I remember this">
+                      <strong>{{memoryItem.IREMcount}}</strong>&nbsp;&nbsp;
+                      <i class="icon ion-information"></i>
+                      IREM
+                    </a>
                     
-                </div>
-        	</div>
+                    <a class="tab-item" href="#" title="Like">
+                     <strong> {{memoryItem.LIKEcount}}</strong>&nbsp;&nbsp;
+                      <i class="icon ion-thumbsup"></i>
+                      Like
+                    </a>
+                    <a class="tab-item" href="#" title="Follower">
+                      <strong>{{memoryItem.FOLLOWcount}}</strong>&nbsp;&nbsp;
+                      <i class="icon ion-ios-people"></i>
+                      Follower
+                    </a>
+                 </div>
+            
+                 <div class="item home-act-bg padding-zero" ng-repeat="activityItem in memoryItem.activityListArray">
+                    <a class="item home-act-bg padding-zero" href="#/app/activityDetails/{{activityItem.activityId}}/{{memoryItem.memoryTitle}}">
+                         <div class="row">
+                             <div class="col">
+                                <div class="text-left item-avatar">
+                                    <img src="{{activityItem.activityUserImg}}">
+                                    <strong>{{activityItem.activityUserName}}</strong>
+                                    <p>{{activityItem.activityContent}}</p>
+                                </div>
+                             </div>
+                             <div class="col col-20">
+                                 <strong>{{activityItem.activityType}}</strong>
+                             </div>
+                             <div class="col col-20 text-right full-image">
+                               <img ng-show="activityItem.activityImgTrue" width="50px" height="50px" src="{{activityItem.activityImg}}">
+                             </div>
+                         </div> <!--End row-->
+                    </a> <!--End a-->
+                </div><!-- End activityListArray loop-->
+                
+                
+                 <a class="item home-act-bg text-center" href="#/app/activity/{{memoryItem.memoryId}}/ADD/{{memoryItem.memoryUserId}}">
+                  <strong>Reminisce</strong>
+                 </a>
+                
+              </div> <!--End memoryListArr-->
+           </div>
         
-        	<div class="list" ng-show="!showMemories">
-                <div class="card text-center">
-                     <strong>No Memory Found</strong>
-                </div>
-        	</div>
+          <div class="list" ng-show="!showMemories">
+              <div class="card text-center">
+                 <strong>No Memory Found</strong>
+             </div>
+          </div>
        </div>
     
   </ion-content>
