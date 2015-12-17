@@ -17,7 +17,7 @@
               </div>
              
              <a class="item item-thumbnail-right" href="#/app/activityDetails/{{activitiesItem.activitiesId}}/{{memoryTitle}}">
-                <img src="{{activitiesItem.activitiesImg}}">
+                <img ng-show="activitiesItem.activitiesImg!=''" src="{{activitiesItem.activitiesImg}}">
                 <p>{{activitiesItem.activitiesContent}}</p>
             </a>
         </div>

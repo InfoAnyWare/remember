@@ -85,6 +85,14 @@
 {
 	color:#fff;
 }
+.bar-subheader .title
+{
+	color:#fff;
+}
+.button-clear.button-clear
+{
+	color:#fff;
+}
 
 .item-avatar
 {
@@ -99,4 +107,75 @@
 {
 	padding:0px;
 }
+
+.home-share-button
+{
+	float:right;
+	margin-right: -48px;
+    margin-top: -18px;
+	z-index:2;
+	right:0px;
+}
+
+.button.button-full {
+    margin-bottom: 0px;
+    margin-top: 0px;
+	margin-left: 0px;
+    margin-right: 0px;
+}
+
+/*//////////////fileUpload button css///////////////////*/
+
+*{
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+}
+
+.inputBtnSection{
+    display:block;
+    vertical-align:top;
+    font-size:0;
+    font-family:verdana;
+}
+.disableInputField{
+    display:inline-block;
+    vertical-align:top;
+    height: 34px;
+    margin: 0;
+    font-size:14px;
+    padding:0 3px;
+}
+
+.fileUpload {
+	position: relative;
+	overflow: hidden;
+    border:solid 1px gray;
+    display:inline-block;
+    vertical-align:top;
+}
+.uploadBtn{
+    display:inline-block;
+    vertical-align:top;
+    background:#387EF5;
+    font-size:14px;
+    padding:0 10px;
+    height:33px;
+    line-height:30px;
+    color:#fff;
+}
+
+.fileUpload input.upload {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	font-size: 20px;
+	cursor: pointer;
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
+
+/*//////////////fileUpload button css///////////////////*/
 

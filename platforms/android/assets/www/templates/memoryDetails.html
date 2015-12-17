@@ -13,7 +13,7 @@
       </div>
     
       <div class="item item-body">
-        <img class="full-image" src="{{memoryDetailsImg}}">
+        <img class="full-image" ng-show="memoryDetailsImg!=''" src="{{memoryDetailsImg}}">
         <p>
          {{memoryDetailsContent}}
         </p>
@@ -39,23 +39,15 @@
         </a>
       </div>
       
-      
-      <div class="item tabs tabs-secondary tabs-icon-left">
-      
-      	<a class="tab-item" href="#/app/addMemory/{{memoryDetailsId}}" ng-show="showEditMemory">
-          <i class="icon ion-ios-compose"></i>
-          Edit
-        </a>
-        
-        <a class="tab-item" href="#/app/viewAllActivities/{{memoryDetailsId}}/{{memoryDetailsTitle}}">
-          <i class="icon ion-eye"></i>
-          View All Activities
-        </a>
-        <a class="tab-item" href="#/app/activity/{{memoryDetailsId}}/ADD/{{memoryDetailsUserId}}">
-          <i class="icon ion-share"></i>
-          Do Activity
-        </a>
-      </div>
+      <a class="item button button-full button-positive" href="#/app/addMemory/{{memoryDetailsId}}" ng-show="showEditMemory">
+      	<i class="icon ion-ios-compose"></i> Edit
+      </a>
+      <a class="item button button-full button-positive" href="#/app/activity/{{memoryDetailsId}}/ADD/{{memoryDetailsUserId}}">
+      	 <i class="icon ion-share"></i> Reminisce
+      </a>
+      <a class="item button button-full button-positive" href="#/app/viewAllActivities/{{memoryDetailsId}}/{{memoryDetailsTitle}}">
+      	<i class="icon ion-eye"></i> More Activities
+      </a>
     
     </div>
   
