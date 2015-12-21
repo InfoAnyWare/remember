@@ -659,7 +659,7 @@ angular.module('starter.controllers', [])
 	
 	
 	// Perform the Register action when the user submits the Register form  ***********Start***********
-	
+		
 		// Form data for the register modal
 		$scope.registerData = [];
 		
@@ -693,6 +693,16 @@ angular.module('starter.controllers', [])
 		  }
 		  //console.log('passwordNotMatch=', $scope.passwordMatch);
 		};
+		
+		//Register photo upload btn
+		$scope.uploadFileRegister = function() {
+			$(function() {
+					$("input:file[id=photoFileUpload]").change (function() {
+					var file = $(this)[0].files[0];
+					$("#uploadFileRegister").val(file.name);
+				});
+			});
+		}
 		
 		// Perform the register action when the user submits the register form
 		$scope.doRegister = function() {
@@ -1176,7 +1186,17 @@ angular.module('starter.controllers', [])
 		
 		
 	// Perform the editUser action***********Start***********
-	
+		
+		//Edit User photo upload btn
+		$scope.uploadFileEditUser = function() {
+			$(function() {
+					$("input:file[id=editUserPhotoFileUpload]").change (function() {
+					var file = $(this)[0].files[0];
+					$("#uploadFileEditUser").val(file.name);
+				});
+			});
+		}
+		
 		// Form data for the editUser modal
 			$scope.editUserData = [];
 			$scope.editUserMsg 			= false;
@@ -1735,13 +1755,15 @@ angular.module('starter.controllers', [])
 //CYRme Memory controller******************************Start************************************************
 	.controller('CYRmeMemory', function($scope ,$rootScope, $state, $ionicLoading, $cordovaNetwork, ThumbnailService, $ionicPush, $http, $cordovaDevice, $timeout, $stateParams, $ionicHistory) {
 		
-		//code for file upload btn 
-		 $(function() {
-				$("input:file[id=memoryFileUpload]").change (function() {
-				$("#uploadFile").val($(this).val());
-				//$("span.uploadBtn").text("upload");
+		//Memory photo upload btn
+		$scope.uploadFileMemory = function() {
+			$(function() {
+					$("input:file[id=memoryFileUpload]").change (function() {
+					var file = $(this)[0].files[0];
+					$("#uploadFileMemory").val(file.name);
+				});
 			});
-		});
+		}
 		
 		//add memory icon not show this Ctrl
 		$rootScope.showAddMemoryLink	=false;
@@ -2821,6 +2843,69 @@ angular.module('starter.controllers', [])
 			$scope.$apply();
 		}
 		
+		
+		//////////////////////////////////////////////////////////////////////////
+		//Define addActivityTypeAction (when click Like,iREM and follow button)
+		$scope.addActivityTypeAction = function(mId,toUser,activityType,activityCount) 
+		{
+			$scope.showMemoryDetailsMsg = false;
+			$scope.showMemoryDetailsMsgValue = '';
+			$scope.showLoading();
+			var currentUser = Parse.User.current();
+			if(currentUser && $cordovaNetwork.isOnline()) 
+			{
+				var Activity = new Parse.Object("Activity");
+				Activity.set("CYRme", {"__type":"Pointer","className":"CYRme","objectId":mId}); //set pointer to current Memory
+				Activity.set("toUser", {"__type":"Pointer","className":"_User","objectId":toUser}); //set memory user pointer in toUser
+				Activity.set("fromUser", {"__type":"Pointer","className":"_User","objectId":currentUser.id}); //set current user pointer in fromUser
+				Activity.set("activityType", String(activityType));
+				Activity.set("dateOfMemory", new Date());
+				Activity.set("privacy", "No");
+				
+				//save Activity object
+				Activity.save(null, {
+					  success: function(activityRes) {
+						 //alert("activityRes=="+JSON.stringify(activityRes));
+						 $scope.showMemoryDetailsMsg = true;
+						 if(activityType=='IREM')
+						 {
+							 $scope.IREMcount = activityCount+1;
+							 $scope.showMemoryDetailsMsgValue = 'iREM Successfully.';
+						 }
+						 
+						 if(activityType=='LIKE')
+						 {
+							 $scope.LIKEcount = activityCount+1;
+							 $scope.showMemoryDetailsMsgValue = 'Like Successfully.';
+						 }
+						 
+						 if(activityType=='FOLLOW')
+						 {
+							 $scope.FOLLOWcount = activityCount+1;
+							 $scope.showMemoryDetailsMsgValue = 'Follow Successfully.';
+						 }
+						$scope.hideLoading();
+						$scope.$apply();
+					  },
+					  error: function(error) {
+						//alert("error=="+JSON.stringify(error));
+						$scope.showMemoryDetailsMsg = true;
+						$scope.showMemoryDetailsMsgValue = 'Error, please try again.';
+						$scope.hideLoading();
+						$scope.$apply();
+					  }
+				});
+			}
+			else
+			{
+				// Show the error message somewhere and let the user try again.
+				alert("Please check your network connection and try again.");
+				$scope.hideLoading();
+				$scope.$apply();
+			}
+		};
+		//////////////////////////////////////////////////////////////////////////
+		
 	})
 //memory Details controller******************************End************************************************	
 
@@ -2847,6 +2932,18 @@ angular.module('starter.controllers', [])
 		
 		//add memory icon not show this Ctrl
 		$rootScope.showAddMemoryLink	=false;
+		
+		
+		//activity photo upload btn
+		$scope.uploadFileActivity = function() {
+			$(function() {
+					$("input:file[id=activityFileUpload]").change (function() {
+					var file = $(this)[0].files[0];
+					$("#uploadFileActivity").val(file.name);
+				});
+			});
+		}
+		
 		// current user
 		var currentUser = Parse.User.current();
 		

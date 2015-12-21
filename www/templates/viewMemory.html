@@ -46,24 +46,24 @@
                         <p>{{memoryItem.memoryContent}}</p>
                     </a>
                    
-                    <div class="item tabs tabs-secondary tabs-icon-left">
-                    <a class="tab-item" href="#" title="I remember this">
-                      <strong>{{memoryItem.IREMcount}}</strong>&nbsp;&nbsp;
-                      <i class="icon ion-information"></i>
-                      IREM
-                    </a>
-                    
-                    <a class="tab-item" href="#" title="Like">
-                     <strong> {{memoryItem.LIKEcount}}</strong>&nbsp;&nbsp;
-                      <i class="icon ion-thumbsup"></i>
-                      Like
-                    </a>
-                    <a class="tab-item" href="#" title="Follower">
-                      <strong>{{memoryItem.FOLLOWcount}}</strong>&nbsp;&nbsp;
-                      <i class="icon ion-ios-people"></i>
-                      Follower
-                    </a>
-                 </div>
+                   <!-- <div class="item tabs tabs-secondary tabs-icon-left">
+                        <a class="tab-item" href="#" title="I remember this">
+                          <strong>{{memoryItem.IREMcount}}</strong>&nbsp;&nbsp;
+                          <i class="icon ion-information"></i>
+                          IREM
+                        </a>
+                        
+                        <a class="tab-item" href="#" title="Like">
+                         <strong> {{memoryItem.LIKEcount}}</strong>&nbsp;&nbsp;
+                          <i class="icon ion-thumbsup"></i>
+                          Like
+                        </a>
+                        <a class="tab-item" href="#" title="Follower">
+                          <strong>{{memoryItem.FOLLOWcount}}</strong>&nbsp;&nbsp;
+                          <i class="icon ion-ios-people"></i>
+                          Follower
+                        </a>
+                 </div>-->
             
                  <div class="item home-act-bg padding-zero" ng-repeat="activityItem in memoryItem.activityListArray">
                     <a class="item home-act-bg padding-zero" href="#/app/activityDetails/{{activityItem.activityId}}/{{memoryItem.memoryTitle}}">

@@ -38,18 +38,13 @@
           <span class="input-label">Content</span>
           <textarea name="content" ng-model="addMemoryData.content" placeholder="Content" autocomplete="off"></textarea> 
         </label>
-        
-        <!-- <label class="item item-input">
-          <span class="input-label">Upload Photo ({{fileSizeMBMsg}} Max.)</span>
-          <input type="file" name="memoryFileUpload" id="memoryFileUpload" ng-model="addMemoryData.memoryFileUpload">
-        </label>-->
-        
+       
         <div class="item inputBtnSection">
         	<span class="input-label">Upload Photo ({{fileSizeMBMsg}} Max.)</span>
-            <input id="uploadFile" class="disableInputField" placeholder="" disabled="disabled" />
+            <input id="uploadFileMemory" class="disableInputField" placeholder="" disabled="disabled" />
             <label class="fileUpload">
-                <input type="file" class="upload" name="memoryFileUpload" id="memoryFileUpload" ng-model="addMemoryData.memoryFileUpload"/>
-                <span class="uploadBtn">Choose File..</span>
+                <input type="file" class="upload" name="memoryFileUpload" id="memoryFileUpload" ng-model="addMemoryData.memoryFileUpload" ng-click="uploadFileMemory()"/>
+                <span class="uploadBtn">Choose File</span>
             </label>
    		</div>
         

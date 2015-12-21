@@ -18,21 +18,25 @@
          {{memoryDetailsContent}}
         </p>
       </div>
+      
+       <div class="item text-center" ng-show="showMemoryDetailsMsg">
+            <strong class="display-msg">{{showMemoryDetailsMsgValue}}</strong>
+       </div>
     
       <div class="item tabs tabs-secondary tabs-icon-left">
       
-        <a class="tab-item" href="#" title="I remember this">
+        <a class="tab-item" title="I remember this" href="javascript:;" ng-click="addActivityTypeAction(memoryDetailsId,memoryDetailsUserId,'IREM',IREMcount)">
           <strong>{{IREMcount}}</strong>&nbsp;&nbsp;
           <i class="icon ion-information"></i>
           IREM
         </a>
         
-        <a class="tab-item" href="#" title="Like">
+        <a class="tab-item" title="Like" href="javascript:;" ng-click="addActivityTypeAction(memoryDetailsId,memoryDetailsUserId,'LIKE',LIKEcount)">
          <strong> {{LIKEcount}}</strong>&nbsp;&nbsp;
           <i class="icon ion-thumbsup"></i>
           Like
         </a>
-        <a class="tab-item" href="#" title="Follower">
+        <a class="tab-item" title="Follower" href="javascript:;" ng-click="addActivityTypeAction(memoryDetailsId,memoryDetailsUserId,'FOLLOW',FOLLOWcount)">
           <strong>{{FOLLOWcount}}</strong>&nbsp;&nbsp;
           <i class="icon ion-ios-people"></i>
           Follower

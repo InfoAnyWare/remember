@@ -77,11 +77,14 @@
           </span>
         </label>
         
-        
-         <label class="item item-input">
-          <span class="input-label">Photo ({{fileSizeMBMsg}} Max.)</span>
-          <input type="file" name="photoFileUpload" id="photoFileUpload" ng-model="registerData.photoFileUpload">
-        </label>
+        <div class="item inputBtnSection">
+        	<span class="input-label">Upload Photo ({{fileSizeMBMsg}} Max.)</span>
+            <input id="uploadFileRegister" class="disableInputField" placeholder="" disabled="disabled" />
+            <label class="fileUpload">
+               <input type="file" class="upload" name="photoFileUpload" id="photoFileUpload" ng-model="registerData.photoFileUpload" ng-click="uploadFileRegister()"/>
+               <span class="uploadBtn">Choose File</span>
+            </label>
+   		</div>
         
          <label class="item item-input item-floating-label" style="color:red" ng-show="passwordMatchMsg">
         	<span >Password did not match.</span>

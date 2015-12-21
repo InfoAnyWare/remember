@@ -43,10 +43,14 @@
           <input type="date" name="dateOfBirth" ng-model="editUserData.dateOfBirth" placeholder="MM-DD-YYYY" value="">
         </label>
         
-        <label class="item item-input">
-          <span class="input-label">Photo ({{fileSizeMBMsg}} Max.)</span>
-          <input type="file" name="editUserPhotoFileUpload" id="editUserPhotoFileUpload" ng-model="editUserData.editUserPhotoFileUpload">
-        </label>
+         <div class="item inputBtnSection">
+        	<span class="input-label">Upload Photo ({{fileSizeMBMsg}} Max.)</span>
+            <input id="uploadFileEditUser" class="disableInputField" placeholder="" disabled="disabled" />
+            <label class="fileUpload">
+                <input type="file" class="upload" name="editUserPhotoFileUpload" id="editUserPhotoFileUpload" ng-model="editUserData.editUserPhotoFileUpload" ng-click="uploadFileEditUser()"/>
+                <span class="uploadBtn">Choose File</span>
+            </label>
+   		</div>
         
         <label class="item item-input item-stacked-label" ng-show="showFileMsg">
           <span style="color:red; text-align:center;">
