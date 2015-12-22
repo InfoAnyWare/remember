@@ -33,10 +33,15 @@
           <input type="date" name="dateOfMemory" ng-model="addActivityData.dateOfMemory" placeholder="MM-DD-YYYY" value="">
         </label>
         
-        <label class="item item-input item-stacked-label">
+        <!--<label class="item item-input item-stacked-label" ng-show="showActivityMentionToField">
           <span class="input-label">Invite Users</span>
           <textarea name="mentionTo" ng-model="addActivityData.mentionTo" placeholder="Type CYRme users, facebook user ids or emails separated by comma" autocomplete="off"></textarea> 
-        </label>
+        </label>-->
+        
+        <div class="mentionToField" ng-show="showActivityMentionToField">
+          <h4>Invite Users</h4>
+          <autocomplete ng-model="addActivityData.mentionTo" attr-placeholder="Type to search CYRme users, facebook user ids or emails separated by comma..." click-activation="true" data="users" on-type="doSomething" on-select="doSomethingElse" name="mentionTo"></autocomplete>
+       </div>
         
         <label class="item item-input item-stacked-label">
           <span class="input-label">Content</span>

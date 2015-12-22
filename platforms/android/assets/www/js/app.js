@@ -11,6 +11,7 @@ angular.module('starter', [
 		'ngOpenFB',
 		'ui.thumbnail',
 		'starter.controllers',
+		'autocomplete',
 	])
 
 
@@ -30,6 +31,36 @@ angular.module('starter', [
 	
   });
   
+})
+
+// the service that retrieves some user title from an url
+.factory('UserRetriever', function($http, $q, $timeout){
+	var UserRetriever = new Object();
+	var moreUsers	= new Array();
+	var currentUser = Parse.User.current();
+	var query 		= new Parse.Query("_User");
+	query.notEqualTo("objectId", currentUser.id);
+	query.find({
+		success: function(findUserResults) {
+			for(i in findUserResults){
+				  var findUserResObj = findUserResults[i];
+				   moreUsers.push(findUserResObj.get('name'));
+			} // End for loop
+		},
+		error: function(error){
+		}
+	}); // End Query find
+  
+  UserRetriever.getusers = function(i) {
+    var userdata =  $q.defer();
+    var users	 =	moreUsers;
+    $timeout(function(){
+      userdata.resolve(users);
+    },400);
+
+    return userdata.promise
+  }
+  return UserRetriever;
 })
 
 
@@ -100,7 +131,7 @@ angular.module('starter', [
   })
   
   .state('app.activity', {
-	url: "/activity/:mId/:aId/:toUser",
+	url: "/activity/:mId/:aId/:toUser/:mPrivacy",
 	cache: false,
     views: {
       'menuContent': {

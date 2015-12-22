@@ -1658,6 +1658,7 @@ angular.module('starter.controllers', [])
 									memoryAddOnDateTime	: memoryAddOnDateTime,
 									memoryType			: memoryType,
 									memoryImg			: memoryImg,
+									memoryPrivacy		: "No",
 									
 									memoryUserName		: memoryUserName,
 									memoryUserImg		: memoryUserImg,
@@ -1688,6 +1689,7 @@ angular.module('starter.controllers', [])
 										memoryAddOnDateTime	: memoryAddOnDateTime,
 										memoryType			: memoryType,
 										memoryImg			: memoryImg,
+										memoryPrivacy		: "Yes",
 										
 										memoryUserName		: memoryUserName,
 										memoryUserImg		: memoryUserImg,
@@ -2589,6 +2591,7 @@ angular.module('starter.controllers', [])
 										memoryAddOnDateTime	: memoryAddOnDateTime,
 										memoryType			: memoryType,
 										memoryImg			: memoryImg,
+										memoryPrivacy		: "No",
 										
 										memoryUserName		: memoryUserName,
 										memoryUserImg		: memoryUserImg,
@@ -2619,6 +2622,7 @@ angular.module('starter.controllers', [])
 											memoryAddOnDateTime	: memoryAddOnDateTime,
 											memoryType			: memoryType,
 											memoryImg			: memoryImg,
+											memoryPrivacy		: "Yes",
 											
 											memoryUserName		: memoryUserName,
 											memoryUserImg		: memoryUserImg,
@@ -2761,6 +2765,17 @@ angular.module('starter.controllers', [])
 								 {
 									 $scope.showEditMemory = false;
 								 }
+								 
+								 //check memory privacy
+								 if(memoryResObj.get('privacy')=="Yes")
+								 {
+									$scope.memoryDetailsPrivacy  = "Yes"; 
+								 }
+								 else
+								 {
+									 $scope.memoryDetailsPrivacy  = "No"; 
+								 }
+								 
 								 
 								 //get IREM activity counts
 								 var activityQuery   	= Parse.Object.extend("Activity");
@@ -2928,7 +2943,7 @@ angular.module('starter.controllers', [])
 
 
 //activity controller******************************Start************************************************
-	.controller('activity', function($scope ,$rootScope, $state, $stateParams, $ionicLoading, $cordovaNetwork, ThumbnailService,$ionicPush, $http, $cordovaDevice, $timeout, $ionicHistory) {
+	.controller('activity', function($scope ,$rootScope, $state, $stateParams, $ionicLoading, $cordovaNetwork, ThumbnailService,$ionicPush, $http, $cordovaDevice, $timeout, $ionicHistory,UserRetriever) {
 		
 		//add memory icon not show this Ctrl
 		$rootScope.showAddMemoryLink	=false;
@@ -2943,6 +2958,36 @@ angular.module('starter.controllers', [])
 				});
 			});
 		}
+		
+		
+		//////////////////////////////////////auto complete//////////////////////////////
+		  var typeWord="";
+		  $scope.doSomething = function(typedthings){
+			//alert("Do something like reload data with this: " + typedthings );
+			typeWord=typedthings;
+			if(typedthings.length>2)
+			{
+				$scope.newusers = UserRetriever.getusers(typedthings);
+				$scope.newusers.then(function(data){
+				  $scope.users = data;
+				});
+			}
+			else
+			{
+				 $scope.users = '';
+			}
+		  }
+		
+		  $scope.doSomethingElse = function(suggestion){
+			//alert("Suggestion selected: " + suggestion );
+			//alert("typeWord: " + typeWord );
+			var preStr=$scope.addActivityData.mentionTo;
+			preStr=preStr.replace(typeWord,"");
+			
+			$scope.addActivityData.mentionTo	=preStr+suggestion+",";
+			//$scope.addActivityData['mentionTo']
+		  }
+		////////////////////////////////////////////////////////////////////////////////
 		
 		// current user
 		var currentUser = Parse.User.current();
@@ -2959,9 +3004,18 @@ angular.module('starter.controllers', [])
 		$scope.showAPhoto = false;
 		
 		//code for edit activity
-		var aId = $stateParams.aId;
-		var toUser = $stateParams.toUser;
-		var mId = $stateParams.mId;
+		var aId 		= $stateParams.aId;
+		var toUser 		= $stateParams.toUser;
+		var mId 		= $stateParams.mId;
+		var mPrivacy	= $stateParams.mPrivacy
+		if(mPrivacy=="Yes")
+		{
+			$scope.showActivityMentionToField=false;
+		}
+		else
+		{
+			$scope.showActivityMentionToField=true;
+		}
 		
 		if(aId!='' && aId!='ADD')
 		{ 
@@ -2982,7 +3036,7 @@ angular.module('starter.controllers', [])
 						  var activityResObj = activityResults[i];
 						
 						  $scope.addActivityData['activityType'] 	   =activityResObj.get('activityType');
-						  $scope.addActivityData['dateOfMemory'] =activityResObj.get('dateOfMemory');
+						  $scope.addActivityData['dateOfMemory']       =activityResObj.get('dateOfMemory');
 						  if(activityResObj.get('mentionTo')!=undefined)
 						  {
 						  	$scope.addActivityData['mentionTo']    =activityResObj.get('mentionTo').toString();
@@ -3320,6 +3374,8 @@ angular.module('starter.controllers', [])
 				Activity.set("dateOfMemory", $scope.addActivityData['dateOfMemory']);
 				Activity.set("content", String($scope.addActivityData['content']));
 				Activity.set("privacy", String($scope.addActivityData['privacy']));
+				
+				alert("mentionTo="+$scope.addActivityData['mentionTo']);
 					
 				if(String($scope.addActivityData['mentionTo'])!="undefined")
 				{
@@ -3771,7 +3827,16 @@ angular.module('starter.controllers', [])
 								 $scope.activityDetailsId  			= activityResObj.id;
 								 
 								 //get memory id
-								  $scope.memoryId  		= activityResObj.get("CYRme").id;
+								 $scope.memoryId  		= activityResObj.get("CYRme").id;
+								 //check memory privacy
+								 if(activityResObj.get("CYRme").get('privacy')=="Yes")
+								 {
+									$scope.memoryPrivacy  = "Yes"; 
+								 }
+								 else
+								 {
+									 $scope.memoryPrivacy  = "No"; 
+								 }
 								 
 								 if(activityResObj.get("fromUser").id==currentUser.id)
 								 {
