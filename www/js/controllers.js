@@ -3032,7 +3032,7 @@ angular.module('starter.controllers', [])
 		}
 		
 		
-	//autocomplete Start*******************************************
+	//autocomplete Start******************************************
 		
 		//store all username detail in findUserArray array
 		var findUserArray	=new Array();
