@@ -3014,7 +3014,7 @@ angular.module('starter.controllers', [])
 
 
 //activity controller******************************Start************************************************
-	.controller('activity', function($scope ,$rootScope, $state, $stateParams, $ionicLoading, $cordovaNetwork, ThumbnailService,$ionicPush, $http, $cordovaDevice, $timeout, $ionicHistory) {
+	.controller('activity', function($scope ,$rootScope, $state, $stateParams, $ionicLoading, $cordovaNetwork, ThumbnailService,$ionicPush, $http, $cordovaDevice, $timeout, $ionicHistory,UserRetriever) {
 		
 		//add memory icon not show this Ctrl
 		$rootScope.showAddMemoryLink	=false;
@@ -3097,8 +3097,6 @@ angular.module('starter.controllers', [])
 	    };
 		
 	//autocomplete End*******************************************
-		
-		
 		
 		$scope.fileSizeMBMsg =$rootScope.fileSizeMBMsg;
 		$scope.showFileMsg = false;
@@ -3492,6 +3490,7 @@ angular.module('starter.controllers', [])
 					  var value = $.trim(this[key]);
 					  mentionToArray.push(value);
 					}); 
+
 					Activity.set("mentionTo", mentionToArray);
 				}
 				
