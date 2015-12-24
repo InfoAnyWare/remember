@@ -11,6 +11,7 @@ angular.module('starter', [
 		'ngOpenFB',
 		'ui.thumbnail',
 		'starter.controllers',
+		"ngTagsInput",
 	])
 
 
@@ -31,7 +32,6 @@ angular.module('starter', [
   });
   
 })
-
 
 .config(function ($stateProvider, $urlRouterProvider, $cordovaFacebookProvider, $cordovaAppRateProvider, $cordovaInAppBrowserProvider, ThumbnailServiceProvider) 
  {
@@ -100,7 +100,7 @@ angular.module('starter', [
   })
   
   .state('app.activity', {
-	url: "/activity/:mId/:aId/:toUser",
+	url: "/activity/:mId/:aId/:toUser/:mPrivacy",
 	cache: false,
     views: {
       'menuContent': {

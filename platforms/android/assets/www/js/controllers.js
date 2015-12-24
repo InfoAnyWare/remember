@@ -1658,6 +1658,7 @@ angular.module('starter.controllers', [])
 									memoryAddOnDateTime	: memoryAddOnDateTime,
 									memoryType			: memoryType,
 									memoryImg			: memoryImg,
+									memoryPrivacy		: "No",
 									
 									memoryUserName		: memoryUserName,
 									memoryUserImg		: memoryUserImg,
@@ -1688,6 +1689,7 @@ angular.module('starter.controllers', [])
 										memoryAddOnDateTime	: memoryAddOnDateTime,
 										memoryType			: memoryType,
 										memoryImg			: memoryImg,
+										memoryPrivacy		: "Yes",
 										
 										memoryUserName		: memoryUserName,
 										memoryUserImg		: memoryUserImg,
@@ -1770,6 +1772,72 @@ angular.module('starter.controllers', [])
 		// current user
 		var currentUser = Parse.User.current();
 		
+		//autocomplete Start*******************************************
+		
+		//store all username detail in findUserArray array
+		var findUserArray	=new Array();
+		var query = new Parse.Query("_User");
+		query.notEqualTo("objectId", currentUser.id);
+		query.find().then(function(userAllResult) {
+			var promise = Parse.Promise.as(); // define a promise
+			//run each loop fetch each record
+			$.each(userAllResult, function(userResult) {
+			  var findUserResObj = userAllResult[userResult];
+			  promise = promise.then(function() {
+				 findUserArray.push(findUserResObj.get('username'));
+				 findUserArray.push(findUserResObj.get('email'));
+			  }); // end promise
+			}); //end each loop
+			return promise;
+		}).then(function() {
+				//alert("findUserArray=="+JSON.stringify(findUserArray));
+			  }, function (error) {
+				//alert("Error.code: " + error.code + " error.message: " + error.message);
+		});
+		
+		//load user in autocomplete list   
+		$scope.loadTags = function(query){
+			//return $http.get('tags.json');
+			var newUserArrayList=new Array;
+			for(var i=0; i<findUserArray.length; i++)
+			{
+				var userValue 	= findUserArray[i].toLowerCase();
+				var searchStr	= query.toLowerCase();
+				
+				if(searchStr && userValue.indexOf(searchStr)!=-1)
+				{
+					if(newUserArrayList.length>0)
+					{
+						$.each(newUserArrayList, function() {
+							var key 			= Object.keys(this)[0];
+							var newUserValue    = this[key].toLowerCase();
+							if(searchStr && newUserValue.indexOf(searchStr)==-1)
+							{
+								newUserArrayList.push({"text"	: findUserArray[i]});
+							}
+							else
+							{
+								//alert("no match");
+							}
+						}); 
+					}
+					else
+					{
+						newUserArrayList.push({"text"	: findUserArray[i]});
+					}
+				}
+			}//for loop End
+			
+			//check new user array count
+			if(newUserArrayList.length<1)
+			{
+				newUserArrayList.push({"text"	: "No Record Found"});
+			}
+			return newUserArrayList;
+	    };
+		
+	//autocomplete End*******************************************
+		
 		$scope.fileSizeMBMsg =$rootScope.fileSizeMBMsg;
 		$scope.showFileMsg = false;
 		
@@ -1806,7 +1874,7 @@ angular.module('starter.controllers', [])
 						  $scope.addMemoryData['dateOfMemory'] =memoryResObj.get('dateOfMemory');
 						  if(memoryResObj.get('mentionTo')!=undefined)
 						  {
-						  	$scope.addMemoryData['mentionTo']    =memoryResObj.get('mentionTo').toString();
+						  	$scope.addMemoryData['mentionTo']    =memoryResObj.get('mentionTo');
 						  }
 						  
 						  $scope.addMemoryData['content'] =memoryResObj.get('content');
@@ -2150,14 +2218,19 @@ angular.module('starter.controllers', [])
 				CYRmeMemory.set("title", String($scope.addMemoryData['title']));
 				CYRmeMemory.set("typeOfMemory", String($scope.addMemoryData['typeOfMemory']))
 				CYRmeMemory.set("dateOfMemory", $scope.addMemoryData['dateOfMemory']);
-				if(String($scope.addMemoryData['mentionTo'])!="undefined")
+				
+				//alert(typeof($scope.addMemoryData['mentionTo']));
+				var mentionToArray = [];
+				if(($scope.addMemoryData['mentionTo'])!=undefined)
 				{
-					var mentionToArray = [];
-					$.each($scope.addMemoryData['mentionTo'].split(","), function(){
-						mentionToArray.push($.trim(this));
-					});
+					$.each($scope.addMemoryData['mentionTo'], function() {
+					  var key 	= Object.keys(this)[0];
+					  var value = $.trim(this[key]);
+					  mentionToArray.push(value);
+					}); 
 					CYRmeMemory.set("mentionTo", mentionToArray);
 				}
+				
 				CYRmeMemory.set("content", String($scope.addMemoryData['content']));
 				CYRmeMemory.set("privacy", String($scope.addMemoryData['privacy']));
 				
@@ -2385,7 +2458,7 @@ angular.module('starter.controllers', [])
 					var query = new Parse.Query("CYRme");
 					query.include("user");
 					//query.equalTo("user", {"__type":"Pointer","className":"_User","objectId":currentUser.id});
-					query.descending("createdAt");
+					query.descending("updatedAt");
 					query.find().then(function(CYRmeAllResult) {
 						
 						var promise = Parse.Promise.as(); // define a promise
@@ -2589,6 +2662,7 @@ angular.module('starter.controllers', [])
 										memoryAddOnDateTime	: memoryAddOnDateTime,
 										memoryType			: memoryType,
 										memoryImg			: memoryImg,
+										memoryPrivacy		: "No",
 										
 										memoryUserName		: memoryUserName,
 										memoryUserImg		: memoryUserImg,
@@ -2619,6 +2693,7 @@ angular.module('starter.controllers', [])
 											memoryAddOnDateTime	: memoryAddOnDateTime,
 											memoryType			: memoryType,
 											memoryImg			: memoryImg,
+											memoryPrivacy		: "Yes",
 											
 											memoryUserName		: memoryUserName,
 											memoryUserImg		: memoryUserImg,
@@ -2761,6 +2836,17 @@ angular.module('starter.controllers', [])
 								 {
 									 $scope.showEditMemory = false;
 								 }
+								 
+								 //check memory privacy
+								 if(memoryResObj.get('privacy')=="Yes")
+								 {
+									$scope.memoryDetailsPrivacy  = "Yes"; 
+								 }
+								 else
+								 {
+									 $scope.memoryDetailsPrivacy  = "No"; 
+								 }
+								 
 								 
 								 //get IREM activity counts
 								 var activityQuery   	= Parse.Object.extend("Activity");
@@ -2932,7 +3018,8 @@ angular.module('starter.controllers', [])
 		
 		//add memory icon not show this Ctrl
 		$rootScope.showAddMemoryLink	=false;
-		
+		// current user
+		var currentUser = Parse.User.current();
 		
 		//activity photo upload btn
 		$scope.uploadFileActivity = function() {
@@ -2944,8 +3031,74 @@ angular.module('starter.controllers', [])
 			});
 		}
 		
-		// current user
-		var currentUser = Parse.User.current();
+		
+	//autocomplete Start*******************************************
+		
+		//store all username detail in findUserArray array
+		var findUserArray	=new Array();
+		var query = new Parse.Query("_User");
+		query.notEqualTo("objectId", currentUser.id);
+		query.find().then(function(userAllResult) {
+			var promise = Parse.Promise.as(); // define a promise
+			//run each loop fetch each record
+			$.each(userAllResult, function(userResult) {
+			  var findUserResObj = userAllResult[userResult];
+			  promise = promise.then(function() {
+				 findUserArray.push(findUserResObj.get('username'));
+				 findUserArray.push(findUserResObj.get('email'));
+			  }); // end promise
+			}); //end each loop
+			return promise;
+		}).then(function() {
+				//alert("findUserArray=="+JSON.stringify(findUserArray));
+			  }, function (error) {
+				//alert("Error.code: " + error.code + " error.message: " + error.message);
+		});
+		
+		//load user in autocomplete list   
+		$scope.loadTags = function(query){
+			//return $http.get('tags.json');
+			var newUserArrayList=new Array;
+			for(var i=0; i<findUserArray.length; i++)
+			{
+				var userValue 	= findUserArray[i].toLowerCase();
+				var searchStr	= query.toLowerCase();
+				
+				if(searchStr && userValue.indexOf(searchStr)!=-1)
+				{
+					if(newUserArrayList.length>0)
+					{
+						$.each(newUserArrayList, function() {
+							var key 			= Object.keys(this)[0];
+							var newUserValue    = this[key].toLowerCase();
+							if(searchStr && newUserValue.indexOf(searchStr)==-1)
+							{
+								newUserArrayList.push({"text"	: findUserArray[i]});
+							}
+							else
+							{
+								//alert("no match");
+							}
+						}); 
+					}
+					else
+					{
+						newUserArrayList.push({"text"	: findUserArray[i]});
+					}
+				}
+			}//for loop End
+			
+			//check new user array count
+			if(newUserArrayList.length<1)
+			{
+				newUserArrayList.push({"text"	: "No Record Found"});
+			}
+			return newUserArrayList;
+	    };
+		
+	//autocomplete End*******************************************
+		
+		
 		
 		$scope.fileSizeMBMsg =$rootScope.fileSizeMBMsg;
 		$scope.showFileMsg = false;
@@ -2959,9 +3112,18 @@ angular.module('starter.controllers', [])
 		$scope.showAPhoto = false;
 		
 		//code for edit activity
-		var aId = $stateParams.aId;
-		var toUser = $stateParams.toUser;
-		var mId = $stateParams.mId;
+		var aId 		= $stateParams.aId;
+		var toUser 		= $stateParams.toUser;
+		var mId 		= $stateParams.mId;
+		var mPrivacy	= $stateParams.mPrivacy
+		if(mPrivacy=="Yes")
+		{
+			$scope.showActivityMentionToField=false;
+		}
+		else
+		{
+			$scope.showActivityMentionToField=true;
+		}
 		
 		if(aId!='' && aId!='ADD')
 		{ 
@@ -2982,10 +3144,10 @@ angular.module('starter.controllers', [])
 						  var activityResObj = activityResults[i];
 						
 						  $scope.addActivityData['activityType'] 	   =activityResObj.get('activityType');
-						  $scope.addActivityData['dateOfMemory'] =activityResObj.get('dateOfMemory');
+						  $scope.addActivityData['dateOfMemory']       =activityResObj.get('dateOfMemory');
 						  if(activityResObj.get('mentionTo')!=undefined)
 						  {
-						  	$scope.addActivityData['mentionTo']    =activityResObj.get('mentionTo').toString();
+							$scope.addActivityData['mentionTo']    =activityResObj.get('mentionTo');
 						  }
 						  
 						  $scope.addActivityData['content'] =activityResObj.get('content');
@@ -3320,15 +3482,19 @@ angular.module('starter.controllers', [])
 				Activity.set("dateOfMemory", $scope.addActivityData['dateOfMemory']);
 				Activity.set("content", String($scope.addActivityData['content']));
 				Activity.set("privacy", String($scope.addActivityData['privacy']));
-					
-				if(String($scope.addActivityData['mentionTo'])!="undefined")
-				{
-					var mentionToArray = [];
-					$.each($scope.addActivityData['mentionTo'].split(","), function(){
-						mentionToArray.push($.trim(this));
-					});
+				
+				//alert(typeof($scope.addActivityData['mentionTo']));
+				var mentionToArray = [];
+				if(($scope.addActivityData['mentionTo'])!=undefined)
+				{ 
+					$.each($scope.addActivityData['mentionTo'], function() {
+					  var key 	= Object.keys(this)[0];
+					  var value = $.trim(this[key]);
+					  mentionToArray.push(value);
+					}); 
 					Activity.set("mentionTo", mentionToArray);
 				}
+				
 				//upload file
 				var fileUploadControl = $("#activityFileUpload")[0];
 				if (fileUploadControl.files.length > 0) {
@@ -3548,7 +3714,7 @@ angular.module('starter.controllers', [])
 					var query 				= new Parse.Query(activitiesQuery);
 					query.include("fromUser");
 					query.equalTo("CYRme", {"__type":"Pointer","className":"CYRme","objectId":mId});
-					query.descending("createdAt");
+					query.descending("updatedAt");
 					
 					query.find({
 						success: function(activitiesResults) {
@@ -3771,7 +3937,16 @@ angular.module('starter.controllers', [])
 								 $scope.activityDetailsId  			= activityResObj.id;
 								 
 								 //get memory id
-								  $scope.memoryId  		= activityResObj.get("CYRme").id;
+								 $scope.memoryId  		= activityResObj.get("CYRme").id;
+								 //check memory privacy
+								 if(activityResObj.get("CYRme").get('privacy')=="Yes")
+								 {
+									$scope.memoryPrivacy  = "Yes"; 
+								 }
+								 else
+								 {
+									 $scope.memoryPrivacy  = "No"; 
+								 }
 								 
 								 if(activityResObj.get("fromUser").id==currentUser.id)
 								 {
