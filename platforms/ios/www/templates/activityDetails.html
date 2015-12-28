@@ -9,18 +9,15 @@
       </div>
     
       <div class="item item-body">
-        <img class="full-image" src="{{activityDetailsImg}}">
+        <img class="full-image" ng-show="activityDetailsImg!=''" src="{{activityDetailsImg}}">
         <p>
          {{activityDetailsContent}}
         </p>
       </div>
       
-      <div class="item tabs tabs-secondary tabs-icon-left">
-        <a class="tab-item" href="#/app/activity/{{memoryId}}/{{activityDetailsId}}/{{activityDetailsUserId}}" ng-show="showEditActivity">
-          <i class="icon ion-ios-compose"></i>
-          Edit
-        </a>
-       </div>
+       <a class="item button button-full button-positive" href="#/app/activity/{{memoryId}}/{{activityDetailsId}}/{{activityDetailsUserId}}/{{memoryPrivacy}}" ng-show="showEditActivity">
+      	<i class="icon ion-ios-compose"></i> Edit
+      </a>
     </div>
   
   </ion-content>

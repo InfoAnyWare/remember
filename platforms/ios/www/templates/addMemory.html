@@ -29,20 +29,27 @@
           <input type="date" name="dateOfMemory" ng-model="addMemoryData.dateOfMemory" placeholder="MM-DD-YYYY" value="">
         </label>
         
-        <label class="item item-input item-stacked-label">
-          <span class="input-label">Invite Users</span>
-          <textarea name="mentionTo" ng-model="addMemoryData.mentionTo" placeholder="Type CYRme users, facebook user ids or emails separated by comma" autocomplete="off"></textarea> 
-        </label>
+        <div class="mentionToField">
+          <h4>Invite Users</h4>
+          	<!--addFromAutocompleteOnly="true"  add this when not show autofill-->
+          	<tags-input name="mentionTo" ng-model="addMemoryData.mentionTo" placeholder="Type CYRme users, facebook user ids or emails">
+                <auto-complete source="loadTags($query)" maxResultsToShow="5"></auto-complete>
+            </tags-input>
+       </div>
         
         <label class="item item-input item-stacked-label">
           <span class="input-label">Content</span>
           <textarea name="content" ng-model="addMemoryData.content" placeholder="Content" autocomplete="off"></textarea> 
         </label>
-        
-         <label class="item item-input">
-          <span class="input-label">Upload Photo ({{fileSizeMBMsg}} Max.)</span>
-          <input type="file" name="memoryFileUpload" id="memoryFileUpload" ng-model="addMemoryData.memoryFileUpload">
-        </label>
+       
+        <div class="item inputBtnSection">
+        	<span class="input-label">Upload Photo ({{fileSizeMBMsg}} Max.)</span>
+            <input id="uploadFileMemory" class="disableInputField" placeholder="" disabled="disabled" />
+            <label class="fileUpload">
+                <input type="file" class="upload" name="memoryFileUpload" id="memoryFileUpload" ng-model="addMemoryData.memoryFileUpload" ng-click="uploadFileMemory()"/>
+                <span class="uploadBtn">Choose File</span>
+            </label>
+   		</div>
         
         <label class="item item-input item-stacked-label" ng-show="showFileMsg">
           <span style="color:red; text-align:center;">
@@ -55,7 +62,6 @@
               <div class="col col-67"><img align="absmiddle" width="80px" height="80px" src="{{MPhoto}}"  /></div>
         </div>
         
-        <div class="list">
         <label class="item item-input">
             <span class="input-label">Privacy <i class="ion-ios-medical assertive m-star-field"></i></span>
             <label class="item item-radio">
@@ -76,8 +82,7 @@
             <span style="color:red" ng-show="addMemoryForm.privacy.$dirty && addMemoryForm.privacy.$invalid">
             <span ng-show="addMemoryForm.privacy.$error.required">Privacy is required.</span>
             </span>
-          </label>
-		</div>
+         </label>
         
         <label class="item">
           <button class="button button-block button-positive" type="submit" ng-disabled="((addMemoryForm.title.$dirty || addMemoryForm.title.$pristine) && addMemoryForm.title.$invalid) || ((addMemoryForm.privacy.$dirty || addMemoryForm.privacy.$pristine) && addMemoryForm.privacy.$invalid) ">
@@ -91,3 +96,4 @@
   </div>
   </ion-content>
 </ion-view>
+

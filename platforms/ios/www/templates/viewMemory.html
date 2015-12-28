@@ -1,26 +1,101 @@
 <ion-view title="View Memories">
   <ion-content ng-show="afterloginLinks">
   
-    <div class="row card" ng-show="showViewMemoryMsg">
-        <div class="col"><h4 class="display-msg">{{showViewMemoryValue}}</h4></div>
+    <div class="card text-center display-msg" ng-show="showViewMemoryMsg">
+         <strong>{{showViewMemoryValue}}</strong>
     </div>
     
     <div class="list" ng-show="showMemories">
         <div class="card" ng-repeat="memoryItem in memoryListArr">
-            <a class="item item-avatar item-divider" href="#/app/memoryDetails/{{memoryItem.memoryId}}">
-                 <img src="{{memoryItem.memoryUserImg}}">
-                  <strong>{{memoryItem.memoryUserName}}</strong>
-                  <p>{{memoryItem.memoryAddOnDateTime}}</p>
-             </a>
-             <a class="item item-thumbnail-right" href="#/app/memoryDetails/{{memoryItem.memoryId}}">
-                <img src="{{memoryItem.memoryImg}}">
-                <strong>{{memoryItem.memoryTitle}}</strong>
-                <p>{{memoryItem.memoryContent}}</p>
-            </a>
-        </div>
+                    <a class="item item-avatar item-divider" href="#/app/memoryDetails/{{memoryItem.memoryId}}">
+                          <img src="{{memoryItem.memoryUserImg}}">
+                          <strong>{{memoryItem.memoryUserName}}</strong>
+                          
+                          <span class="home-share-button">
+                              <div class="row">
+                                 <div class="col">
+                                 	 <span class="button button-small button-positive" title="I remember this">
+                                          <strong>{{memoryItem.IREMcount}}</strong>&nbsp;&nbsp;
+                                          <i class="icon ion-information"></i>
+                                          IREM
+                                     </span>
+                                 </div>
+                                 <div class="col">
+                                 	<span class="button button-small button-positive" title="Like">
+                                     <strong> {{memoryItem.LIKEcount}}</strong>&nbsp;&nbsp;
+                                      <i class="icon ion-thumbsup"></i>
+                                      Like
+                                    </span>
+                                 </div>
+                                 <div class="col">
+                                   <span class="button button-small button-positive">
+                                    {{memoryItem.activityTotalCount}}
+                                   </span>
+                                 </div>
+                             </div> <!--End row-->
+                          </span>
+                          
+                          <p>{{memoryItem.memoryAddOnDateTime}}
+                          <span class="dark" ng-show="memoryItem.memoryType!='' && memoryItem.memoryAddOnDateTime!=''">&nbsp;<strong>|</strong>&nbsp;</span>
+                          {{memoryItem.memoryType}}
+                          </p>
+                     </a>
+                     <a class="item item-thumbnail-right" href="#/app/memoryDetails/{{memoryItem.memoryId}}">
+                        <img  ng-show="memoryItem.memoryImg!=''" src="{{memoryItem.memoryImg}}">
+                        <strong>{{memoryItem.memoryTitle}}</strong>
+                        <p>{{memoryItem.memoryContent}}</p>
+                    </a>
+                   
+                   <!-- <div class="item tabs tabs-secondary tabs-icon-left">
+                        <a class="tab-item" href="#" title="I remember this">
+                          <strong>{{memoryItem.IREMcount}}</strong>&nbsp;&nbsp;
+                          <i class="icon ion-information"></i>
+                          IREM
+                        </a>
+                        
+                        <a class="tab-item" href="#" title="Like">
+                         <strong> {{memoryItem.LIKEcount}}</strong>&nbsp;&nbsp;
+                          <i class="icon ion-thumbsup"></i>
+                          Like
+                        </a>
+                        <a class="tab-item" href="#" title="Follower">
+                          <strong>{{memoryItem.FOLLOWcount}}</strong>&nbsp;&nbsp;
+                          <i class="icon ion-ios-people"></i>
+                          Follower
+                        </a>
+                 </div>-->
+            
+                 <div class="item home-act-bg padding-zero" ng-repeat="activityItem in memoryItem.activityListArray">
+                    <a class="item home-act-bg padding-zero" href="#/app/activityDetails/{{activityItem.activityId}}/{{memoryItem.memoryTitle}}">
+                         <div class="row">
+                             <div class="col">
+                                <div class="text-left item-avatar">
+                                     <img src="{{activityItem.activityUserImg}}">
+                                     <strong>{{activityItem.activityUserName}}</strong>
+                                     <p>
+                                         {{activityItem.activityType}}
+                                         <span class="dark" ng-show="activityItem.activityAddOnDateTime!=''">&nbsp;<strong>|</strong>&nbsp;</span>
+                                         {{activityItem.activityAddOnDateTime}}
+                                     </p>
+                                     <p>{{activityItem.activityContent}}</p>
+                                </div>
+                             </div>
+                             <div class="col col-20 text-right full-image">
+                               <img ng-show="activityItem.activityImg!=''" width="50px" height="50px" src="{{activityItem.activityImg}}">
+                             </div>
+                         </div> <!--End row-->
+                    </a> <!--End a-->
+                </div><!-- End activityListArray loop-->
+                
+                
+                 <a class="item button button-full button-positive" href="#/app/activity/{{memoryItem.memoryId}}/ADD/{{memoryItem.memoryUserId}}/{{memoryItem.memoryPrivacy}}">
+                  <i class="icon ion-share"></i> Reminisce
+                 </a>
+                
+              </div><!--End memoryListArr-->
     </div>
     
-    <div class="list" ng-show="!showMemories">
+    <div class="list" ng-show="!showMemories && !showViewMemoryMsg">
         <div class="card text-center">
              <strong>No Memory Found</strong>
         </div>

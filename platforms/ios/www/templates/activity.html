@@ -33,20 +33,27 @@
           <input type="date" name="dateOfMemory" ng-model="addActivityData.dateOfMemory" placeholder="MM-DD-YYYY" value="">
         </label>
         
-        <label class="item item-input item-stacked-label">
-          <span class="input-label">Invite Users</span>
-          <textarea name="mentionTo" ng-model="addActivityData.mentionTo" placeholder="Type CYRme users, facebook user ids or emails separated by comma" autocomplete="off"></textarea> 
-        </label>
+        <div class="mentionToField" ng-show="showActivityMentionToField">
+          <h4>Invite Users</h4>
+          	<!--addFromAutocompleteOnly="true"  add this when not show autofill-->
+          	<tags-input name="mentionTo" ng-model="addActivityData.mentionTo" placeholder="Type CYRme users, facebook user ids or emails">
+                <auto-complete source="loadTags($query)" maxResultsToShow="5"></auto-complete>
+            </tags-input>
+       </div>
         
         <label class="item item-input item-stacked-label">
           <span class="input-label">Content</span>
           <textarea name="content" ng-model="addActivityData.content" placeholder="Content" autocomplete="off"></textarea> 
         </label>
         
-         <label class="item item-input">
-          <span class="input-label">Upload Photo ({{fileSizeMBMsg}} Max.)</span>
-          <input type="file" name="activityFileUpload" id="activityFileUpload" ng-model="addActivityData.activityFileUpload">
-        </label>
+        <div class="item inputBtnSection">
+        	<span class="input-label">Upload Photo ({{fileSizeMBMsg}} Max.)</span>
+            <input id="uploadFileActivity" class="disableInputField" placeholder="" disabled="disabled" />
+            <label class="fileUpload">
+                <input type="file" class="upload" name="activityFileUpload" id="activityFileUpload" ng-model="addActivityData.activityFileUpload" ng-click="uploadFileActivity()"/>
+                <span class="uploadBtn">Choose File</span>
+            </label>
+   		</div>
         
         <label class="item item-input item-stacked-label" ng-show="showFileMsg">
           <span style="color:red; text-align:center;">
@@ -59,7 +66,6 @@
               <div class="col col-67"><img align="absmiddle" width="80px" height="80px" src="{{APhoto}}"  /></div>
         </div>
         
-        <div class="list">
         <label class="item item-input">
             <span class="input-label">Privacy <i class="ion-ios-medical assertive m-star-field"></i></span>
             <label class="item item-radio">
@@ -81,7 +87,6 @@
             <span ng-show="addActivityForm.privacy.$error.required">Privacy is required.</span>
             </span>
           </label>
-		</div>
         
         
         <label class="item">

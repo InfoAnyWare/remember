@@ -1,8 +1,11 @@
-<ion-view title="{{memoryDetailsTitle}}">
-  <ion-content ng-show="afterloginLinks">
- 
+<ion-view title="Memory Detail">
+  
+  <div class="bar bar-subheader">
+ 	<h2 class="title">{{memoryDetailsTitle}}</h2>
+  </div>
+  <ion-content class="has-subheader" ng-show="afterloginLinks">
     <div class="list card">
-
+    
       <div class="item item-avatar">
         <img src="{{memoryDetailsUserImg}}">
         <h2>{{memoryDetailsUserName}}</h2>
@@ -10,49 +13,45 @@
       </div>
     
       <div class="item item-body">
-        <img class="full-image" src="{{memoryDetailsImg}}">
+        <img class="full-image" ng-show="memoryDetailsImg!=''" src="{{memoryDetailsImg}}">
         <p>
          {{memoryDetailsContent}}
         </p>
       </div>
+      
+       <div class="item text-center" ng-show="showMemoryDetailsMsg">
+            <strong class="display-msg">{{showMemoryDetailsMsgValue}}</strong>
+       </div>
     
       <div class="item tabs tabs-secondary tabs-icon-left">
       
-        <a class="tab-item" href="#" title="I remember this">
+        <a class="tab-item" title="I remember this" href="javascript:;" ng-click="addActivityTypeAction(memoryDetailsId,memoryDetailsUserId,'IREM',IREMcount)">
           <strong>{{IREMcount}}</strong>&nbsp;&nbsp;
           <i class="icon ion-information"></i>
           IREM
         </a>
         
-        <a class="tab-item" href="#" title="Like">
+        <a class="tab-item" title="Like" href="javascript:;" ng-click="addActivityTypeAction(memoryDetailsId,memoryDetailsUserId,'LIKE',LIKEcount)">
          <strong> {{LIKEcount}}</strong>&nbsp;&nbsp;
           <i class="icon ion-thumbsup"></i>
           Like
         </a>
-        <a class="tab-item" href="#" title="Follower">
+        <a class="tab-item" title="Follower" href="javascript:;" ng-click="addActivityTypeAction(memoryDetailsId,memoryDetailsUserId,'FOLLOW',FOLLOWcount)">
           <strong>{{FOLLOWcount}}</strong>&nbsp;&nbsp;
           <i class="icon ion-ios-people"></i>
           Follower
         </a>
       </div>
       
-      
-      <div class="item tabs tabs-secondary tabs-icon-left">
-      
-      	<a class="tab-item" href="#/app/addMemory/{{memoryDetailsId}}" ng-show="showEditMemory">
-          <i class="icon ion-ios-compose"></i>
-          Edit
-        </a>
-        
-        <a class="tab-item" href="#/app/viewAllActivities/{{memoryDetailsId}}/{{memoryDetailsTitle}}">
-          <i class="icon ion-eye"></i>
-          View All Activities
-        </a>
-        <a class="tab-item" href="#/app/activity/{{memoryDetailsId}}/ADD/{{memoryDetailsUserId}}">
-          <i class="icon ion-share"></i>
-          Do Activity
-        </a>
-      </div>
+      <a class="item button button-full button-positive" href="#/app/addMemory/{{memoryDetailsId}}" ng-show="showEditMemory">
+      	<i class="icon ion-ios-compose"></i> Edit
+      </a>
+      <a class="item button button-full button-positive" href="#/app/activity/{{memoryDetailsId}}/ADD/{{memoryDetailsUserId}}/{{memoryDetailsPrivacy}}">
+      	 <i class="icon ion-share"></i> Reminisce
+      </a>
+      <a class="item button button-full button-positive" href="#/app/viewAllActivities/{{memoryDetailsId}}/{{memoryDetailsTitle}}">
+      	<i class="icon ion-eye"></i> More Activities
+      </a>
     
     </div>
   

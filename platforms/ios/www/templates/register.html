@@ -3,7 +3,7 @@
   <ion-header-bar>
     <a class="button icon-left ion-chevron-left button-clear button-small"  ng-click="login()" ng-show="beforeloginLinks"></a>
     <a class="button icon-left ion-chevron-left button-clear button-small"  ng-click="closeRegister()" ng-show="afterloginLinks"></a>
-    <h1 class="title">Register</h1>
+    <span class="title">Register</span>
   </ion-header-bar>
   
   <ion-content>
@@ -57,11 +57,8 @@
         </label>
         
         <label class="item item-input item-stacked-label">
-          <span class="input-label">Date Of Birth <i class="ion-ios-medical assertive m-star-field"></i></span>
+          <span class="input-label">Date Of Birth</span>
           <input type="date" name="dateOfBirth" ng-model="registerData.dateOfBirth" placeholder="MM-DD-YYYY" value="">
-          <span style="color:red" ng-show="registerForm.dateOfBirth.$dirty">
-          	<span ng-show="registerForm.dateOfBirth.$error.required">Date Of Birth is required.</span>
-          </span>
         </label>
         
         <label class="item item-input item-stacked-label">
@@ -80,11 +77,14 @@
           </span>
         </label>
         
-        
-         <label class="item item-input">
-          <span class="input-label">Photo ({{fileSizeMBMsg}} Max.)</span>
-          <input type="file" name="photoFileUpload" id="photoFileUpload" ng-model="registerData.photoFileUpload">
-        </label>
+        <div class="item inputBtnSection">
+        	<span class="input-label">Upload Photo ({{fileSizeMBMsg}} Max.)</span>
+            <input id="uploadFileRegister" class="disableInputField" placeholder="" disabled="disabled" />
+            <label class="fileUpload">
+               <input type="file" class="upload" name="photoFileUpload" id="photoFileUpload" ng-model="registerData.photoFileUpload" ng-click="uploadFileRegister()"/>
+               <span class="uploadBtn">Choose File</span>
+            </label>
+   		</div>
         
          <label class="item item-input item-floating-label" style="color:red" ng-show="passwordMatchMsg">
         	<span >Password did not match.</span>

@@ -1,0 +1,77 @@
+<ion-modal-view>
+
+  <ion-header-bar>
+    <a class="button icon-left ion-chevron-left button-clear button-small"  ng-click="closeEditUser()" ng-show="afterloginLinks"></a>
+    <span class="title">Edit User</span>
+  </ion-header-bar>
+  
+  <ion-content>
+    <form ng-submit="doEditUser()" name="editUserForm" novalidate enctype="multipart/form-data">
+      <div class="list">
+      
+        <label class="item item-input item-stacked-label m-star">
+      		Fields marked with '<i class="ion-ios-medical assertive"></i>' are mandatory &nbsp;&nbsp;
+        </label>
+      
+       	<label class="item item-input display-msg" ng-show="editUserMsg">
+        	{{editUserMsgValue}}
+        </label>
+        
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">First Name <i class="ion-ios-medical assertive m-star-field"></i></span>
+          <input type="text" name="firstName" ng-model="editUserData.firstName" placeholder="First Name" autocomplete="off" required>
+          <span style="color:red" ng-show="editUserForm.firstName.$dirty && editUserForm.firstName.$invalid">
+          	<span ng-show="editUserForm.firstName.$error.required">First name is required.</span>
+          </span>
+        </label>
+        
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Middle Name</span>
+          <input type="text" name="middleName" ng-model="editUserData.middleName" placeholder="Middle Name" autocomplete="off" required>
+        </label>
+        
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Sur Name <i class="ion-ios-medical assertive m-star-field"></i></span>
+          <input type="text" name="surName" ng-model="editUserData.surName" placeholder="Sur Name" autocomplete="off" required>
+          <span style="color:red" ng-show="editUserForm.surName.$dirty && editUserForm.surName.$invalid">
+          	<span ng-show="editUserForm.surName.$error.required">Sur name is required.</span>
+          </span>
+        </label>
+        
+        <label class="item item-input item-stacked-label">
+          <span class="input-label">Date Of Birth</span>
+          <input type="date" name="dateOfBirth" ng-model="editUserData.dateOfBirth" placeholder="MM-DD-YYYY" value="">
+        </label>
+        
+         <div class="item inputBtnSection">
+        	<span class="input-label">Upload Photo ({{fileSizeMBMsg}} Max.)</span>
+            <input id="uploadFileEditUser" class="disableInputField" placeholder="" disabled="disabled" />
+            <label class="fileUpload">
+                <input type="file" class="upload" name="editUserPhotoFileUpload" id="editUserPhotoFileUpload" ng-model="editUserData.editUserPhotoFileUpload" ng-click="uploadFileEditUser()"/>
+                <span class="uploadBtn">Choose File</span>
+            </label>
+   		</div>
+        
+        <label class="item item-input item-stacked-label" ng-show="showFileMsg">
+          <span style="color:red; text-align:center;">
+          	{{fileMsg}}
+          </span>
+        </label>
+        
+         <div class="row item item-text-wrap">
+              <div class="col col-33">Photo : </div>
+              <div class="col col-67"><img align="absmiddle" width="80px" height="80px" src="{{UPhoto}}"  /></div>
+        </div>
+        
+        <label class="item">
+          <button class="button button-block button-positive" type="submit" ng-disabled="((editUserForm.firstName.$dirty || editUserForm.firstName.$pristine) && editUserForm.firstName.$invalid) || ((editUserForm.surName.$dirty || editUserForm.surName.$pristine) && editUserForm.surName.$invalid)">
+         
+          <i class="ion-android-checkmark-circle"></i>
+          Submit</button>
+        </label>
+        
+      </div>
+    </form>
+  </div>
+  </ion-content>
+</ion-modal-view>
