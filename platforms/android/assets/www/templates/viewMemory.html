@@ -1,12 +1,24 @@
 <ion-view title="View Memories">
-  <ion-content ng-show="afterloginLinks">
+
+  <label class="item item-input item-select bar bar-subheader filter-bar">
+    <div class="input-label">
+      Filter By :-
+    </div>
+    <select ng-model="searchText">
+      <option value="{{filterUserId}}">My Memories</option>
+      <option value="!{{filterUserId}}">Memories I am included in</option>
+      <option selected="selected" value="">All Memories</option>
+    </select>
+  </label>
+  
+  <ion-content class="has-subheader" ng-show="afterloginLinks">
   
     <div class="card text-center display-msg" ng-show="showViewMemoryMsg">
          <strong>{{showViewMemoryValue}}</strong>
     </div>
     
     <div class="list" ng-show="showMemories">
-        <div class="card" ng-repeat="memoryItem in memoryListArr">
+        <div class="card" ng-repeat="memoryItem in memoryListArr | filter:searchText">
                     <a class="item item-avatar item-divider" href="#/app/memoryDetails/{{memoryItem.memoryId}}">
                           <img src="{{memoryItem.memoryUserImg}}">
                           <strong>{{memoryItem.memoryUserName}}</strong>
