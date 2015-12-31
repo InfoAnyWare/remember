@@ -2452,7 +2452,8 @@ angular.module('starter.controllers', [])
 					$scope.showViewMemoryValue  = "";
 					$scope.showMemories			= true;
 					var memoryListArray			= new Array(); //store all memory data
-					var currentUser = Parse.User.current();
+					var currentUser 			= Parse.User.current();
+					$scope.filterUserId			= currentUser.id;
 					var mCount=0;
 					
 					var query = new Parse.Query("CYRme");
